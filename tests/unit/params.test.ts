@@ -10,8 +10,31 @@ describe('parseLaunchParams', () => {
       cam: null,
       autostart: false,
       showUi: true,
+      time: null,
+      timeScale: 1,
+      dialog: null,
     });
     expect(params.debugFlags.size).toBe(0);
+  });
+
+  it('reads a start time on the 24-hour clock', () => {
+    expect(parseLaunchParams('?time=1555').time).toBe(15 * 60 + 55);
+    expect(parseLaunchParams('?time=07:05').time).toBe(7 * 60 + 5);
+    expect(parseLaunchParams('?time=2400').time).toBeNull();
+    expect(parseLaunchParams('?time=7').time).toBeNull();
+  });
+
+  it('reads a time scale, 0 to freeze', () => {
+    expect(parseLaunchParams('?timescale=20').timeScale).toBe(20);
+    expect(parseLaunchParams('?timescale=0').timeScale).toBe(0);
+    expect(parseLaunchParams('?timescale=0.5').timeScale).toBe(0.5);
+    expect(parseLaunchParams('?timescale=-3').timeScale).toBe(1);
+    expect(parseLaunchParams('?timescale=9999').timeScale).toBe(1);
+  });
+
+  it('reads a dialog entry id', () => {
+    expect(parseLaunchParams('?dialog=mess-coffee').dialog).toBe('mess-coffee');
+    expect(parseLaunchParams('?dialog=Mess Coffee').dialog).toBeNull();
   });
 
   it('turns debug on with or without a value', () => {

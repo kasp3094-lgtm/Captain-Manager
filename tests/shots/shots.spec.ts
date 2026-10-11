@@ -1,11 +1,15 @@
 /**
  * Screenshots for review after visual changes: `npm run shots`, then look at artifacts/shots/.
- * The interface in a few states, the ship map of each deck, and every room and shaft from its
- * viewpoint (artifacts/shots/rooms/<deck>-<room>.png). Viewpoints are fixed, so images are
- * comparable between runs.
+ * The interface in a few states, the ship map of each deck, the crew at different times of day,
+ * and every room and shaft from its viewpoint (artifacts/shots/rooms/<deck>-<room>.png).
+ * Viewpoints, seeds and times are fixed and the crew are frozen in place (`timescale=0`), so
+ * images are comparable between runs.
  */
 import { expect, test, type Page } from '@playwright/test';
 import { openGame, pose, waitFrames } from '../support';
+
+/** Fixed seed, the crew frozen in place, no interface. */
+const CREW = '?autostart&noui&seed=3&timescale=0';
 
 interface Shot {
   readonly name: string;
@@ -49,6 +53,29 @@ const SHOTS: readonly Shot[] = [
   { name: '07-map-deck-2', query: '?autostart', then: mapOfDeck(2) },
   { name: '08-map-deck-3', query: '?autostart', then: mapOfDeck(3) },
   { name: '09-map-deck-4', query: '?autostart', then: mapOfDeck(4) },
+  // The crew through the day.
+  { name: '10-crew-mess-lunch', query: `${CREW}&time=1210&cam=crew-mess` },
+  { name: '11-crew-bridge-forenoon', query: `${CREW}&time=1000&cam=bridge` },
+  { name: '12-crew-berthing-night', query: `${CREW}&time=0300&cam=junior-berthing-a` },
+  { name: '13-crew-engineering', query: `${CREW}&time=1400&cam=main-engineering` },
+  { name: '14-crew-gym-evening', query: `${CREW}&time=1900&cam=gym` },
+  {
+    // Time runs here: the oncoming watch walking to their posts just before 1600.
+    name: '15-crew-passage-watch-change',
+    query: '?autostart&noui&seed=3&time=1545&timescale=10&cam=passage-2',
+    then: async (page) => {
+      await expect
+        .poll(() => page.evaluate(() => window.__captain!.time()), { timeout: 60_000 })
+        .toMatch(/^15:5[6-9]$/);
+    },
+  },
+  {
+    name: '16-crew-speech',
+    query: '?autostart&seed=3&time=1210&cam=crew-mess&dialog=mess-coffee',
+    then: async (page) => {
+      await expect(page.getByTestId('speech')).toContainText('coffee', { timeout: 30_000 });
+    },
+  },
 ];
 
 for (const shot of SHOTS) {
@@ -61,7 +88,7 @@ for (const shot of SHOTS) {
 
 test('every room', async ({ page }) => {
   test.setTimeout(20 * 60_000);
-  await openGame(page, '?autostart&noui');
+  await openGame(page, `${CREW}&time=1000`);
   const names = await page.evaluate(() => window.__captain!.bookmarks());
   for (const name of names.filter((candidate) => candidate !== 'spawn')) {
     await page.evaluate((bookmark) => window.__captain!.goTo(bookmark), name);

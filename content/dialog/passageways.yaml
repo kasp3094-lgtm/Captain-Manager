@@ -1,0 +1,150 @@
+# Anywhere aboard: the passageways and ladders, people on their way somewhere, and the talk
+# that follows the crew from room to room (the new captain, Vance, the ship). Entries without
+# `where:` can happen in any room. One speaker and no `to:` means someone muttering to
+# themselves, maybe as they walk past. How to write entries: content/dialog/README.md.
+
+# ---- Muttering on the way ------------------------------------------------------------------
+
+- id: walk-late
+  who: junior
+  lines: |
+    1: Late, late, late. The Chief's going to have me painting bilges.
+
+- id: walk-forgot
+  who: anyone
+  lines: |
+    1: Did I leave the… no. Yes. No. I'll check later.
+
+- id: walk-ladder
+  where: passage
+  who: anyone
+  lines: |
+    1: Four decks of ladders and they call the lift "for emergencies". Every day's an emergency.
+
+- id: walk-boots
+  who: anyone
+  lines: |
+    1: These boots were issued in the last century, I swear.
+
+- id: walk-field-day
+  who: [junior, junior]
+  lines: |
+    1: Field day tomorrow.
+    2: Again? We cleaned everything last week.
+    1: Then we clean the clean. Navy tradition.
+
+- id: walk-rumour-mill
+  who: [anyone, anyone]
+  lines: |
+    1: Heard we're going into the Reach.
+    2: Who from?
+    1: Someone who heard it from the ship's office.
+    2: Then it's true. Or it's a form.
+
+# ---- The new captain ---------------------------------------------------------------------
+
+- id: talk-captain-first-week
+  who: [anyone, anyone]
+  lines: |
+    1: First week with a new captain. Everyone's on their best behaviour.
+    2: For now.
+    1: How long does it last, usually?
+    2: Until the first bad call. Then we find out who they really are.
+
+- id: talk-captain-walks
+  who: [anyone, anyone]
+  lines: |
+    1: The skipper was down on deck four yesterday. Talking to stokers.
+    2: Vance never went below two.
+    1: That's what I said.
+
+- id: talk-captain-fair
+  who: [petty-officer, junior]
+  lines: |
+    1: Fair, hard or soft. That's all you want to know about a new captain.
+    2: Which is this one?
+    1: Ask me after the first captain's mast.
+
+- id: talk-captain-xo
+  who: [anyone, anyone]
+  lines: |
+    1: The XO and the captain didn't say ten words at dinner.
+    2: Who told you that?
+    1: Steward. Ten words, and four of them were "pass the".
+
+# ---- Vance ------------------------------------------------------------------------------------
+
+- id: talk-vance-why
+  who: [junior, junior]
+  lines: |
+    1: Why was Vance relieved, really?
+    2: Drink, I heard.
+    1: I heard there was a fight.
+    2: I heard Vance found something.
+    1: Found what?
+    2: That's the bit nobody's heard.
+
+- id: talk-vance-quarters
+  who: [anyone, anyone]
+  once: true
+  lines: |
+    1: They cleared Vance's quarters in an hour. Two suits from Fort Marrow, not even Navy.
+    2: Who were they?
+    1: Nobody asked. That's the thing. Nobody asked.
+
+- id: talk-vance-last-jump
+  who: [operations, anyone]
+  once: true
+  lines: |
+    1: The last jump Vance logged doesn't match the fuel we used.
+    2: Then the log's wrong.
+    1: Or the jump went somewhere we're not supposed to know about.
+
+# ---- The ship --------------------------------------------------------------------------------
+
+- id: talk-ship-old
+  who: [anyone, anyone]
+  lines: |
+    1: The {ship} is older than both of us put together.
+    2: Older than the Chief, even.
+    1: Nothing's older than the Chief.
+
+- id: talk-ship-creaks
+  when: night
+  who: [anyone, anyone]
+  lines: |
+    1: You hear her creak at night?
+    2: Hull's cooling. It's normal.
+    1: It sounds like she's talking.
+    2: Then she's saying "go to sleep".
+
+- id: talk-ship-pride
+  who: [chief, junior]
+  lines: |
+    1: You hear people call her a rust bucket, you put them right.
+    2: Even if she is one, Chief?
+    1: Especially then. She's our rust bucket.
+
+# ---- The Master Chief on her rounds --------------------------------------------------------
+
+- id: delgado-rounds
+  who: [delgado, junior]
+  doing: patrol
+  lines: |
+    1: Your collar, {2.last}.
+    2: Master Chief?
+    1: It's crooked. So's your excuse. Fix both.
+
+- id: delgado-rounds-kind
+  who: [delgado, junior]
+  doing: patrol
+  lines: |
+    1: You look like death, {2.last}. When did you last sleep in your rack instead of on your feet?
+    2: Tuesday, Master Chief.
+    1: It's Friday. Go on. I'll square it with your PO.
+
+- id: delgado-rounds-alone
+  who: delgado
+  doing: patrol
+  lines: |
+    1: Thirty years in and still the same three problems. Sleep, food and mail.

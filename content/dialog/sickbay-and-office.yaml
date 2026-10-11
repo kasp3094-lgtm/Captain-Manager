@@ -1,0 +1,89 @@
+# The ship's services: sickbay, the ship's office, the stores and the food stores. The surgeon
+# is the ship's conscience, the yeoman hears every rumour, and supply has numbers that don't
+# add up (Act 1 spec §4). How to write entries: content/dialog/README.md.
+
+# ---- Sickbay ---------------------------------------------------------------------------------
+
+- id: sickbay-moreau-patient
+  where: sickbay
+  who: [moreau, anyone]
+  lines: |
+    1: How long since you slept a full watch?
+    2: I'm fine, Doc.
+    1: That isn't a number.
+
+- id: sickbay-moreau-haddad
+  where: sickbay
+  who: [moreau, haddad]
+  lines: |
+    1: You've been quiet since Vance left.
+    2: I've always been quiet, Doc.
+    1: Not like this.
+
+- id: sickbay-assistant-inventory
+  where: sickbay
+  who: medical-assistant
+  doing: duty
+  lines: |
+    1: Gauze, plenty. Painkillers, low. Anti-rad tabs… who's been taking anti-rad tabs?
+
+- id: sickbay-assistant-gossip
+  where: sickbay
+  who: [medical-assistant, anyone]
+  lines: |
+    1: You're the third one this week with "a sore back from the racks".
+    2: It's true!
+    1: I know it's true. That's what worries me.
+
+# ---- The ship's office ---------------------------------------------------------------------
+
+- id: office-raman-forms
+  where: ships-office
+  who: [raman, anyone]
+  lines: |
+    1: You want a transfer? Form seven-twelve. You want to know why the transfer was refused? Form seven-thirteen.
+    2: And if I want both?
+    1: Then you want me to be very, very patient.
+
+- id: office-raman-rumour
+  where: ships-office
+  who: [raman, anyone]
+  lines: |
+    1: You didn't hear this from me, but the captain asked for every log Vance signed in the last month.
+    2: Every log?
+    1: Every log. Some of them aren't where they should be.
+
+- id: office-raman-alone
+  where: ships-office
+  who: raman
+  lines: |
+    1: Three hundred signatures by Friday. The Navy runs on ink and patience, and we're low on both.
+
+# ---- Stores ------------------------------------------------------------------------------------
+
+- id: stores-reyes-crate
+  where: stores
+  who: reyes
+  lines: |
+    1: That crate's machine parts. Hydraulic ones. They slosh. That's normal, for hydraulics.
+
+- id: stores-haas-manifest
+  where: stores
+  who: [haas, anyone]
+  lines: |
+    1: Leave the Halvard crates to me. I'll do the count on those myself.
+    2: It's no trouble, sir—
+    1: I said I'll do it.
+
+- id: stores-rating-count
+  where: [stores, forward-stores, food-stores, engineering-stores]
+  who: anyone
+  doing: duty
+  lines: |
+    1: One hundred and twelve… one hundred and thirteen… and where's the one hundred and fourteenth?
+
+- id: food-stores-storekeeper
+  where: food-stores
+  who: storekeeper
+  lines: |
+    1: Flour, eleven days. Coffee, nine. Morale, about four.

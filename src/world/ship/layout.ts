@@ -143,7 +143,9 @@ export interface ShaftStop {
 
 export type InteractAction =
   | { readonly kind: 'ladder'; readonly shaft: string; readonly toDeck: number }
-  | { readonly kind: 'lift'; readonly shaft: string };
+  | { readonly kind: 'lift'; readonly shaft: string }
+  /** A crew member (src/world/crew/crowd.ts tags them; the layout itself has none). */
+  | { readonly kind: 'talk'; readonly crew: string };
 
 /** Something the captain can use with E: an invisible box that a look ray can hit. */
 export interface Interactable {

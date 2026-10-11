@@ -37,6 +37,9 @@ export interface GameUiState {
   readonly prompt: string | null;
   /** True while the view fades to black for a trip between decks. */
   readonly fading: boolean;
+  /** Ship's time, "0752", and the day aboard (0 is the first). */
+  readonly time: string;
+  readonly day: number;
   /** Debug panel figures. */
   readonly fps: number;
   readonly drawCalls: number;
@@ -50,11 +53,32 @@ export const gameUi = createStore<GameUiState>({
   nearbyPoi: null,
   prompt: null,
   fading: false,
+  time: '',
+  day: 0,
   fps: 0,
   drawCalls: 0,
   seed: 0,
   pointerLocked: false,
 });
+
+/** A line the crew are saying, placed on screen by the game every frame. */
+export interface SpeechBubble {
+  /** New for every line. */
+  readonly key: number;
+  /** Who says it, e.g. "PO2 Barros". */
+  readonly name: string;
+  readonly text: string;
+  /** Said to the captain, rather than overheard. */
+  readonly toCaptain: boolean;
+  /** Above the speaker's head, in CSS pixels; null when they're off screen (shown as a subtitle). */
+  readonly x: number | null;
+  readonly y: number | null;
+  /** 1 close by, fainter further off. */
+  readonly opacity: number;
+}
+
+/** What's being said; its own store, since it moves every frame. */
+export const speech = createStore<{ readonly bubble: SpeechBubble | null }>({ bubble: null });
 
 /** Where the captain is on the deck plan: metres from the bow (x) and from starboard (y). */
 export interface PlayerPose {

@@ -6,6 +6,8 @@
 import '@babylonjs/core/Collisions/collisionCoordinator';
 // Looking at things: scene.pickWithRay, used to find what the captain can interact with.
 import '@babylonjs/core/Culling/ray';
+// Drawing many boxes with one mesh: mesh.thinInstanceSetBuffer, used for the crew (crowd.ts).
+import '@babylonjs/core/Meshes/thinInstanceMesh';
 
 export { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
 export { Ray } from '@babylonjs/core/Culling/ray';
@@ -20,7 +22,7 @@ export { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 export { DynamicTexture } from '@babylonjs/core/Materials/Textures/dynamicTexture';
 export { Texture } from '@babylonjs/core/Materials/Textures/texture';
 export { Color3, Color4 } from '@babylonjs/core/Maths/math.color';
-export { Vector3 } from '@babylonjs/core/Maths/math.vector';
+export { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
 export { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder';
 export { Mesh } from '@babylonjs/core/Meshes/mesh';
 export type { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';

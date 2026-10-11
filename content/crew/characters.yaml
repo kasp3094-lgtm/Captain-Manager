@@ -1,0 +1,160 @@
+# The named crew (Act 1 spec §4.1 and §4.2). Each takes a slot in their billet
+# (billets.yaml); everyone else aboard is generated. The id is how dialog files refer to them,
+# e.g. `who: [delgado]`. Names are placeholders like the ship's: nothing in the code depends on
+# them, so rename freely (and update the dialog files that mention them).
+#
+#   look: skin 0-5, hair (black, dark-brown, brown, auburn, blonde, grey),
+#         style (short, buzz, long, bun, ponytail, curly, bald), height and build (1 = average),
+#         beard, wear (apron, coat, beret, cap, headset, glasses).
+
+characters:
+  # ---- Officers --------------------------------------------------------------------------
+  - id: okafor
+    name: Mara Okafor
+    rank: Lt. Cmdr.
+    billet: executive-officer
+    berth: xo-cabin
+    look: { skin: 5, hair: black, style: bun, height: 1.04 }
+    note: Passed over for this command; quietly reporting on you to High Command. Order, competence.
+
+  - id: holm
+    name: Dagny Holm
+    rank: Lt.
+    billet: chief-engineer
+    look: { skin: 0, hair: blonde, style: ponytail, height: 1.06 }
+    note: Falsifies maintenance logs to keep the old ship alive. Honest by nature, which hurts.
+
+  - id: sethi
+    name: Arjun Sethi
+    rank: Lt.
+    billet: tactical-officer
+    look: { skin: 3, hair: black, style: short, beard: true }
+    note: Wants a fight. Glory, boldness, promotion.
+
+  - id: haas
+    name: Pieter Haas
+    rank: Lt. (jg)
+    billet: supply-officer
+    look: { skin: 1, hair: brown, style: short, build: 1.1, wear: glasses }
+    note: Careful with numbers in public, careless with money in private. Gambling debts.
+
+  - id: moreau
+    name: Lena Moreau
+    rank: Lt.
+    billet: surgeon
+    look: { skin: 1, hair: auburn, style: long, wear: coat }
+    note: The ship's conscience. Compassion, honesty.
+
+  - id: mensah
+    name: Kofi Mensah
+    rank: Lt.
+    billet: marine-lieutenant
+    look: { skin: 5, hair: black, style: buzz, build: 1.15, wear: beret }
+    note: Loyal to duty and to his marines, in that order until it isn't.
+
+  - id: tanaka
+    name: Yuki Tanaka
+    rank: Lt. (jg)
+    billet: navigator
+    look: { skin: 2, hair: black, style: short, height: 0.94 }
+    note: Precise, truthful. Will find the deleted jump records.
+
+  - id: brandt
+    name: Owen Brandt
+    rank: Lt. (jg)
+    billet: operations-officer
+    look: { skin: 1, hair: brown, style: short }
+    note: Minor character. Does his job and keeps his head down.
+
+  - id: ashford
+    name: Julian Ashford
+    rank: Ensign
+    billet: ensign
+    look: { skin: 0, hair: blonde, style: short, height: 1.07, build: 0.92 }
+    note: Green, likeable, eager for approval. His mother is a vice admiral.
+
+  # ---- Chiefs ----------------------------------------------------------------------------
+  - id: delgado
+    name: Rosa Delgado
+    rank: Master Chief
+    billet: master-chief
+    look: { skin: 3, hair: grey, style: bun, build: 1.05 }
+    note: Voice of the crew. Fairness, tradition. Knows more about Vance than she says.
+
+  - id: ost
+    name: Benedikt Ost
+    rank: Chief
+    billet: engineering-chief
+    look: { skin: 1, hair: grey, style: bald, beard: true, build: 1.2 }
+    note: Grumpy veteran engineer, Holm's protector.
+
+  # ---- Petty officers --------------------------------------------------------------------
+  - id: barros
+    name: Leon Barros
+    rank: PO2
+    billet: cook
+    look: { skin: 3, hair: black, style: curly, build: 1.2 }
+    note: Ship's cook. Food quality against the budget; sets the mood in the mess.
+
+  - id: sato
+    name: Hana Sato
+    rank: PO1
+    billet: railgun-crew-chief
+    look: { skin: 2, hair: black, style: ponytail }
+    note: Railgun crew chief. Ambitious; wants live-fire drills.
+
+  - id: lindqvist
+    name: Mira Lindqvist
+    rank: PO3
+    billet: engineering-technician
+    look: { skin: 0, hair: blonde, style: bun, height: 0.95 }
+    note: Notices that the maintenance logs don't match the machinery.
+
+  - id: raman
+    name: Priya Raman
+    rank: Yeoman
+    billet: yeoman
+    look: { skin: 4, hair: black, style: long, wear: glasses }
+    note: Ship's office. Knows every rumour and every form.
+
+  # ---- Junior enlisted -------------------------------------------------------------------
+  - id: kowalski
+    name: Kit Kowalski
+    rank: Spacer
+    billet: navigation-rating
+    section: B
+    berth: junior-berthing-a
+    look: { skin: 0, hair: brown, style: short, height: 0.96, build: 0.9 }
+    note: Nineteen and homesick. At the centre of the rack dispute.
+
+  - id: reyes
+    name: Tomas Reyes
+    rank: Spacer
+    billet: stores-rating
+    section: A
+    look: { skin: 3, hair: black, style: short }
+    note: Runs contraband liquor out of the stores. Charming about it.
+
+  - id: haddad
+    name: Noor Haddad
+    rank: Spacer
+    billet: medical-assistant
+    section: C
+    look: { skin: 3, hair: dark-brown, style: bun }
+    note: Saw what Vance ordered. Doesn't talk about it.
+
+  # ---- Marines ---------------------------------------------------------------------------
+  - id: strand
+    name: Ida Strand
+    rank: Gunnery Sgt.
+    billet: gunnery-sergeant
+    look: { skin: 0, hair: blonde, style: buzz, build: 1.1 }
+    note: Mensah's right hand. Says little, misses nothing.
+
+  - id: abara
+    name: Dex Abara
+    rank: Cpl.
+    billet: security-patrol
+    section: C
+    look: { skin: 5, hair: black, style: buzz, build: 1.3, height: 1.08 }
+    note: A brawler with a good heart. Starts the fight in the mess.

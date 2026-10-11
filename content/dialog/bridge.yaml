@@ -1,0 +1,226 @@
+# The bridge, the combat information centre (CIC), comms and point-defence control: the watch
+# at work. Who stands which watch is in content/crew/billets.yaml: the ensign has the day watch
+# (0800–1600), the operations officer the evening and the navigator the night. How to write
+# entries: content/dialog/README.md.
+
+# ---- The bridge watch ----------------------------------------------------------------------
+
+- id: bridge-helm-report
+  where: bridge
+  who: [quartermaster, helmsman]
+  doing: duty
+  lines: |
+    1: Helm, report.
+    2: Steady on two-seven-zero, standard speed, drive answering normally.
+    1: Very well.
+
+- id: bridge-helm-drift
+  where: bridge
+  who: [helmsman, quartermaster]
+  doing: duty
+  lines: |
+    1: She pulls to port again.
+    2: She's pulled to port for thirty years. Correct and log it.
+    1: Logged. Again.
+
+- id: bridge-relieve-the-watch
+  where: bridge
+  who: [officer, officer]
+  doing: duty
+  when: [07:40-08:15, 15:40-16:15, 23:40-00:15]
+  weight: 4
+  lines: |
+    1: Course two-seven-zero, standard speed, nothing on the plot but the Belt traffic.
+    2: Very well. I relieve you.
+    1: I stand relieved.
+
+- id: bridge-turnover-rating
+  where: bridge
+  who: [junior, junior]
+  doing: duty
+  when: [07:40-08:15, 15:40-16:15, 23:40-00:15]
+  weight: 3
+  lines: |
+    1: Anything I should know?
+    2: Port thruster's sulking, coffee's cold, and the XO's in a mood.
+    1: So, normal.
+
+- id: bridge-ashford-eager
+  where: bridge
+  who: [ashford, anyone]
+  doing: duty
+  lines: |
+    1: Should we log that contact? I think we should log that contact.
+    2: It's a rock, sir.
+    1: A rock is a contact.
+    2: Logged, sir.
+
+- id: bridge-ashford-mother
+  where: bridge
+  who: [junior, junior]
+  doing: duty
+  lines: |
+    1: The ensign's mother is a vice admiral. Did you know?
+    2: Everyone knows. He mentioned it twice before breakfast.
+    1: To be fair, I think he hates it.
+
+- id: bridge-tanaka-precise
+  where: bridge
+  who: [tanaka, anyone]
+  doing: duty
+  lines: |
+    1: Our position's off by forty metres.
+    2: Out of how many?
+    1: That's not how being wrong works.
+
+- id: bridge-tanaka-old-charts
+  where: bridge
+  who: tanaka
+  doing: duty
+  lines: |
+    1: These old jump logs don't add up. Somebody's been tidy. Too tidy.
+
+- id: bridge-brandt-quiet
+  where: bridge
+  who: [brandt, junior]
+  doing: duty
+  lines: |
+    1: Quiet watch.
+    2: Do you want me to log anything, sir?
+    1: Log that it was quiet. Then let's keep it that way.
+
+- id: bridge-kowalski-stars
+  where: bridge
+  who: [kowalski, anyone]
+  doing: duty
+  lines: |
+    1: You can see home from here. That bright one. Well — near it.
+    2: That's a navigation beacon, {1.last}.
+    1: Still.
+
+- id: bridge-xo-standards
+  where: bridge
+  who: [okafor, anyone]
+  doing: duty
+  lines: |
+    1: Your log entries are two minutes late, every hour.
+    2: Aye, ma'am. It won't happen again.
+    1: It happened eight times today. Make it not happen nine.
+
+- id: bridge-xo-watching
+  where: bridge
+  who: [junior, junior]
+  doing: duty
+  lines: |
+    1: The XO's been on the bridge since 0600.
+    2: Making sure we notice she's good at this.
+    1: She is good at this.
+    2: That's the problem.
+
+- id: bridge-new-captain-chair
+  where: bridge
+  who: [anyone, anyone]
+  doing: duty
+  lines: |
+    1: Did you see? The new skipper sat in the chair like it might bite.
+    2: Vance never sat in it at all. Stood at the window the last month.
+    1: Doing what?
+    2: Thinking. Or waiting.
+
+- id: bridge-belt-traffic
+  where: bridge
+  who: [navigation-rating, anyone]
+  doing: duty
+  lines: |
+    1: Ore hauler, bearing zero-four-five, squawking Halvard Consortium.
+    2: Third one this watch.
+    1: Busy rocks.
+
+# ---- CIC -----------------------------------------------------------------------------------
+
+- id: cic-sethi-guns
+  where: cic
+  who: [sethi, anyone]
+  doing: duty
+  lines: |
+    1: Two shots. That's all it would take. A pirate cutter wouldn't know what hit it.
+    2: We'd need to find a pirate cutter first, sir.
+    1: They're out there. We're just too polite to look.
+
+- id: cic-sethi-drills
+  where: cic
+  who: [sethi, operations-chief]
+  doing: duty
+  lines: |
+    1: When did this ship last fire a full broadside?
+    2: In anger, sir? Or at all?
+    1: At all.
+    2: …Before my time.
+
+- id: cic-sensor-ghost
+  where: cic
+  who: [sensor-operator, sensor-supervisor]
+  doing: duty
+  lines: |
+    1: I had a ghost at the edge of the scope. There, then gone.
+    2: Hegemony?
+    1: Or a sensor fault.
+    2: Log it as both.
+
+- id: cic-sensor-boredom
+  where: cic
+  who: [sensor-operator, sensor-supervisor]
+  doing: duty
+  lines: |
+    1: Count the rocks with me.
+    2: We counted them yesterday.
+    1: They moved.
+
+- id: cic-holotable
+  where: cic
+  who: sensor-supervisor
+  doing: duty
+  lines: |
+    1: Holotable's flickering again. Somebody hit it. Gently. With love.
+
+# ---- Comms and point defence ---------------------------------------------------------------
+
+- id: comms-static
+  where: comms-room
+  who: comms-rating
+  doing: duty
+  lines: |
+    1: Fort Marrow traffic control, this is {ship}, radio check. …Nothing but static and miners singing.
+
+- id: comms-mail
+  where: comms-room
+  who: comms-rating
+  doing: duty
+  lines: |
+    1: Mail packet's queued for the next relay. Forty-one letters home. One to a lawyer.
+
+- id: comms-high-command
+  where: comms-room
+  who: comms-rating
+  doing: duty
+  once: true
+  lines: |
+    1: Another sealed signal for the XO. That's the third this week. Not my business. Not my business.
+
+- id: pd-drill
+  where: pd-control
+  who: [point-defence-supervisor, point-defence-operator]
+  doing: duty
+  lines: |
+    1: Simulated launch, bearing one-one-zero. Go.
+    2: Tracking… engaging… splash one.
+    1: Two seconds slow. Again.
+
+- id: pd-old-guns
+  where: pd-control
+  who: [point-defence-operator, anyone]
+  doing: duty
+  lines: |
+    1: These mounts are older than my dad.
+    2: They still work.
+    1: So does my dad. I wouldn't trust him with a missile either.

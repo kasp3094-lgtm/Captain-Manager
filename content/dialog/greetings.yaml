@@ -1,0 +1,382 @@
+# What the crew say to the captain: as you pass close by them, and when you talk to someone (E).
+# Every entry here has `to: captain`. How to write entries: content/dialog/README.md.
+#
+# The two entries marked "fallback" must stay (npm run validate checks): they make sure anyone
+# you talk to has an answer, awake or asleep.
+
+# ---- Fallbacks -----------------------------------------------------------------------------
+
+- id: greet-anyone # fallback: anyone, anywhere, any time
+  to: captain
+  who: anyone
+  lines: |
+    1: {captain}.
+
+- id: greet-sleeper # fallback: talking to someone asleep in their rack
+  to: captain
+  who: anyone
+  doing: sleep
+  lines: |
+    1: Mm… five more minutes, Chief…
+
+- id: greet-sleeper-startled
+  to: captain
+  who: anyone
+  doing: sleep
+  lines: |
+    1: Wha—? {captain}! Sorry, {captain}. I'm off watch, {captain}.
+
+- id: greet-sleeper-mumble
+  to: captain
+  who: anyone
+  doing: sleep
+  lines: |
+    1: …not my watch… tell the Chief it's not my watch…
+
+- id: greet-sleeper-junior
+  to: captain
+  who: junior
+  doing: sleep
+  lines: |
+    1: Is it my watch already? …Oh. {captain}. Sorry, {captain}.
+
+# ---- Anyone, any time ----------------------------------------------------------------------
+
+- id: greet-good-day
+  to: captain
+  who: anyone
+  weight: 2
+  lines: |
+    1: Good day, {captain}.
+
+- id: greet-good-to-have-you
+  to: captain
+  who: anyone
+  lines: |
+    1: Good to have you aboard, {captain}.
+
+- id: greet-carrying-on
+  to: captain
+  who: anyone
+  doing: [duty, patrol]
+  lines: |
+    1: Carrying on, {captain}.
+
+- id: greet-all-quiet
+  to: captain
+  who: anyone
+  doing: [duty, patrol]
+  lines: |
+    1: All quiet here, {captain}.
+
+- id: greet-something-you-need
+  to: captain
+  who: anyone
+  lines: |
+    1: Something you need, {captain}?
+
+- id: greet-make-way
+  to: captain
+  who: anyone
+  where: passage
+  lines: |
+    1: Make way — sorry, {captain}. Narrow old girl, the {ship}.
+
+# ---- Time of day ---------------------------------------------------------------------------
+
+- id: greet-morning
+  to: captain
+  who: anyone
+  when: morning
+  weight: 2
+  lines: |
+    1: Morning, {captain}.
+
+- id: greet-afternoon
+  to: captain
+  who: anyone
+  when: afternoon
+  lines: |
+    1: Afternoon, {captain}.
+
+- id: greet-evening
+  to: captain
+  who: anyone
+  when: evening
+  lines: |
+    1: Evening, {captain}.
+
+- id: greet-night
+  to: captain
+  who: anyone
+  when: night
+  lines: |
+    1: Quiet night, {captain}. The way we like them.
+
+- id: greet-night-late
+  to: captain
+  who: anyone
+  when: 00:00-05:00
+  lines: |
+    1: Late one, {captain}? The galley's got coffee. Well. It's got something.
+
+# ---- By group and department --------------------------------------------------------------
+
+- id: greet-junior-nervous
+  to: captain
+  who: junior
+  lines: |
+    1: {captain}! I mean — good morning. Afternoon. Sorry, {captain}.
+
+- id: greet-junior-new-captain
+  to: captain
+  who: junior
+  lines: |
+    1: {1}, {captain}. You won't remember. That's all right.
+
+- id: greet-petty-officer
+  to: captain
+  who: petty-officer
+  lines: |
+    1: {captain}. Anything you want looked at, you tell me.
+
+- id: greet-chief
+  to: captain
+  who: chief
+  lines: |
+    1: {captain}. The ship's in better shape than she looks. Most days.
+
+- id: greet-officer
+  to: captain
+  who: officer
+  lines: |
+    1: {captain}. Shall I walk with you, or are you seeing it for yourself?
+
+- id: greet-marine
+  to: captain
+  who: marine
+  lines: |
+    1: {captain}. Marines are squared away, {captain}.
+
+- id: greet-engineer
+  to: captain
+  who: engineering
+  lines: |
+    1: Mind the deck plates here, {captain}. Some of them have opinions.
+
+- id: greet-engineer-rad-badge
+  to: captain
+  who: engineering
+  where: deck 4
+  lines: |
+    1: You'll want a rad badge if you're going near the reactor, {captain}. Regulations. And sense.
+
+- id: greet-cook
+  to: captain
+  who: supply
+  where: [galley, crew-mess]
+  lines: |
+    1: You eaten, {captain}? Don't answer that, you look like you haven't.
+
+- id: greet-medical
+  to: captain
+  who: medical
+  lines: |
+    1: {captain}. You're due a medical, by the way. Everyone pretends they're not.
+
+- id: greet-operations
+  to: captain
+  who: operations
+  doing: duty
+  lines: |
+    1: Board's clear, {captain}. Nothing on the scopes but rocks and miners.
+
+# ---- Places --------------------------------------------------------------------------------
+
+- id: greet-bridge
+  to: captain
+  who: anyone
+  where: bridge
+  doing: duty
+  weight: 3
+  lines: |
+    1: Captain on the bridge.
+
+- id: greet-bridge-steady
+  to: captain
+  who: anyone
+  where: bridge
+  doing: duty
+  lines: |
+    1: Steady as she goes, {captain}. Patrol course, standard speed.
+
+- id: greet-gym
+  to: captain
+  who: anyone
+  where: gym
+  lines: |
+    1: Joining us, {captain}? The rowing machine's free. Nobody likes the rowing machine.
+
+- id: greet-berthing
+  to: captain
+  who: anyone
+  where: berthing
+  doing: leisure
+  lines: |
+    1: Keep it down, {captain} — sorry — half the berth is asleep.
+
+- id: greet-heads
+  to: captain
+  who: anyone
+  doing: wash
+  lines: |
+    1: Ah. {captain}. Wasn't expecting company.
+
+- id: greet-laundry
+  to: captain
+  who: anyone
+  where: laundry
+  lines: |
+    1: If you've got whites, {captain}, the left machine's the honest one.
+
+- id: greet-hangar
+  to: captain
+  who: anyone
+  where: hangar
+  lines: |
+    1: Cutter's fuelled and ready, {captain}. Not that anyone tells us where we're going.
+
+# ---- Named characters ----------------------------------------------------------------------
+# These come up more often than the general lines when the character is the one you meet.
+
+- id: greet-okafor
+  to: captain
+  who: okafor
+  lines: |
+    1: {captain}. The morning report is on your desk. All of it, this time.
+
+- id: greet-okafor-walk
+  to: captain
+  who: okafor
+  lines: |
+    1: Seeing the ship for yourself? Good. Vance never came below deck two.
+
+- id: greet-delgado
+  to: captain
+  who: delgado
+  lines: |
+    1: {captain}. The crew are watching you. Don't let that worry you. Let it remind you.
+
+- id: greet-delgado-chiefs
+  to: captain
+  who: delgado
+  lines: |
+    1: If you want to know what the crew thinks, {captain}, ask the chiefs. If you want the truth, ask me.
+
+- id: greet-holm
+  to: captain
+  who: holm
+  lines: |
+    1: {captain}. She's holding together. I'll have the maintenance figures for you… soon.
+
+- id: greet-ost
+  to: captain
+  who: ost
+  lines: |
+    1: {captain}. If you're here to tell me to save power, the answer's already no.
+
+- id: greet-sethi
+  to: captain
+  who: sethi
+  lines: |
+    1: {captain}. Whenever you'd like to see what this ship can really do, the guns are ready.
+
+- id: greet-haas
+  to: captain
+  who: haas
+  lines: |
+    1: {captain}! Everything's in order in supply. Completely in order. Was there something?
+
+- id: greet-moreau
+  to: captain
+  who: moreau
+  lines: |
+    1: {captain}. My door's open, for the crew and for you. Especially for you.
+
+- id: greet-mensah
+  to: captain
+  who: mensah
+  lines: |
+    1: {captain}. My marines are ready for whatever you need. Within reason.
+
+- id: greet-tanaka
+  to: captain
+  who: tanaka
+  lines: |
+    1: {captain}. We're four point two seconds behind the patrol schedule. I'm aware of it.
+
+- id: greet-brandt
+  to: captain
+  who: brandt
+  lines: |
+    1: {captain}. Nothing to report. Which is how I like it.
+
+- id: greet-ashford
+  to: captain
+  who: ashford
+  lines: |
+    1: {captain}! {1}, {captain}. If there's anything at all I can do — anything —
+
+- id: greet-barros
+  to: captain
+  who: barros
+  lines: |
+    1: {captain}! Tonight it's stew. Don't ask what's in it. Ask me how much it cost. Nothing!
+
+- id: greet-sato
+  to: captain
+  who: sato
+  lines: |
+    1: {captain}. Any word on a live-fire exercise? The crew's sharp. I'd like to keep them that way.
+
+- id: greet-lindqvist
+  to: captain
+  who: lindqvist
+  lines: |
+    1: Oh — {captain}. Sorry. I was miles away. Numbers. Just… numbers.
+
+- id: greet-raman
+  to: captain
+  who: raman
+  lines: |
+    1: {captain}! If you need a form, I have it. If you need to know something, I probably have that too.
+
+- id: greet-kowalski
+  to: captain
+  who: kowalski
+  lines: |
+    1: {captain}. {1}. Is it true we might get mail at Fort Marrow?
+
+- id: greet-reyes
+  to: captain
+  who: reyes
+  lines: |
+    1: {captain}! Lovely to see you. Lovely ship. Nothing going on here at all.
+
+- id: greet-haddad
+  to: captain
+  who: haddad
+  lines: |
+    1: {captain}. …Sorry. You looked like someone else, just for a second.
+
+- id: greet-strand
+  to: captain
+  who: strand
+  lines: |
+    1: {captain}.
+
+- id: greet-abara
+  to: captain
+  who: abara
+  lines: |
+    1: {captain}! {1}. Whoever you hear started it, it wasn't me. Probably.

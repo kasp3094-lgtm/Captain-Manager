@@ -178,6 +178,34 @@ export interface Furnishing {
   readonly problems: readonly string[];
 }
 
+/** A person's half-width, for checking that furniture can be walked to. */
+const BODY_RADIUS = 0.25;
+
+/** Squares of a room reached on foot from its doors (see Fitter.prune). */
+interface Reach {
+  readonly room: Area;
+  readonly cell: number;
+  readonly columns: number;
+  readonly rows: number;
+  readonly seen: Uint8Array;
+}
+
+/** True when someone can get to the item: to the floor in front of it, or around it. */
+function reachable(item: PlacedItem, reach: Reach): boolean {
+  // Past the item's own clearance by more than a body's half-width.
+  const ring = item.access ? grow(item.access, BODY_RADIUS) : grow(item.area, BODY_RADIUS * 2);
+  const { room, cell, columns, rows, seen } = reach;
+  for (let y = ring.y0 + cell / 2; y < ring.y1; y += cell) {
+    for (let x = ring.x0 + cell / 2; x < ring.x1; x += cell) {
+      if (x > item.area.x0 && x < item.area.x1 && y > item.area.y0 && y < item.area.y1) continue;
+      const c = Math.floor((x - room.x0) / cell);
+      const r = Math.floor((y - room.y0) / cell);
+      if (c >= 0 && r >= 0 && c < columns && r < rows && seen[r * columns + c]) return true;
+    }
+  }
+  return false;
+}
+
 /** The clear zone kept in front of every door: this wide, and this deep into the room. */
 export const DOOR_ZONE = { width: 1.4, depth: 1.3 };
 /** A point of interest this close to a wall (beyond half its prop's depth) is set against it. */
@@ -200,6 +228,7 @@ export function furnish(space: Space, room: Room): Furnishing {
   }
   const fit = room.fit ?? DEFAULT_FITS[room.type] ?? 'empty';
   FITS[fit](fitter);
+  fitter.prune();
   fitter.checkRacks();
   return {
     items: fitter.items,
@@ -484,6 +513,76 @@ class Fitter {
     }
   }
 
+  /**
+   * Takes out furniture that other furniture has walled in, latest first, until everything left
+   * can be reached on foot from a door. Points of interest and racks are never taken out; if one
+   * is walled in, that's reported.
+   */
+  prune(): void {
+    for (let round = 0; round < 40; round++) {
+      const reach = this.reachability();
+      const stuck = this.items.filter((item) => item.blocks && !reachable(item, reach));
+      if (stuck.length === 0) return;
+      const essential = (item: PlacedItem) => item.poi !== null || item.racks > 0;
+      const near = (item: PlacedItem) =>
+        stuck.some((other) => other === item || areasOverlap(grow(other.area, 0.7), item.area));
+      const victim = [...this.items]
+        .reverse()
+        .find((item) => item.blocks && !essential(item) && near(item));
+      if (!victim) {
+        for (const item of stuck) {
+          this.problems.push(
+            `${this.room.id}: "${item.poi ?? item.kind}" is walled in by other furniture`,
+          );
+        }
+        return;
+      }
+      this.items.splice(this.items.indexOf(victim), 1);
+    }
+  }
+
+  /** Which squares of the room a person can walk to from its doors. */
+  private reachability(): Reach {
+    const room = this.inner;
+    const cell = 0.1;
+    const columns = Math.ceil((room.x1 - room.x0) / cell);
+    const rows = Math.ceil((room.y1 - room.y0) / cell);
+    const free = new Uint8Array(columns * rows).fill(1);
+    const block = (area: Area) => {
+      const c0 = Math.max(0, Math.floor((area.x0 - room.x0) / cell));
+      const c1 = Math.min(columns - 1, Math.ceil((area.x1 - room.x0) / cell) - 1);
+      const r0 = Math.max(0, Math.floor((area.y0 - room.y0) / cell));
+      const r1 = Math.min(rows - 1, Math.ceil((area.y1 - room.y0) / cell) - 1);
+      for (let r = r0; r <= r1; r++) free.fill(0, r * columns + c0, r * columns + c1 + 1);
+    };
+    for (const item of this.items) if (item.blocks) block(grow(item.area, BODY_RADIUS));
+    const seen = new Uint8Array(free.length);
+    const queue: number[] = [];
+    for (const zone of this.zones) {
+      const [x, y] = centre(zone);
+      const index = Math.floor((y - room.y0) / cell) * columns + Math.floor((x - room.x0) / cell);
+      if (index >= 0 && index < free.length && free[index]) {
+        seen[index] = 1;
+        queue.push(index);
+      }
+    }
+    while (queue.length > 0) {
+      const at = queue.pop()!;
+      const c = at % columns;
+      for (const [next, ok] of [
+        [at - 1, c > 0],
+        [at + 1, c < columns - 1],
+        [at - columns, true],
+        [at + columns, true],
+      ] as const) {
+        if (!ok || next < 0 || next >= free.length || seen[next] || !free[next]) continue;
+        seen[next] = 1;
+        queue.push(next);
+      }
+    }
+    return { room, cell, columns, rows, seen };
+  }
+
   /** Reports a room whose racks didn't all fit. */
   checkRacks(): void {
     const want = this.room.racks ?? 0;
@@ -652,8 +751,8 @@ const FITS: Record<Fit, FitFunction> = {
   cabin(f) {
     const far = opposite(f.doorWall);
     f.run('bunk', far, { from: 'end', max: 1 });
-    for (const side of f.walls) if (f.run('wardrobe', side, { max: 1 }).length) break;
     for (const side of f.walls) if (f.run('desk', side, { max: 1 }).length) break;
+    for (const side of f.walls) if (f.run('wardrobe', side, { max: 1 }).length) break;
   },
 
   captain(f) {

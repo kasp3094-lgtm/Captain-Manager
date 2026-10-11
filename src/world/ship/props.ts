@@ -192,11 +192,9 @@ const PROPS: Record<ItemKind, PropBuilder> = {
         b.slab('blanket', [-0.9, h + 0.16, back + 0.15], [-0.5, h + 0.27, front - 0.15]);
       }
       b.box('readingLight', [0.8, h + 0.42, back + 0.03], [0.16, 0.05, 0.04]);
-      // Closed means someone is asleep.
-      const curtain = ctx.random.int(0, 2);
-      const [left, right] =
-        curtain === 0 ? [-0.94, 0.94] : curtain === 1 ? [-0.94, -0.05] : [-0.94, -0.76];
-      b.slab('curtain', [left, h + 0.17, front + 0.015], [right, railY - 0.02, front + 0.035]);
+      // Pushed back to the foot of the rack; the crew renderer draws it shut over a sleeper.
+      const right = ctx.random.chance(0.5) ? -0.76 : -0.55;
+      b.slab('curtain', [-0.94, h + 0.17, front + 0.015], [right, railY - 0.02, front + 0.035]);
     });
   },
 

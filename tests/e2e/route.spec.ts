@@ -66,7 +66,7 @@ async function expectRoom(page: Page, code: string): Promise<void> {
 
 test('quarters → bridge → down the ladders to engineering → back up by lift', async ({ page }) => {
   test.setTimeout(8 * 60_000);
-  const { errors } = await openGame(page, '?autostart&cam=captains-quarters');
+  const { errors } = await openGame(page, '?autostart&seed=1&cam=captains-quarters');
   await expectRoom(page, '1-30-1-L');
 
   // Out of the quarters, forward along the passageway to the bridge.

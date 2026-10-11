@@ -1,6 +1,7 @@
 // Lint rules. Besides the recommended sets: Babylon.js only through src/world/babylon.ts, and
-// src/sim and the layout planner (src/world/ship/{coords,layout,fits}.ts) kept free of
-// rendering, React and browser globals so they run headless in Node.
+// src/sim, the layout planner (src/world/ship/{coords,layout,fits,walkgrid,spots}.ts) and the
+// crew's movement, bodies and dialog (src/world/crew/{life,body,chatter}.ts) free of rendering,
+// React and browser globals so they run headless in Node.
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -61,8 +62,18 @@ export default defineConfig([
     },
   },
   {
-    // The 3D layout planner runs in Node too (validator, unit tests): plain maths only.
-    files: ['src/world/ship/coords.ts', 'src/world/ship/layout.ts', 'src/world/ship/fits.ts'],
+    // The 3D layout planner and the crew's movement run in Node too (validator, unit tests):
+    // plain maths only.
+    files: [
+      'src/world/ship/coords.ts',
+      'src/world/ship/layout.ts',
+      'src/world/ship/fits.ts',
+      'src/world/ship/walkgrid.ts',
+      'src/world/ship/spots.ts',
+      'src/world/crew/life.ts',
+      'src/world/crew/body.ts',
+      'src/world/crew/chatter.ts',
+    ],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -70,7 +81,8 @@ export default defineConfig([
           patterns: [
             {
               group: ['@babylonjs/*', 'react', 'react-dom', '**/babylon', '**/ui/**'],
-              message: 'The layout planner must stay free of rendering and UI code.',
+              message:
+                'The layout planner and crew movement must stay free of rendering and UI code.',
             },
           ],
         },

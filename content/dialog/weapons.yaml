@@ -1,0 +1,58 @@
+# The weapons spaces on deck 3: the railgun room and the missile magazine. A gun crew that has
+# never fired in anger and a crew chief who wants it to (Act 1 spec §4.2). How to write
+# entries: content/dialog/README.md.
+
+- id: railgun-sato-drill
+  where: railgun-room
+  who: [sato, railgun-rating]
+  lines: |
+    1: Load drill. Again.
+    2: That's the sixth time, PO.
+    1: And the sixth time was faster than the fifth. Again.
+
+- id: railgun-sato-live-fire
+  where: railgun-room
+  who: [sato, anyone]
+  lines: |
+    1: All this practice and we've never put a round downrange.
+    2: The captain might authorise a live shoot.
+    1: The captain might. Let's be ready when they do.
+
+- id: railgun-capacitors
+  where: railgun-room
+  who: railgun-rating
+  lines: |
+    1: Capacitors at ninety percent and they'll stay there. Don't stand there. That's where the arc goes.
+
+- id: railgun-ratings
+  where: railgun-room
+  who: [railgun-rating, weapons]
+  lines: |
+    1: What does a slug do to a ship, anyway?
+    2: Goes in one side and out the other.
+    1: And the people inside?
+    2: Don't think about that part.
+
+- id: magazine-count
+  where: missile-magazine
+  who: [weapons-chief, missile-technician]
+  lines: |
+    1: Count them.
+    2: Twenty-four, Chief.
+    1: The manifest says twenty-six.
+    2: Then the manifest's been drinking.
+
+- id: magazine-quiet
+  where: missile-magazine
+  who: missile-technician
+  lines: |
+    1: Don't drop anything. Don't drop anything. Don't drop anything.
+
+- id: magazine-serials
+  where: missile-magazine
+  who: [missile-technician, anyone]
+  once: true
+  lines: |
+    1: These two warheads have Hegemony-standard fittings.
+    2: On a Navy ship?
+    1: Supply said they were "adapted". Nobody adapts a warhead.

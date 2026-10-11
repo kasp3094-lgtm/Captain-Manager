@@ -135,6 +135,8 @@ All narrative content is made of **events**: a small data record plus an Ink scr
 
 Act 1 counts per type are in the [Act 1 spec](02-act1-content.md#7-event-list-targets).
 
+Ambient barks are the one exception to the Ink rule. They have no choices, so they are plain YAML in `content/dialog/`: who says them (a group, a job or a named character), where, when and doing what, and the lines. That keeps hundreds of them quick to write and edit; the format is in `content/dialog/README.md`. Once the meters and flags exist (M2), barks will be able to require them too.
+
 ### 7.1 Reactivity
 
 Every significant decision must show up in at least one of:

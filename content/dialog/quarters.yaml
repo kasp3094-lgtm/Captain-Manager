@@ -1,0 +1,253 @@
+# Where the crew live off duty: the berthing compartments, the chiefs' quarters, the heads, the
+# laundry, the gym and the quiet room. Junior enlisted share racks in pairs from different
+# watches ("hot-racking", design doc §8), which is a sore point. How to write entries:
+# content/dialog/README.md.
+
+# ---- Junior berthing -----------------------------------------------------------------------
+
+- id: berth-hot-rack-smell
+  where: [junior-berthing-a, junior-berthing-b]
+  who: [junior, junior]
+  doing: leisure
+  lines: |
+    1: My rack-mate sleeps in their boots. I can tell.
+    2: How?
+    1: The mattress knows. The mattress always knows.
+
+- id: berth-hot-rack-warm
+  where: [junior-berthing-a, junior-berthing-b]
+  who: [junior, junior]
+  doing: leisure
+  lines: |
+    1: Worst thing about hot-racking?
+    2: Getting in and it's still warm.
+    1: Getting in and it's still warm, and damp.
+    2: Thanks. Thank you for that.
+
+- id: berth-empty-racks
+  where: [junior-berthing-a, junior-berthing-b]
+  who: [junior, junior]
+  doing: leisure
+  lines: |
+    1: The POs have a rack each. Eight racks sit empty on deck two and we share.
+    2: Write to the captain.
+    1: Maybe I will.
+    2: You won't.
+    1: Maybe someone should.
+
+- id: berth-kowalski-home
+  where: junior-berthing-a
+  who: [kowalski, junior]
+  doing: leisure
+  lines: |
+    1: It's harvest at home now. My sisters will be out in the fields all week.
+    2: You miss it?
+    1: I miss the sky. Here it's just… overhead.
+
+- id: berth-kowalski-photo
+  where: junior-berthing-a
+  who: [junior, kowalski]
+  doing: leisure
+  lines: |
+    1: Who's that in the photo?
+    2: My dog. Biscuit. He's thirteen. I just hope he's there when I get back.
+
+- id: berth-snoring
+  where: [junior-berthing-a, junior-berthing-b, po-berthing-a, po-berthing-b, marine-berthing]
+  who: anyone
+  doing: leisure
+  lines: |
+    1: Rack seven, I swear, if you snore one more time, I'm venting you.
+
+- id: berth-quiet
+  where: berthing
+  who: anyone
+  doing: leisure
+  lines: |
+    1: Keep it down, half the compartment's on the mid-watch.
+
+- id: berth-lights
+  where: berthing
+  who: [anyone, anyone]
+  doing: leisure
+  when: night
+  lines: |
+    1: You awake?
+    2: No.
+    1: Me neither.
+
+- id: berth-reyes-offer
+  where: [junior-berthing-a, junior-berthing-b]
+  who: [reyes, junior]
+  doing: leisure
+  lines: |
+    1: Rough watch? I might know where a little something warming is to be had.
+    2: Is it legal?
+    1: It's medicinal. In spirit.
+
+- id: berth-reyes-rumour
+  where: [junior-berthing-a, junior-berthing-b]
+  who: [junior, junior]
+  doing: leisure
+  lines: |
+    1: Where's {reyes.last} getting it from, anyway?
+    2: Getting what?
+    1: You know what.
+    2: I don't, and neither do you, and that's how it stays.
+
+- id: berth-letter
+  where: berthing
+  who: [junior, anyone]
+  doing: leisure
+  lines: |
+    1: Do we get to send messages home from Fort Marrow?
+    2: If the relay's up and the budget allows.
+    1: So no.
+    2: So maybe.
+
+# ---- PO berthing and the chiefs ------------------------------------------------------------
+
+- id: po-promotion
+  where: [po-berthing-a, po-berthing-b]
+  who: [petty-officer, petty-officer]
+  doing: leisure
+  lines: |
+    1: Your own rack, your own locker. Took me nine years.
+    2: And a bit of quiet.
+    1: Never quiet. Not with you breathing.
+
+- id: po-new-captain
+  where: [po-berthing-a, po-berthing-b]
+  who: [petty-officer, petty-officer]
+  lines: |
+    1: The new captain walked the whole ship the first night. Every deck.
+    2: Looking for something?
+    1: Looking at us.
+
+- id: chiefs-delgado-ost
+  where: chiefs-quarters
+  who: [delgado, ost]
+  lines: |
+    1: You're covering for her.
+    2: I'm keeping a ship alive, {1.first}.
+    1: Same thing, the way you do it.
+
+- id: chiefs-delgado-vance
+  where: chiefs-quarters
+  who: [chief, delgado]
+  once: true
+  lines: |
+    1: The juniors keep asking about Vance.
+    2: Let them ask.
+    1: And when the new captain asks?
+    2: Then I'll decide whether the new captain's earned an answer.
+
+- id: chiefs-coffee
+  where: chiefs-quarters
+  who: [chief, chief]
+  lines: |
+    1: Real coffee. Don't tell the wardroom.
+    2: The wardroom drinks the stuff from the galley?
+    1: The wardroom drinks what the chiefs let it have.
+
+- id: chiefs-kids
+  where: chiefs-quarters
+  who: [chief, chief]
+  lines: |
+    1: Kids these days.
+    2: You said that twenty years ago.
+    1: And I was right then too.
+
+# ---- Heads, laundry --------------------------------------------------------------------------
+
+- id: heads-cold-water
+  where: [heads-fwd, heads-aft, officers-head]
+  who: anyone
+  doing: wash
+  lines: |
+    1: Cold! COLD! Who's running the hot water on deck four?!
+
+- id: heads-water-ration
+  where: [heads-fwd, heads-aft]
+  who: [anyone, anyone]
+  doing: wash
+  lines: |
+    1: Two-minute showers.
+    2: Navy showers. Wet, off, soap, on, rinse, off.
+    1: I'm not even wet.
+
+- id: laundry-socks
+  where: laundry
+  who: anyone
+  lines: |
+    1: Whose socks are these? Nobody? Every week, nobody's socks.
+
+- id: laundry-lint
+  where: laundry
+  who: [anyone, anyone]
+  lines: |
+    1: Clean the lint trap.
+    2: I cleaned it yesterday.
+    1: Lint is a fire waiting to happen. Clean it every time.
+
+# ---- Gym -----------------------------------------------------------------------------------
+
+- id: gym-spot-me
+  where: gym
+  who: [anyone, anyone]
+  doing: leisure
+  lines: |
+    1: Spot me?
+    2: Sure. How many?
+    1: Ten.
+    2: You said ten last time and did four.
+    1: Spot me for four, then.
+
+- id: gym-abara
+  where: gym
+  who: [anyone, abara]
+  doing: leisure
+  lines: |
+    1: Corporal, want to spar?
+    2: With you? I'd feel bad.
+    1: Scared?
+    2: For you. Gloves on, then.
+
+- id: gym-treadmill
+  where: gym
+  who: anyone
+  doing: leisure
+  lines: |
+    1: Six kilometres and I've not gone anywhere. Story of this ship.
+
+- id: gym-marines
+  where: gym
+  who: [marine, marine]
+  doing: leisure
+  lines: |
+    1: The sergeant says another kilo off your run time or you're on the cutter roster.
+    2: The cutter roster's a reward.
+    1: Not the way the sergeant runs it.
+
+# ---- Quiet room ------------------------------------------------------------------------------
+
+- id: quiet-memorial
+  where: quiet-room
+  who: [anyone, anyone]
+  lines: |
+    1: Did you know any of the names on the memorial?
+    2: Two. Before your time.
+    1: What happened?
+    2: The ship happened. She's old. Old ships take their toll.
+
+- id: quiet-alone
+  where: quiet-room
+  who: anyone
+  lines: |
+    1: …and keep my mum well. And let the mail come. Amen.
+
+- id: quiet-haddad
+  where: quiet-room
+  who: haddad
+  lines: |
+    1: I should tell someone. I should. Just not yet.

@@ -40,7 +40,7 @@ Rules:
 1. **The simulation owns all game state** and changes it only through actions and effects. It never imports Babylon.js, React or the DOM, so tests and bots can play the whole game without rendering anything.
 2. **Deterministic.** All randomness comes from a seeded generator stored in the save. Same seed + same choices = same game.
 3. **Content is data.** Systems read `content/`; nothing about a specific room, character or event is hard-coded.
-4. **The ship is generated from deck plans.** One data source drives the 3D geometry, the deck map, crew locations, the navigation mesh and validation (rack count, reachability).
+4. **The ship is generated from deck plans.** One data source drives the 3D geometry, the deck map, crew locations, the walk grid the crew find their way on, and validation (rack count, reachability).
 
 ### 2.1 Modules
 
@@ -50,15 +50,16 @@ Rules:
 | `src/sim/effects` | Applying and clamping changes; tiers; the change log; requirement checks for gated choices |
 | `src/sim/events` | Event registry, trigger evaluation, scheduling of delayed consequences |
 | `src/sim/narrative` | Ink runtime binding: external functions (`fx`, `req`, `flag`, `rel`) and tags (speaker, portrait, cost, requirement) |
-| `src/sim/crew` | Roster generation, watch rotation, rack assignment, where everyone is in each watch |
+| `src/sim/crew`, `schedule`, `clock` | Roster generation, watch rotation, rack assignment; everyone's day (duty, patrols, meals, leisure, sleep) and where they are at any minute; ship's time |
+| `src/sim/dialog` | Walk-by dialog: reads and checks the scripts, finds entries that can never happen, matches entries to people, places and times |
 | `src/sim/battle` | Fixed-step deterministic battle simulation: orders, AI, damage, casualties |
 | `src/sim/campaign` | Days, command time, patrol legs, sector map, stations, budget cycle, endings |
 | `src/sim/save` | Versioned save files and migrations |
 | `src/sim/ship` | Ship layout queries (room at a point, nearest point of interest) and the deck-plan rules checked by `npm run validate` |
 | `src/world/babylon.ts` | The only place that imports Babylon.js, module by module, to keep the bundle small |
-| `src/world/ship` | Deck plan → layout plan (walls, doors, lighting cells, furniture; pure and unit-tested) → meshes, props, lights, signs, ladders, lift; later the navigation mesh |
+| `src/world/ship` | Deck plan → layout plan (walls, doors, lighting cells, furniture; pure and unit-tested) → meshes, props, lights, signs, ladders, lift; the walk grid and the spots (seats, racks, posts) the crew use |
 | `src/world/player` | First-person controller, interaction ray, ladder and lift transitions |
-| `src/world/npcs` | Crew placement from the schedule, animations, ambient walkers, general quarters |
+| `src/world/crew` | The crew in 3D: who walks where through the day, posed low-poly bodies drawn per lighting cell, walk-by dialog; later general quarters |
 | `src/world/tactical` | Tactical plot and external battle camera |
 | `src/ui` | Dialogue, datapad, HUD, menus, settings, debug panel |
 | `src/ui/map` | The minimap and the full ship map (M), drawn from the deck plans |
@@ -70,8 +71,11 @@ Rules:
 content/
   ship/ship.yaml                    the ship as a whole: ladders, lift, start room
   ship/deck1.yaml … deck4.yaml      deck plans, including each room's furniture template (`fit`)
+  crew/billets.yaml                 every job aboard: how many, department, watch, station
   crew/characters.yaml              named characters
-  crew/names/                       name lists for generated crew
+  crew/names.yaml                   name lists for generated crew
+  crew/routine.yaml                 the watch bill, mealtimes, where each group sleeps and eats
+  dialog/*.yaml                     walk-by dialog (format in dialog/README.md)
   events/<leg>/<event>.yaml + .ink  event data and scripts
   battles/*.yaml                    battle scenarios; ship and weapon stats
   sector/map.yaml                   sector map and High Command orders
@@ -114,18 +118,42 @@ Ladders and the lift are defined once in `content/ship/ship.yaml`, with the deck
 
 Furniture comes from two places. A room's `fit` names a template in `src/world/ship/fits.ts` (berthing, mess, galley, operations, machinery…) that fills the room around its doors. A point of interest's `prop` builds that object where the point is: against a wall if it is close to one, otherwise free-standing with the given `facing`. A point without a prop marks something the template builds (the racks above). The templates are code rather than the `templates.yaml` this plan first sketched: placing furniture around doors and other furniture is logic, not data, while the choice of template and every prop's position stay in the deck plans. `npm run validate` furnishes the whole ship and reports anything that doesn't fit.
 
-**Crew member**
+**Crew** (`content/crew/`). Jobs, not people, are the data: each billet says how many hold it and where they work, the named characters take their billets first, and everyone else is generated from a fixed seed, with a name, a look, a watch section and a rack (juniors share theirs with someone from another section). `routine.yaml` holds the watch bill, mealtimes and where each group sleeps, eats, washes and relaxes, and `src/sim/schedule.ts` turns it into everyone's day.
 
 ```yaml
-id: c042
-name: Kit Kowalski
-rank: SA                          # spacer apprentice
-dept: operations
-watch: B
-station: bridge/helm_2
-rack: berthing_junior_a/r07       # shared with c071 (watch C)
-traits: [homesick, quick_learner]
-skill: 2
+# billets.yaml
+- id: helmsman
+  title: Helmsman
+  department: operations
+  group: junior
+  count: 3
+  watch: rotating            # one holder in each watch section, A, B and C
+  station: bridge
+  post: helm                 # the furniture they use there
+  ranks: [Spacer]
+
+# characters.yaml
+- id: kowalski
+  name: Kit Kowalski
+  rank: Spacer
+  billet: navigation-rating
+  section: B
+  look: { skin: 1, hair: brown, style: short }
+```
+
+Traits, skill and status (fit, injured, in the brig…) join the crew records with the simulation state in M2.
+
+**Walk-by dialog** (`content/dialog/*.yaml`). Short lines the crew say in passing: no choices, so plain YAML rather than Ink. Each entry says who speaks (a group, department, job or named character per speaker), and optionally where, when and doing what; the game plays an entry when people who fit it are near the captain. The full format is in `content/dialog/README.md`.
+
+```yaml
+- id: mess-coffee
+  where: crew-mess
+  who: [anyone, anyone]
+  doing: [eat, leisure]
+  lines: |
+    1: Who made the coffee?
+    2: Engineering. They ran it through the coolant loop.
+    1: Tastes like it.
 ```
 
 **Event**
@@ -167,7 +195,7 @@ Convention: the game checks `#req` and `#cost` tags. Unmet choices are shown gre
 | Check | Command | What it proves |
 |---|---|---|
 | Unit tests | `npm test` | Rules: effects, tiers, gating, schedules, battle maths, saves |
-| Content validation | `npm run validate` | Every file matches its schema; every Ink script compiles; every referenced room, character, meter and flag exists; ≥ 50 racks; every room reachable; no rack double-booked in any watch |
+| Content validation | `npm run validate` | Every file matches its schema; every Ink script compiles; every referenced room, character, meter and flag exists; ≥ 50 racks; every room reachable; no rack double-booked in any watch; every dialog entry can happen |
 | Playthrough bots | `npm run sim` | 1,000 headless runs with random and greedy choices: no crashes or dead ends; every event and ending reachable; meters stay in their designed ranges |
 | End-to-end | `npm run e2e` | The real game in headless Chromium: boot, walk, open the datapad, play an event, save and load |
 | Screenshots | `npm run shots` | A fixed viewpoint for every room and shaft, and the main UI states, saved for review |
@@ -253,20 +281,24 @@ Done when:
 
 ### M3 — Living crew (1–2 weeks)
 
+*Started before M2, at your request (October 2026): the crew going about their day and their walk-by dialog came first. General quarters and the live noticeboards are still to do, and the barks will react to story state once M2 brings it.*
+
 Build:
 
-- The roster: 100 crew from `characters.yaml` plus seeded generation.
-- The watch rotation ([design doc §8](01-game-design.md#8-the-crew)) and hot-rack assignment.
-- People at duty stations, seats and racks for each watch; idle, sit, sleep, work and walk animations; a few ambient walkers on the navigation mesh.
-- Talk to anyone: state-driven barks; named characters have their own positions and greetings.
+- The roster: 100 crew from `characters.yaml` plus seeded generation. *(Done: 99 aboard plus the captain, from the jobs in `billets.yaml`.)*
+- The watch rotation ([design doc §8](01-game-design.md#8-the-crew)) and hot-rack assignment. *(Done.)*
+- People at duty stations, seats and racks for each watch; idle, sit, sleep, work and walk animations; a few ambient walkers on the navigation mesh. *(Done, and more than a few walkers: everyone walks to wherever their day takes them, on a walk grid generated from the layout, by ladder or lift between decks.)*
+- Talk to anyone: state-driven barks; named characters have their own positions and greetings. *(Done, without the story state: walk-by dialog in `content/dialog/`, overheard conversations, remarks as you pass, and answers when you talk to someone with E.)*
 - General quarters: alarm, red lighting, crew moves to battle stations.
 - Noticeboards show the live watch bill.
 
+How it is built: `src/sim/crew.ts` makes the roster and `schedule.ts` everyone's day; `src/world/ship/walkgrid.ts` and `spots.ts` say where people can walk and be (every seat, rack, console and patch of open floor); `src/world/crew/life.ts` moves everyone through their day by ship's time, setting off early enough to arrive on time (the watch stays at its post until relieved). Bodies are a couple of dozen boxes each, posed every frame (`body.ts`), and drawn as thin instances of one mesh per lighting cell so the room's lights light them (`crowd.ts`). `chatter.ts` plays the dialog.
+
 Done when:
 
-- [ ] Validator: no rack has two sleepers in the same watch, and everyone has exactly one location per watch.
-- [ ] The 1600 shift change visibly reshuffles the crew.
-- [ ] 60 fps with all 100 crew aboard.
+- [x] Validator: no rack has two sleepers in the same watch, and everyone has exactly one location per watch.
+- [x] The 1600 shift change visibly reshuffles the crew (`tests/unit/life.test.ts`, `tests/e2e/crew.spec.ts`).
+- [ ] 60 fps with all 100 crew aboard. *(Can't be measured in the cloud sandbox, which renders in software; check with `?debug` on real hardware.)*
 
 ### M4 — Vertical slice: "First Watch" (2–3 weeks) ★ prototype checkpoint
 

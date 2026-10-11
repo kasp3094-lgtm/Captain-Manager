@@ -1,0 +1,107 @@
+# The marine detachment: their berthing and ready room, the armory, the hangar and boarding
+# airlock, the brig, and the security patrols through the passageways. How to write entries:
+# content/dialog/README.md.
+
+- id: marines-strand-inspection
+  where: marine-berthing
+  who: [strand, marine]
+  lines: |
+    1: Your rifle.
+    2: Sergeant?
+    1: Clean it again.
+    2: It's clean, Sergeant.
+    1: Then it'll be cleaner.
+
+- id: marines-strand-few-words
+  where: marine-berthing
+  who: [marine, marine]
+  lines: |
+    1: The Gunny said four words to me today.
+    2: What were they?
+    1: "Good. Do it again."
+    2: That's practically a speech.
+
+- id: marines-mensah-duty
+  where: [armory, marine-berthing]
+  who: [mensah, marine]
+  lines: |
+    1: Whatever comes, we do it right. By the book, and as a unit.
+    2: And if the book's wrong, sir?
+    1: Then we talk to the captain. Not before.
+
+- id: marines-boarding-rumour
+  where: [marine-berthing, hangar]
+  who: [marine, marine]
+  lines: |
+    1: They say we'll be boarding freighters in the Reach.
+    2: Inspecting. Not boarding.
+    1: What's the difference?
+    2: Whether they shoot first.
+
+- id: marines-abara-fight
+  where: [marine-berthing, crew-mess]
+  who: [marine, abara]
+  lines: |
+    1: You can't keep fighting stokers in the mess, {2.first}.
+    2: He spilled my tea.
+    1: That's not a reason.
+    2: It was good tea.
+
+- id: armory-count
+  where: armory
+  who: armorer
+  lines: |
+    1: Forty-one rifles, forty-one rifles signed in. Count it again anyway.
+
+- id: armory-old-stock
+  where: armory
+  who: [armorer, anyone]
+  lines: |
+    1: These charge packs were made before you were born.
+    2: Do they still work?
+    1: We'll find out on the day.
+
+- id: hangar-cutter
+  where: hangar
+  who: [anyone, anyone]
+  lines: |
+    1: The cutter's port skid is bent.
+    2: Since when?
+    1: Since somebody landed it like a brick. Not naming names. Sergeant.
+
+- id: hangar-airlock-check
+  where: hangar
+  who: marine-sergeant
+  lines: |
+    1: Outer door sealed, inner door sealed, suits charged. Nobody goes outside without me knowing.
+
+- id: brig-sentry-bored
+  where: brig
+  who: brig-sentry
+  doing: duty
+  lines: |
+    1: Empty cells, clean cells, quiet cells. Best watch on the ship. Worst watch on the ship.
+
+- id: brig-sentry-vance
+  where: brig
+  who: brig-sentry
+  doing: duty
+  once: true
+  lines: |
+    1: Someone was in cell two the week before Vance left. Nobody wrote down who.
+
+- id: patrol-passage
+  where: passage
+  who: security-patrol
+  doing: patrol
+  lines: |
+    1: Passageway clear. Hatches dogged. Moving on.
+
+- id: patrol-pair-chat
+  where: [passage, crew-mess, hangar]
+  who: [security-patrol, anyone]
+  doing: patrol
+  lines: |
+    1: All right here?
+    2: All quiet.
+    1: Keep it that way.

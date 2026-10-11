@@ -1,0 +1,119 @@
+# Officers' country on deck 1: the wardroom (the officers' mess) and the staterooms. Each
+# officer wants something (Act 1 spec §4.1), and it shows when they think the captain isn't
+# listening. How to write entries: content/dialog/README.md.
+
+# ---- The wardroom ----------------------------------------------------------------------------
+
+- id: wardroom-sethi-moreau
+  where: wardroom
+  who: [sethi, moreau]
+  lines: |
+    1: A little action would do this crew good. Something to be proud of.
+    2: Something to bleed for, you mean.
+    1: That's what the Navy's for, {2.first}.
+    2: I'm the one who sews them back together, {1.first}.
+
+- id: wardroom-haas-cards
+  where: wardroom
+  who: [haas, officer]
+  doing: leisure
+  lines: |
+    1: Fancy a hand? Low stakes. Very low. Friendly.
+    2: Last time "friendly" cost {brandt.last} a month's pay.
+    1: {brandt.last} doesn't understand probability.
+
+- id: wardroom-haas-nervous
+  where: wardroom
+  who: [officer, haas]
+  lines: |
+    1: You've checked your messages five times since breakfast, {2.first}.
+    2: Have I? Family. Just family things.
+
+- id: wardroom-ashford-plot
+  where: wardroom
+  who: [ashford, officer]
+  lines: |
+    1: How do you get the plot so clean? Mine always looks like spaghetti.
+    2: Check every number twice. Then check whoever checked it before you.
+    1: Who checked it before me?
+    2: Exactly.
+
+- id: wardroom-okafor-dinner
+  where: wardroom
+  who: [okafor, officer]
+  doing: eat
+  lines: |
+    1: The captain has asked for all department reports by 0800.
+    2: All of them? Even supply?
+    1: Especially supply.
+
+- id: wardroom-okafor-command
+  where: wardroom
+  who: [officer, officer]
+  doing: [eat, leisure]
+  lines: |
+    1: Did you see the XO's face at the change of command?
+    2: Like she'd swallowed a bolt.
+    1: Twelve years to command, and they send someone from outside.
+    2: Keep your voice down.
+
+- id: wardroom-moreau-crew
+  where: wardroom
+  who: [moreau, officer]
+  lines: |
+    1: Three juniors in sickbay this week with nothing wrong but no sleep.
+    2: Hot-racking.
+    1: Hot-racking, double watches, and a ship that creaks at night. They're tired, and they're scared.
+
+- id: wardroom-holm-late
+  where: wardroom
+  who: [officer, holm]
+  doing: eat
+  lines: |
+    1: You're eating with us? Who's minding the reactor?
+    2: {ost.last}. Which means it's minded better than if I were there.
+
+- id: wardroom-mensah-sethi
+  where: wardroom
+  who: [mensah, sethi]
+  lines: |
+    1: My marines aren't toys, {2.first}.
+    2: No one said they were.
+    1: You looked at the boarding plan like it was a game board.
+
+- id: wardroom-brandt-quiet
+  where: wardroom
+  who: [brandt, officer]
+  lines: |
+    1: I just do the job.
+    2: That's what everyone said about Vance's officers. Right up until they didn't.
+
+# ---- Staterooms ------------------------------------------------------------------------------
+
+- id: stateroom-ashford-letter
+  where: [stateroom-1, stateroom-2, stateroom-3, stateroom-4]
+  who: ashford
+  doing: leisure
+  lines: |
+    1: "Dear Mother. The new captain seems—" seems what? Seems what, {1.first}?
+
+- id: stateroom-haas-sums
+  where: [stateroom-1, stateroom-2, stateroom-3, stateroom-4]
+  who: haas
+  lines: |
+    1: If I move the fuel line to next quarter… no. No. They'd notice that.
+
+- id: stateroom-sethi-pushups
+  where: [stateroom-1, stateroom-2, stateroom-3, stateroom-4]
+  who: sethi
+  doing: leisure
+  lines: |
+    1: Forty-eight… forty-nine… fifty. Again.
+
+- id: wardroom-briefing
+  where: wardroom
+  who: [officer, officer]
+  lines: |
+    1: What's on the board?
+    2: Patrol route through the Reach. Three colonies, one station, a lot of nothing.
+    1: Nothing's my favourite.

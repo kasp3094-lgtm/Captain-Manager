@@ -1,0 +1,52 @@
+# How the crew's day runs. Times are on the 24-hour clock ("HH:MM").
+# src/sim/schedule.ts turns this into a plan of the day for every crew member.
+
+# The watch bill (design doc §8). At any time one section is on duty, one off duty and one
+# asleep. The rows must cover the whole day.
+watches:
+  - { from: '00:00', to: '08:00', A: duty, B: sleep, C: off }
+  - { from: '08:00', to: '16:00', A: sleep, B: off, C: duty }
+  - { from: '16:00', to: '24:00', A: off, B: duty, C: sleep }
+
+# Day workers (the officers, chiefs, cooks...) keep these hours unless their billet says
+# otherwise, and sleep at night.
+dayWork: [['08:00', '11:30'], ['12:30', '17:00']]
+daySleep: ['22:00', '06:00']
+
+# Mealtimes. Off-duty crew eat during any of these; midrats feed the night watch.
+meals:
+  breakfast: ['06:30', '08:00']
+  lunch: ['11:30', '13:00']
+  dinner: ['17:00', '18:30']
+  midrats: ['23:00', '24:00']
+
+# Where each group sleeps (berthing is shared out rack by rack), eats and washes.
+berthing:
+  officer: [stateroom-1, stateroom-2, stateroom-3, stateroom-4]
+  chief: [chiefs-quarters]
+  petty-officer: [po-berthing-a, po-berthing-b]
+  junior: [junior-berthing-a, junior-berthing-b]
+  marine: [marine-berthing]
+
+mess:
+  officer: wardroom
+  chief: chiefs-quarters
+  petty-officer: crew-mess
+  junior: crew-mess
+  marine: crew-mess
+
+heads:
+  officer: officers-head
+  chief: heads-aft
+  petty-officer: heads-aft
+  junior: heads-fwd
+  marine: heads-aft
+
+# Where people go when they're off duty and awake, and how likely each place is.
+# `berthing` means their own berthing.
+leisure:
+  officer: { wardroom: 4, berthing: 3, gym: 1, quiet-room: 1 }
+  chief: { chiefs-quarters: 5, crew-mess: 1, gym: 1 }
+  petty-officer: { crew-mess: 3, berthing: 3, gym: 2, laundry: 1, ships-office: 1, quiet-room: 0.5 }
+  junior: { crew-mess: 4, berthing: 3, gym: 2, laundry: 1, ships-office: 0.5, quiet-room: 0.5 }
+  marine: { berthing: 3, gym: 3, crew-mess: 2, hangar: 1 }

@@ -68,6 +68,14 @@ export interface ShipWorld {
   show(deck: number): void;
   /** Height of a deck's floor in the world. */
   floorY(deck: number): number;
+  /** An empty mesh per lighting cell for drawing people in (crowd.ts), lit like the cell. */
+  readonly peopleMeshes: ReadonlyMap<number, readonly PeopleMesh[]>;
+}
+
+/** A unit box in one cell, drawn as thin instances: one per box of every body in the cell. */
+export interface PeopleMesh {
+  readonly cell: Cell;
+  readonly mesh: Mesh;
 }
 
 /** Where the lower band of paint meets the upper on every bulkhead. */
@@ -89,6 +97,8 @@ interface Materials {
   readonly solid: StandardMaterial;
   readonly glow: StandardMaterial;
   readonly deck: StandardMaterial;
+  /** People: white, tinted per box by the thin instances' colours. */
+  readonly people: StandardMaterial;
   readonly collider: StandardMaterial | null;
 }
 
@@ -109,15 +119,19 @@ export function buildShip(
   const materials = createMaterials(scene, options.showColliders);
   const roots = new Map<number, TransformNode>();
   const floors = new Map<number, number>();
+  const peopleMeshes = new Map<number, PeopleMesh[]>();
   for (const deck of layout.decks) {
-    roots.set(deck.deck.deck, buildDeck(scene, glow, deck, materials));
+    const built = buildDeck(scene, glow, deck, materials);
+    roots.set(deck.deck.deck, built.root);
     floors.set(deck.deck.deck, deck.floorY);
+    peopleMeshes.set(deck.deck.deck, built.people);
   }
   return {
     show(deck) {
       for (const [n, root] of roots) root.setEnabled(n === deck);
     },
     floorY: (deck) => floors.get(deck) ?? 0,
+    peopleMeshes,
   };
 }
 
@@ -143,6 +157,11 @@ function createMaterials(scene: Scene, showColliders: boolean): Materials {
   deck.specularColor = new Color3(0.06, 0.06, 0.06);
   deck.maxSimultaneousLights = 6;
 
+  const people = new StandardMaterial('mat-people', scene);
+  people.diffuseColor = Color3.White();
+  people.specularColor = new Color3(0.06, 0.06, 0.06);
+  people.maxSimultaneousLights = 6;
+
   let collider: StandardMaterial | null = null;
   if (showColliders) {
     collider = new StandardMaterial('mat-collider', scene);
@@ -150,7 +169,7 @@ function createMaterials(scene: Scene, showColliders: boolean): Materials {
     collider.disableLighting = true;
     collider.wireframe = true;
   }
-  return { solid, glow, deck, collider };
+  return { solid, glow, deck, people, collider };
 }
 
 interface CellParts {
@@ -168,7 +187,7 @@ function buildDeck(
   glow: GlowLayer,
   layout: DeckLayout,
   materials: Materials,
-): TransformNode {
+): { root: TransformNode; people: PeopleMesh[] } {
   const n = layout.deck.deck;
   const root = new TransformNode(`deck-${n}`, scene);
   const y = layout.floorY;
@@ -290,13 +309,18 @@ function buildDeck(
     );
   }
 
-  // Meshes: per cell the solid parts, the deck and the colliders; per deck what glows and the panels.
+  // Meshes: per cell the solid parts, the deck, the people and the colliders; per deck what
+  // glows and the panels.
   const cellMeshes = new Map<string, Mesh[]>();
+  const people: PeopleMesh[] = [];
   for (const part of parts.values()) {
     const { id } = part.cell;
+    const crowd = peopleMesh(scene, materials.people, root, id);
+    people.push({ cell: part.cell, mesh: crowd });
     const meshes = [
       part.solid.toMesh(`${id}-solid`, scene, materials.solid, root),
       part.floor.toMesh(`${id}-deck`, scene, materials.deck, root),
+      crowd,
     ].filter((mesh): mesh is Mesh => mesh !== null);
     cellMeshes.set(id, meshes);
     for (const [batch, blocksPicks] of [
@@ -324,7 +348,26 @@ function buildDeck(
   if (screenMesh) glow.referenceMeshToUseItsOwnMaterial(screenMesh);
   for (const thing of layout.interactables) interactionBox(scene, root, y, thing);
   cellLights(scene, root, layout, spaces, cellMeshes);
-  return root;
+  return { root, people };
+}
+
+/** A unit box for a cell's people, drawn only through thin instances (see crowd.ts). */
+function peopleMesh(
+  scene: Scene,
+  material: StandardMaterial,
+  root: TransformNode,
+  id: string,
+): Mesh {
+  const mesh = CreateBox(`${id}-people`, { size: 1 }, scene);
+  mesh.material = material;
+  mesh.parent = root;
+  mesh.isPickable = false;
+  // Hidden until someone is in the cell: with no instances a mesh draws itself once.
+  mesh.isVisible = false;
+  // Instances move every frame; skip culling rather than recompute bounds.
+  mesh.alwaysSelectAsActiveMesh = true;
+  mesh.doNotSyncBoundingInfo = true;
+  return mesh;
 }
 
 /**

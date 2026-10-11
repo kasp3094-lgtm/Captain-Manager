@@ -1,0 +1,228 @@
+# The crew mess and the galley: talk over food, cards and coffee. The mess is the heart of the
+# crew's mood (Act 1 spec §3.3), so this is where rumours run. How to write entries:
+# content/dialog/README.md.
+
+# ---- Over a meal ---------------------------------------------------------------------------
+
+- id: mess-coffee
+  where: crew-mess
+  who: [anyone, anyone]
+  doing: [eat, leisure]
+  lines: |
+    1: Who made the coffee?
+    2: Engineering. They ran it through the coolant loop.
+    1: Tastes like it.
+
+- id: mess-mystery-meat
+  where: crew-mess
+  who: [junior, junior]
+  doing: eat
+  lines: |
+    1: What is this?
+    2: Says "protein" on the board.
+    1: Protein from what?
+    2: Don't. Just eat it.
+
+- id: mess-stew-again
+  where: crew-mess
+  who: [anyone, anyone]
+  doing: eat
+  when: [afternoon, evening]
+  lines: |
+    1: Stew. Third night running.
+    2: {barros.last} says it's a different stew.
+    1: It's the same stew with a different number on it.
+
+- id: mess-budget-food
+  where: crew-mess
+  who: [petty-officer, junior]
+  doing: eat
+  lines: |
+    1: Back on the {ship} before the cuts, we had real eggs on Sundays.
+    2: What happened?
+    1: Somebody at High Command did a sum.
+
+- id: mess-real-eggs
+  where: crew-mess
+  who: [junior, junior]
+  doing: eat
+  when: morning
+  lines: |
+    1: Have you ever had a real egg?
+    2: Once. At my nan's. It was weird. It had a yolk that moved.
+    1: Gross.
+    2: It was amazing.
+
+- id: mess-midrats
+  where: crew-mess
+  who: [anyone, anyone]
+  doing: eat
+  when: 23:00-24:00
+  lines: |
+    1: Midrats. Powdered eggs at midnight.
+    2: Beats powdered eggs at noon.
+    1: Does it?
+    2: At midnight you're too tired to taste them.
+
+- id: mess-hot-sauce
+  where: crew-mess
+  who: [anyone, anyone, anyone]
+  doing: eat
+  lines: |
+    1: Who's got the hot sauce?
+    2: {abara.last} had it last.
+    3: Then it's gone. Nobody gets anything back from {abara.last}.
+
+- id: mess-pass-the-salt
+  where: crew-mess
+  who: [anyone, anyone]
+  doing: eat
+  lines: |
+    1: Pass the salt, {2.last}.
+    2: Say please.
+    1: Pass the salt, {2.last}, or I tell the Chief who flooded the forward heads.
+    2: …Here.
+
+# ---- Rumours ---------------------------------------------------------------------------------
+
+- id: mess-new-captain-verdict
+  where: crew-mess
+  who: [anyone, anyone]
+  lines: |
+    1: So what do you make of the new skipper?
+    2: Too early.
+    1: {raman.last} says they've read every report Vance left. Every one.
+    2: Then they know more than we do.
+
+- id: mess-vance-cause
+  where: crew-mess
+  who: [junior, petty-officer]
+  lines: |
+    1: What did Vance actually do? "Relieved for cause." What cause?
+    2: Eat your food.
+    1: You know, don't you?
+    2: I know to eat my food.
+
+- id: mess-vance-chief-knows
+  where: crew-mess
+  who: [junior, junior]
+  once: true
+  lines: |
+    1: The Master Chief knows what happened with Vance. Bet you anything.
+    2: Then go and ask her.
+    1: I'd rather lick the reactor.
+
+- id: mess-xo-wanted-it
+  where: crew-mess
+  who: [anyone, anyone]
+  lines: |
+    1: The XO wanted this ship. Everyone knows that.
+    2: Everyone knows everything on this ship, and none of it's true.
+    1: That one's true.
+
+- id: mess-fort-marrow
+  where: crew-mess
+  who: [junior, junior]
+  doing: [eat, leisure]
+  lines: |
+    1: Think we'll get liberty at Fort Marrow?
+    2: Have you seen Fort Marrow?
+    1: No.
+    2: Then yes, you'll want liberty, and no, you won't enjoy it.
+
+- id: mess-hegemony
+  where: crew-mess
+  who: [anyone, anyone]
+  lines: |
+    1: My cousin's on a frigate on the border. Says Hegemony ships shadow them every patrol.
+    2: Just shadow?
+    1: For now.
+
+- id: mess-short-handed
+  where: crew-mess
+  who: [petty-officer, petty-officer]
+  lines: |
+    1: A hundred aboard, a hundred and eight on the books.
+    2: Eight empty racks and we're still hot-racking.
+    1: Don't say that near junior berthing. You'll start a riot.
+
+# ---- Cards and downtime ------------------------------------------------------------------
+
+- id: mess-cards-cheat
+  where: crew-mess
+  who: [anyone, anyone]
+  doing: leisure
+  lines: |
+    1: You're dealing from the bottom.
+    2: I'm dealing from the deck. The deck has a bottom. That's not my fault.
+
+- id: mess-cards-stakes
+  where: crew-mess
+  who: [anyone, anyone, anyone]
+  doing: leisure
+  lines: |
+    1: What are we playing for?
+    2: Dessert rations.
+    3: There's no dessert.
+    2: Future dessert rations.
+
+- id: mess-letter-home
+  where: crew-mess
+  who: [junior, anyone]
+  doing: leisure
+  lines: |
+    1: How do you spell "nebula"?
+    2: Who are you writing to?
+    1: My mum. I told her we saw one.
+    2: Did we?
+    1: She doesn't know that.
+
+# ---- With the cooks ----------------------------------------------------------------------
+
+- id: mess-barros-praise
+  where: crew-mess
+  who: [anyone, anyone]
+  doing: eat
+  lines: |
+    1: Say what you like, {barros.last} does a lot with nothing.
+    2: And nothing with a lot, sometimes.
+    1: Not this week. This week it's nothing with nothing, and it's still edible.
+
+- id: galley-barros-budget
+  where: galley
+  who: [barros, supply]
+  lines: |
+    1: Forty a head per day. Forty! I can't feed a goldfish on forty.
+    2: Then don't feed goldfish.
+    1: I'm feeding sailors. They eat more than goldfish.
+
+- id: galley-barros-spice
+  where: galley
+  who: [barros, anyone]
+  lines: |
+    1: The secret is the spice tin.
+    2: Which spice?
+    1: It's the tin. It's the last tin. Guard it with your life.
+
+- id: galley-onions
+  where: galley
+  who: [mess-cook, cook]
+  lines: |
+    1: How many onions?
+    2: All of them.
+    1: There are two.
+    2: Then both of them, and cry quietly.
+
+- id: galley-mess-cook-burn
+  where: galley
+  who: mess-cook
+  lines: |
+    1: Hot, hot, hot— who leaves a pan there?!
+
+- id: galley-supply-chief-stock
+  where: galley
+  who: [supply-chief, cook]
+  lines: |
+    1: Dry stores are down to eleven days.
+    2: {haas.last} said fourteen.
+    1: {haas.last} says a lot of things. I count tins.

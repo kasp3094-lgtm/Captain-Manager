@@ -1,6 +1,6 @@
 /**
  * The always-on minimap in the top-right corner of the HUD: the deck around the captain (bow to
- * the left), the deck and room you are in, and the nearest point of interest.
+ * the left), the deck and room you are in, ship's time, and the nearest point of interest.
  */
 import type { Ship } from '../../content/ship';
 import { gameUi, playerPose } from '../state';
@@ -15,6 +15,7 @@ export function MiniMap({ ship }: { ship: Ship }) {
   const pose = useStore(playerPose, (state) => state);
   const room = useStore(gameUi, (state) => state.room);
   const nearby = useStore(gameUi, (state) => state.nearbyPoi);
+  const time = useStore(gameUi, (state) => state.time);
   const deck = ship.decks.find((candidate) => candidate.deck === pose.deck);
   if (!deck) return null;
 
@@ -24,6 +25,11 @@ export function MiniMap({ ship }: { ship: Ship }) {
       <header className="minimap-header">
         <span className="minimap-deck">
           Deck {deck.deck} · {deck.name}
+          {time && (
+            <span className="minimap-time" title="Ship's time" data-testid="ship-time">
+              {time}
+            </span>
+          )}
         </span>
         {room && (
           <>

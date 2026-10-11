@@ -1,0 +1,468 @@
+# Every job aboard, how many people hold it, and where they work (Act 1 spec §4).
+# The named crew (characters.yaml) take their billets first; everyone else is generated from
+# `seed`, so the crew is the same in every game. Checked by `npm run validate`.
+#
+#   watch: rotating = one holder per watch section A, B, C (count is a multiple of 3);
+#          day = works days, sleeps at night; A, B or C = always that section.
+#   station: the room they work in (an id from content/ship/deck*.yaml).
+#   post: the furniture they use there (helm, console, console-seat, range, desk...).
+#   patrol: rooms they make rounds of on duty instead of staying put.
+#
+# 9 officers + 6 chiefs + 24 petty officers + 48 junior enlisted + 12 marines = 99,
+# plus the captain: a crew of 100.
+
+seed: 1701
+
+billets:
+  # ---- Command ---------------------------------------------------------------------------
+  - id: executive-officer
+    title: Executive officer
+    department: command
+    group: officer
+    count: 1
+    watch: day
+    station: bridge
+    ranks: [Lt. Cmdr.]
+
+  - id: master-chief
+    title: Master Chief of the ship
+    department: command
+    group: chief
+    count: 1
+    watch: day
+    station: crew-mess
+    patrol: [crew-mess, junior-berthing-a, passage-2, hangar, junior-berthing-b, passage-3]
+    ranks: [Master Chief]
+
+  - id: yeoman
+    title: Yeoman
+    department: command
+    group: petty-officer
+    count: 1
+    watch: day
+    station: ships-office
+    post: desk
+    ranks: [Yeoman]
+
+  # ---- Operations: bridge, CIC, comms ----------------------------------------------------
+  - id: navigator
+    title: Navigator
+    department: operations
+    group: officer
+    count: 1
+    watch: A
+    station: bridge
+    ranks: [Lt. (jg)]
+
+  - id: operations-officer
+    title: Operations officer
+    department: operations
+    group: officer
+    count: 1
+    watch: B
+    station: bridge
+    ranks: [Lt. (jg)]
+
+  - id: ensign
+    title: Junior officer of the watch
+    department: operations
+    group: officer
+    count: 1
+    watch: C
+    station: bridge
+    ranks: [Ensign]
+
+  - id: operations-chief
+    title: Operations chief
+    department: operations
+    group: chief
+    count: 1
+    watch: day
+    station: cic
+    ranks: [Chief, Senior Chief]
+
+  - id: quartermaster
+    title: Quartermaster of the watch
+    department: operations
+    group: petty-officer
+    count: 3
+    watch: rotating
+    station: bridge
+    post: helm
+    ranks: [PO2, PO1]
+
+  - id: helmsman
+    title: Helmsman
+    department: operations
+    group: junior
+    count: 3
+    watch: rotating
+    station: bridge
+    post: helm
+    ranks: [Spacer, Spacer Apprentice]
+
+  - id: navigation-rating
+    title: Navigation rating
+    department: operations
+    group: junior
+    count: 3
+    watch: rotating
+    station: bridge
+    post: console-pair
+    ranks: [Spacer, Spacer Apprentice]
+
+  - id: sensor-supervisor
+    title: Sensor supervisor
+    department: operations
+    group: petty-officer
+    count: 3
+    watch: rotating
+    station: cic
+    post: console-seat
+    ranks: [PO3, PO2]
+
+  - id: sensor-operator
+    title: Sensor operator
+    department: operations
+    group: junior
+    count: 3
+    watch: rotating
+    station: cic
+    post: console-seat
+    ranks: [Spacer, Spacer Apprentice]
+
+  - id: comms-rating
+    title: Communications rating
+    department: operations
+    group: junior
+    count: 3
+    watch: rotating
+    station: comms-room
+    post: console-seat
+    wear: headset
+    ranks: [Spacer, Spacer Apprentice]
+
+  # ---- Weapons ---------------------------------------------------------------------------
+  - id: tactical-officer
+    title: Tactical officer
+    department: weapons
+    group: officer
+    count: 1
+    watch: day
+    station: cic
+    post: holotable
+    ranks: [Lt.]
+
+  - id: weapons-chief
+    title: Weapons chief
+    department: weapons
+    group: chief
+    count: 1
+    watch: day
+    station: missile-magazine
+    ranks: [Chief, Senior Chief]
+
+  - id: railgun-crew-chief
+    title: Railgun crew chief
+    department: weapons
+    group: petty-officer
+    count: 1
+    watch: day
+    station: railgun-room
+    post: railgun
+    ranks: [PO1]
+
+  - id: point-defence-supervisor
+    title: Point-defence supervisor
+    department: weapons
+    group: petty-officer
+    count: 3
+    watch: rotating
+    station: pd-control
+    post: console-pair
+    ranks: [PO3, PO2]
+
+  - id: railgun-rating
+    title: Railgun loader
+    department: weapons
+    group: junior
+    count: 3
+    watch: rotating
+    station: railgun-room
+    ranks: [Spacer, Spacer Apprentice]
+
+  - id: missile-technician
+    title: Missile technician
+    department: weapons
+    group: junior
+    count: 3
+    watch: rotating
+    station: missile-magazine
+    ranks: [Spacer, Spacer Apprentice]
+
+  - id: point-defence-operator
+    title: Point-defence operator
+    department: weapons
+    group: junior
+    count: 3
+    watch: rotating
+    station: pd-control
+    ranks: [Spacer, Spacer Apprentice]
+
+  # ---- Engineering -----------------------------------------------------------------------
+  - id: chief-engineer
+    title: Chief engineer
+    department: engineering
+    group: officer
+    count: 1
+    watch: day
+    station: main-engineering
+    post: console-bank
+    ranks: [Lt.]
+
+  - id: engineering-chief
+    title: Engineering chief
+    department: engineering
+    group: chief
+    count: 1
+    watch: day
+    station: main-engineering
+    ranks: [Chief]
+
+  - id: damage-control-chief
+    title: Damage-control chief
+    department: engineering
+    group: chief
+    count: 1
+    watch: day
+    station: dc-central
+    ranks: [Chief, Senior Chief]
+
+  - id: engineering-supervisor
+    title: Engineering watch supervisor
+    department: engineering
+    group: petty-officer
+    count: 3
+    watch: rotating
+    station: main-engineering
+    post: console-bank
+    ranks: [PO2, PO1]
+
+  - id: reactor-operator
+    title: Reactor operator
+    department: engineering
+    group: petty-officer
+    count: 3
+    watch: rotating
+    station: reactor
+    ranks: [PO3, PO2]
+
+  - id: damage-control-supervisor
+    title: Damage-control supervisor
+    department: engineering
+    group: petty-officer
+    count: 3
+    watch: rotating
+    station: dc-central
+    ranks: [PO3, PO2]
+
+  - id: engineering-technician
+    title: Engineering technician
+    department: engineering
+    group: petty-officer
+    count: 1
+    watch: day
+    station: workshop
+    post: workbench
+    ranks: [PO3]
+
+  - id: engine-room-rating
+    title: Engine-room rating
+    department: engineering
+    group: junior
+    count: 3
+    watch: rotating
+    station: main-engineering
+    ranks: [Spacer, Spacer Apprentice]
+
+  - id: machinist
+    title: Machinist's mate
+    department: engineering
+    group: junior
+    count: 3
+    watch: rotating
+    station: aux-machinery
+    ranks: [Spacer, Spacer Apprentice]
+
+  - id: electrician
+    title: Electrician's mate
+    department: engineering
+    group: junior
+    count: 3
+    watch: rotating
+    station: electrical
+    ranks: [Spacer, Spacer Apprentice]
+
+  - id: drive-rating
+    title: Drive-room rating
+    department: engineering
+    group: junior
+    count: 3
+    watch: rotating
+    station: drive-room
+    ranks: [Spacer, Spacer Apprentice]
+
+  - id: damage-control-rating
+    title: Damage-control rating
+    department: engineering
+    group: junior
+    count: 3
+    watch: rotating
+    station: dc-central
+    patrol: [dc-central, passage-3, passage-2, laundry, galley, passage-4]
+    ranks: [Spacer, Spacer Apprentice]
+
+  # ---- Supply ----------------------------------------------------------------------------
+  - id: supply-officer
+    title: Supply officer
+    department: supply
+    group: officer
+    count: 1
+    watch: day
+    station: stores
+    ranks: [Lt. (jg)]
+
+  - id: supply-chief
+    title: Supply chief
+    department: supply
+    group: chief
+    count: 1
+    watch: day
+    station: galley
+    ranks: [Chief]
+
+  - id: cook
+    title: Cook
+    department: supply
+    group: petty-officer
+    count: 2
+    watch: day
+    station: galley
+    post: range
+    hours: [['05:30', '13:00'], ['15:00', '19:00']]
+    wear: apron
+    ranks: [PO3, PO2]
+
+  - id: storekeeper
+    title: Storekeeper
+    department: supply
+    group: petty-officer
+    count: 1
+    watch: day
+    station: food-stores
+    ranks: [PO3]
+
+  - id: mess-cook
+    title: Mess cook
+    department: supply
+    group: junior
+    count: 3
+    watch: rotating
+    station: galley
+    wear: apron
+    ranks: [Spacer, Spacer Apprentice]
+
+  - id: laundry-rating
+    title: Laundry rating
+    department: supply
+    group: junior
+    count: 3
+    watch: rotating
+    station: laundry
+    ranks: [Spacer, Spacer Apprentice]
+
+  - id: stores-rating
+    title: Stores rating
+    department: supply
+    group: junior
+    count: 3
+    watch: rotating
+    station: stores
+    ranks: [Spacer, Spacer Apprentice]
+
+  # ---- Medical ---------------------------------------------------------------------------
+  - id: surgeon
+    title: Ship's surgeon
+    department: medical
+    group: officer
+    count: 1
+    watch: day
+    station: sickbay
+    post: desk
+    wear: coat
+    ranks: [Lt.]
+
+  - id: medical-assistant
+    title: Medical assistant
+    department: medical
+    group: junior
+    count: 3
+    watch: rotating
+    station: sickbay
+    ranks: [Spacer, Spacer Apprentice]
+
+  # ---- Marines ---------------------------------------------------------------------------
+  - id: marine-lieutenant
+    title: Marine detachment commander
+    department: marines
+    group: officer
+    count: 1
+    watch: day
+    station: armory
+    ranks: [Lt.]
+
+  - id: gunnery-sergeant
+    title: Gunnery sergeant
+    department: marines
+    group: marine
+    count: 1
+    watch: day
+    station: marine-berthing
+    ranks: [Gunnery Sgt.]
+
+  - id: marine-sergeant
+    title: Marine sergeant (training)
+    department: marines
+    group: marine
+    count: 1
+    watch: day
+    station: hangar
+    ranks: [Sgt.]
+
+  - id: armorer
+    title: Armorer
+    department: marines
+    group: marine
+    count: 1
+    watch: day
+    station: armory
+    ranks: [Cpl., Lance Cpl.]
+
+  - id: brig-sentry
+    title: Brig sentry
+    department: marines
+    group: marine
+    count: 3
+    watch: rotating
+    station: brig
+    ranks: [Pvt., Lance Cpl.]
+
+  - id: security-patrol
+    title: Security patrol
+    department: marines
+    group: marine
+    count: 6
+    watch: rotating
+    station: passage-3
+    patrol: [passage-3, hangar, passage-2, crew-mess, passage-4, passage-1]
+    ranks: [Pvt., Lance Cpl., Cpl.]

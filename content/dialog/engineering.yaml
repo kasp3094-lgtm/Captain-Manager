@@ -1,0 +1,171 @@
+# Engineering: main engineering, the reactor, the drive, the workshop and the machinery spaces
+# on deck 4, and damage-control central on deck 3. An old ship kept alive by stubborn people,
+# and a chief engineer with a secret (Act 1 spec §4.1). How to write entries:
+# content/dialog/README.md.
+
+# ---- Main engineering ----------------------------------------------------------------------
+
+- id: eng-holm-ost-figures
+  where: main-engineering
+  who: [holm, ost]
+  doing: duty
+  lines: |
+    1: The captain will want the maintenance figures.
+    2: The captain will get the figures.
+    1: Which figures, Chief?
+    2: The ones that keep this ship flying, ma'am.
+
+- id: eng-ost-coupling
+  where: main-engineering
+  who: [ost, anyone]
+  doing: duty
+  lines: |
+    1: Who torqued this coupling?
+    2: Me, Chief.
+    1: With what, your teeth? Again. Properly.
+
+- id: eng-ost-old-ship
+  where: main-engineering
+  who: [ost, junior]
+  doing: duty
+  lines: |
+    1: She's thirty-eight years old, this ship. Older than you and me put together. Well. Older than you.
+    2: Does that make her safe, Chief?
+    1: It makes her experienced.
+
+- id: eng-holm-tired
+  where: main-engineering
+  who: [engineering, engineering]
+  doing: duty
+  lines: |
+    1: {holm} has been down here since 0500.
+    2: She's always down here.
+    1: Doesn't she sleep?
+    2: Not since the inspection.
+
+- id: eng-supervisor-gauge
+  where: main-engineering
+  who: [engineering-supervisor, engine-room-rating]
+  doing: duty
+  lines: |
+    1: Read me number three.
+    2: Four-twenty and holding.
+    1: It's always four-twenty. Tap it.
+    2: …Four-forty.
+    1: That's more like it.
+
+- id: eng-rating-scrapyard
+  where: main-engineering
+  who: [engine-room-rating, engineering]
+  doing: duty
+  lines: |
+    1: My uncle says patrol ships this old go to the breakers.
+    2: Not this one. Not while the Chief's aboard.
+    1: What's the Chief got to do with it?
+    2: Ask the Chief. Actually, don't.
+
+- id: eng-lindqvist-numbers
+  who: [lindqvist, anyone]
+  lines: |
+    1: The coolant pump hours in the log say eleven thousand.
+    2: So?
+    1: The wear on the bearings says twenty.
+    2: Then the log's wrong.
+    1: That's what I'm afraid of.
+
+# ---- The reactor ---------------------------------------------------------------------------
+
+- id: reactor-readings
+  where: reactor
+  who: reactor-operator
+  doing: duty
+  lines: |
+    1: Core temperature nominal. Shielding nominal. Me: bored, but nominal.
+
+- id: reactor-singing
+  where: reactor
+  who: reactor-operator
+  doing: duty
+  lines: |
+    1: You hear that hum? That's her singing. When she stops singing, you run.
+
+- id: reactor-badge
+  where: reactor
+  who: reactor-operator
+  doing: duty
+  lines: |
+    1: Badge check. Green. Still green. Lovely green.
+
+# ---- Machinery, electrics, the drive -------------------------------------------------------
+
+- id: machinery-pump
+  where: [aux-machinery, coolant-pumps]
+  who: machinist
+  lines: |
+    1: Number two pump's leaking again. I'll put it on the list. The list is on the list.
+
+- id: machinery-spanner
+  where: aux-machinery
+  who: machinist
+  lines: |
+    1: Who took my spanner? The big one. The one with my name scratched on it. Twice.
+
+- id: electrical-breaker
+  where: electrical
+  who: electrician
+  lines: |
+    1: Don't touch that breaker. Don't touch that one either. Don't touch anything, honestly.
+
+- id: drive-room-vibration
+  where: drive-room
+  who: drive-rating
+  lines: |
+    1: Feel that shudder at full burn? That's normal. Probably. It's in the manual as normal.
+
+- id: drive-room-jump
+  where: main-engineering
+  who: [engine-room-rating, engineering]
+  lines: |
+    1: When did we last do a full jump-core calibration?
+    2: Officially? Last month.
+    1: And actually?
+    2: Officially, last month.
+
+- id: workshop-lindqvist-alone
+  where: workshop
+  who: lindqvist
+  lines: |
+    1: If these serial numbers were replaced last year, why are they older than I am?
+
+- id: workshop-lathe
+  where: main-engineering
+  who: [engineering, engineering]
+  lines: |
+    1: You can't buy that part anymore.
+    2: So what do we do?
+    1: We make it. On a lathe older than both of us.
+
+# ---- Damage control -------------------------------------------------------------------------
+
+- id: dc-board
+  where: dc-central
+  who: [damage-control-supervisor, damage-control-rating]
+  doing: [duty, patrol]
+  lines: |
+    1: Status board?
+    2: All green except the laundry. The laundry is always amber.
+    1: Why is the laundry always amber?
+    2: Lint, Chief says. Lint is a fire waiting to happen.
+
+- id: dc-rounds
+  where: [passage-2, passage-3, passage-4, laundry, galley]
+  who: damage-control-rating
+  doing: patrol
+  lines: |
+    1: Fire main pressure good, hatches dogged, extinguisher in date. Next.
+
+- id: dc-hatch
+  who: damage-control-rating
+  doing: patrol
+  lines: |
+    1: Who left this hatch on the latch? Every time. Every single time.

@@ -1,7 +1,7 @@
 /*
  * All interface styling. The look is a military datapad: dark panels, amber accents, monospace
- * labels. Sections: base and page, cards and screens, HUD, lift, minimap, full ship map, map
- * drawing, debug.
+ * labels. Sections: base and page, cards and screens, HUD, speech, lift, minimap, full ship
+ * map, map drawing, debug.
  */
 
 /* ── Base and page ─────────────────────────────────────────────────────────── */
@@ -219,6 +219,71 @@ kbd {
   opacity: 1;
 }
 
+/* ── Speech (what the crew say) ────────────────────────────────────────────── */
+
+/* A bubble above the speaker's head; the game sets its position and opacity every frame. */
+.speech {
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: min(320px, 70vw);
+  width: max-content;
+  padding: 6px 10px 7px;
+  background: rgba(10, 16, 20, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  font: 14px/1.35 var(--sans);
+  will-change: transform;
+}
+
+/* Said to the captain: an amber edge, like the prompts. */
+.speech[data-to-captain] {
+  border-color: var(--line);
+}
+
+.speech::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  background: inherit;
+  border: inherit;
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(45deg);
+}
+
+.speech-name {
+  display: block;
+  font: 600 10px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+/* When the speaker is out of view: a subtitle above the key hints. */
+.subtitle {
+  position: absolute;
+  left: 50%;
+  bottom: 44px;
+  transform: translateX(-50%);
+  max-width: min(640px, 86vw);
+  padding: 6px 12px;
+  background: rgba(10, 16, 20, 0.78);
+  border-radius: 6px;
+  font: 15px/1.35 var(--sans);
+  text-align: center;
+}
+
+.subtitle .speech-name {
+  display: inline;
+  margin-right: 8px;
+}
+
 /* ── Lift (deck buttons) ───────────────────────────────────────────────────── */
 
 .lift-decks {
@@ -283,10 +348,19 @@ kbd {
 
 .minimap-deck {
   grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
   font: 600 11px var(--mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+/* Ship's time, naval style (0752), at the right of the deck line. */
+.minimap-time {
+  color: var(--text);
+  letter-spacing: 0.08em;
 }
 
 .minimap-code {
