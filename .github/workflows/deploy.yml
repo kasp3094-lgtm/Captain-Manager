@@ -1,5 +1,6 @@
 # Publishes the game to GitHub Pages after CI passes on the default branch.
 # One-time setup: Settings → Pages → Build and deployment → Source: GitHub Actions.
+# Until then the publish job is skipped with a notice instead of failing.
 name: Deploy
 
 on:
@@ -18,13 +19,33 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    name: Build and publish to GitHub Pages
+  pages-status:
+    name: Check that GitHub Pages is switched on
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.event == 'push' &&
        github.event.workflow_run.head_branch == github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      enabled: ${{ steps.check.outputs.enabled }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" --silent; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice title=GitHub Pages is off::Switch it on in Settings → Pages → Source: GitHub Actions, then run this workflow again."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    name: Build and publish to GitHub Pages
+    needs: pages-status
+    if: needs.pages-status.outputs.enabled == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
