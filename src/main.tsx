@@ -4,7 +4,7 @@
  */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { balance, crew, dialog, ship } from './content/gameContent';
+import { balance, crew, dialog, events, ship } from './content/gameContent';
 import { parseLaunchParams } from './debug/params';
 import { Game } from './game';
 import { App } from './ui/App';
@@ -20,7 +20,7 @@ if (!(canvas instanceof HTMLCanvasElement) || !uiRoot) {
 const root = createRoot(uiRoot);
 
 try {
-  const game = new Game(canvas, params, { balance, ship, crew, dialog });
+  const game = new Game(canvas, params, { balance, ship, crew, dialog, events });
   root.render(
     <StrictMode>
       <App game={game} params={params} ship={ship} />

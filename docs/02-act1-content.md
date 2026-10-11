@@ -191,7 +191,7 @@ The operations officer, Lt. (jg) Owen Brandt, is a minor character.
 
 ### Leg 1: Shakedown (Days 1–5)
 
-- **Day 1.** Departure. The first daily report and the first crew requests.
+- **Day 1.** Departure. The first daily report and the first crew requests. A mayday from the *Sable Wren*, an independent hauler "stranded" on the edge of the Belt: the first patrol encounter (`content/events/leg1/stranded-trader`). She is really waiting to take on smuggled military couplings for a Halvard buyer at Fort Marrow. Answer at once, at battle stations or running silent, or ignore it; board her or not; then seize the cargo, let her go, take a quiet fine or look the other way. The smuggling thread starts here, before the *Taurus*.
 - **Day 2.** *The drill* (worked example in the [design doc](01-game-design.md#6-choices-and-gating)). The rack dispute in junior berthing: arbitrate, or spend budget converting a storeroom into six extra racks.
 - **Day 3.** Inspection of the freighter *Taurus Venture*. Your marines find undeclared cargo with military serial numbers. Seize it and report it, fine them and keep the fine, take the bribe they offer, or put the crew in the brig. The smuggling thread begins.
 - **Day 4.** Ensign Ashford's navigation error nearly puts the ship into a debris field. A formal reprimand (his mother will hear) or a quiet cover-up (the XO will know).

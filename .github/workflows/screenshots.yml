@@ -1,0 +1,41 @@
+# Screenshots for review (npm run shots): the interface, the crew and every room. Runs on every
+# push next to CI but doesn't gate the deploy; download them from the run's "screenshots" artifact.
+name: Screenshots
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shots:
+    name: Screenshots for review
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Screenshots
+        run: npm run shots
+        env:
+          PW_SKIP_BUILD: '1'
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: artifacts/shots/
+          if-no-files-found: ignore

@@ -14,6 +14,6 @@ Every file here must match a schema registered in `src/content/registry.ts` (REA
 | `crew/names.yaml` | Given and family names for the generated crew | M3 |
 | `crew/routine.yaml` | How the day runs: the watch bill, day work, mealtimes, where each group sleeps, eats, washes and relaxes | M3 |
 | `dialog/*.yaml` | Walk-by dialog: what the crew say among themselves and to the captain. How to write it: [`dialog/README.md`](dialog/README.md) | M3 |
-| `events/` | Event data (`.yaml`) and story scripts (`.ink`) | M2 |
+| `events/<leg>/*.yaml` + `.ink` | Events: when and where each starts and who takes part, and its scene in Ink. How to write them: [`events/README.md`](events/README.md) | M2 (the first, early) |
 | `battles/` | Battle scenarios, ship and weapon stats | M5 |
 | `sector/` | Sector map and High Command orders | M6 |

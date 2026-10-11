@@ -46,10 +46,10 @@ Rules:
 
 | Module | Responsibility |
 |---|---|
-| `src/sim/state` | Game state: meters, relations, flags, reputation, supplies, time, crew records, RNG |
-| `src/sim/effects` | Applying and clamping changes; tiers; the change log; requirement checks for gated choices |
-| `src/sim/events` | Event registry, trigger evaluation, scheduling of delayed consequences |
-| `src/sim/narrative` | Ink runtime binding: external functions (`fx`, `req`, `flag`, `rel`) and tags (speaker, portrait, cost, requirement) |
+| `src/sim/command` | The meters, relations and flags; applying and clamping changes; tiers; the change log; requirement checks for gated choices (the planned `state` and `effects` modules in one, so far) |
+| `src/sim/state` | Game state for saves: the command state plus reputation, supplies, time, crew records, RNG |
+| `src/sim/events` | Event registry, trigger evaluation (by ship's time and room, so far), scheduling of delayed consequences |
+| `src/sim/narrative` | Ink runtime binding: external functions (`fx`, `flag`, `has`, `meter`, `tier`, `summon`, `name`, `last`, `ship`) and tags (`#speaker`, `#goto`, `#req`, `#cost`; later `#portrait`) |
 | `src/sim/crew`, `schedule`, `clock` | Roster generation, watch rotation, rack assignment; everyone's day (duty, patrols, meals, leisure, sleep) and where they are at any minute; ship's time |
 | `src/sim/dialog` | Walk-by dialog: reads and checks the scripts, finds entries that can never happen, matches entries to people, places and times |
 | `src/sim/battle` | Fixed-step deterministic battle simulation: orders, AI, damage, casualties |
@@ -156,39 +156,39 @@ Traits, skill and status (fit, injured, in the brig…) join the crew records wi
     1: Tastes like it.
 ```
 
-**Event**
+**Event** (`content/events/leg1/drill.yaml` and `drill.ink`; the full format is in `content/events/README.md`, and `leg1/stranded-trader` is the first real one). Relations are named by character id, as in the dialog files. `leg`, `slot` and a command-time `cost` join the trigger with the day loop.
 
 ```yaml
-id: leg1_drill
+id: drill
+title: The drill
 type: story
-trigger: { leg: 1, day: 2, slot: forenoon, room: bridge }
-cost: { commandTime: 0 }
-participants: [xo, master_chief, tactical]
-script: events/leg1/drill.ink
+script: drill.ink
+trigger: { day: 2, after: '09:00', room: bridge, call: Captain to the bridge. }
+summon: [okafor, delgado, sethi]
 ```
 
 ```ink
 === drill ===
-Readiness is at {readiness()} percent, Captain. I want a full twenty-four-hour GQ drill. #speaker:xo #portrait:stern
+Readiness is at {meter("readiness")} percent, Captain. I want a full twenty-four-hour GQ drill. #speaker:okafor
 + [Do it.]
     ~ fx("readiness", 8)
     ~ fx("fatigue", 15)
     ~ fx("crew", -6)
-    ~ fx("rel.xo", 5)
+    ~ fx("rel.okafor", 5)
 + [Live fire. Make it real. #cost:budget:1500]
     ~ fx("budget", -1500)
     ~ fx("readiness", 12)
     ~ fx("crew", 3)
-    ~ fx("rel.tactical", 8)
-+ [Let the Master Chief run it her way. #req:rel.master_chief>=trusted]
+    ~ fx("rel.sethi", 8)
++ [Let the Master Chief run it her way. #req:rel.delgado>=trusted]
     ~ fx("readiness", 7)
     ~ fx("crew", 2)
     ~ fx("fatigue", 8)
-    ~ fx("rel.xo", -3)
+    ~ fx("rel.okafor", -3)
 - -> END
 ```
 
-Convention: the game checks `#req` and `#cost` tags. Unmet choices are shown greyed out with the reason and can't be picked.
+Convention: the game checks `#req` and `#cost` tags. Unmet choices are shown greyed out with the reason and can't be picked; a choice that needs a flag stays hidden until the flag is set. `#goto:<room>` pauses the scene until the captain walks there. Scripts are compiled at build time, so the game carries only the Ink runtime.
 
 ## 4. Verification: how we know it works
 
@@ -263,6 +263,8 @@ Done when:
 
 ### M2 — Command core (1–2 weeks)
 
+*Started early, at your request (October 2026), with the first mission, the Sable Wren's mayday: the command meters with their change log and tiers (`src/sim/command.ts`, starting values in `balance.yaml`), Ink with the game's functions and tags, events called by ship's time and played where they happen (`src/sim/events.ts`, `narrative.ts`), and the dialogue panel with greyed-out locked choices, notices and an outcome card. Still to do: portraits, the datapad, the day loop and command time, the captain's log, saves and the headless runner.*
+
 Build:
 
 - Simulation state: meters, per-character relations, tiers, flags, reputation, supplies, time, RNG.
@@ -274,7 +276,7 @@ Build:
 
 Done when:
 
-- [ ] Three sample events, including *The drill*, play end to end in the browser.
+- [ ] Three sample events, including *The drill*, play end to end in the browser. *(One so far: the Sable Wren's mayday, played through by `tests/e2e/mission.spec.ts`; every branch is played by `tests/unit/events.test.ts`.)*
 - [ ] 1,000 headless runs of three days finish without errors.
 - [ ] Save → load reproduces an identical state; older saves load through migrations.
 - [ ] Unit-test coverage of `src/sim` is at least 80 %.

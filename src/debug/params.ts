@@ -11,6 +11,8 @@
  * - `timescale`  Run ship's time and the crew this many times faster; 0 freezes them (screenshots).
  * - `dialog`     Play this walk-by dialog entry (an id from content/dialog/) as soon as the people
  *                it needs are on the captain's deck, and again after every pause: for writers.
+ * - `event`      Call this event (an id from content/events/) as soon as the game starts, whatever
+ *                the time: for writers and tests.
  *
  * A parameter given as `0`, `false`, `off` or `no` counts as absent.
  */
@@ -25,6 +27,7 @@ export interface LaunchParams {
   readonly time: number | null;
   readonly timeScale: number;
   readonly dialog: string | null;
+  readonly event: string | null;
 }
 
 /** Optional debug features, switched on with `?debug=<flag>,<flag>`. */
@@ -82,6 +85,9 @@ export function parseLaunchParams(search: string): LaunchParams {
   const dialogValue = params.get('dialog')?.trim() ?? '';
   const dialog = /^[a-z0-9]+(-[a-z0-9]+)*$/.test(dialogValue) ? dialogValue : null;
 
+  const eventValue = params.get('event')?.trim() ?? '';
+  const event = /^[a-z0-9]+(-[a-z0-9]+)*$/.test(eventValue) ? eventValue : null;
+
   return {
     debug,
     debugFlags,
@@ -92,5 +98,6 @@ export function parseLaunchParams(search: string): LaunchParams {
     time,
     timeScale,
     dialog,
+    event,
   };
 }

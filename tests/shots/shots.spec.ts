@@ -1,7 +1,8 @@
 /**
  * Screenshots for review after visual changes: `npm run shots`, then look at artifacts/shots/.
  * The interface in a few states, the ship map of each deck, the crew at different times of day,
- * and every room and shaft from its viewpoint (artifacts/shots/rooms/<deck>-<room>.png).
+ * the first mission, and every room and shaft from its viewpoint
+ * (artifacts/shots/rooms/<deck>-<room>.png).
  * Viewpoints, seeds and times are fixed and the crew are frozen in place (`timescale=0`), so
  * images are comparable between runs.
  */
@@ -24,6 +25,13 @@ function mapOfDeck(deck: number) {
     await page.getByRole('tab', { name: new RegExp(`Deck ${deck}`) }).click();
     await expect(page.getByRole('dialog', { name: 'Ship map' })).toBeVisible();
   };
+}
+
+/** Presses Space through an event's lines until it offers choices. */
+async function untilChoices(page: Page) {
+  const choices = page.locator('.event-choices button');
+  for (let i = 0; i < 40 && (await choices.count()) === 0; i++) await page.keyboard.press('Space');
+  await expect(choices.first()).toBeVisible();
 }
 
 /** Looks down the ladderwell's hole, so the prompt shows. */
@@ -67,6 +75,24 @@ const SHOTS: readonly Shot[] = [
       await expect
         .poll(() => page.evaluate(() => window.__captain!.time()), { timeout: 60_000 })
         .toMatch(/^15:5[6-9]$/);
+    },
+  },
+  // The first mission: the call, then the scene on the bridge with a locked choice.
+  {
+    name: '17-mission-call',
+    query: '?autostart&seed=3&time=0809&cam=captains-quarters',
+    then: async (page) => {
+      await expect(page.locator('.ship-call')).toBeVisible({ timeout: 60_000 });
+    },
+  },
+  {
+    name: '18-mission-choices',
+    query: '?autostart&seed=3&timescale=0&event=stranded-trader&cam=bridge',
+    then: async (page) => {
+      await untilChoices(page);
+      await page.keyboard.press('Digit1');
+      await untilChoices(page);
+      await expect(page.locator('.event-choices button:disabled')).toHaveCount(1);
     },
   },
   {

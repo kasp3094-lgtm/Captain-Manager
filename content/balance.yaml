@@ -17,3 +17,14 @@ time:
 crew:
   walkSpeed: 1.3 # metres per second, give or take 15% per person
   climbSeconds: 5 # to climb one deck by ladder, out of sight
+
+# Where the captain stands on day one (design doc §5). Meters change only through effects.
+command:
+  budget: 6000 # discretionary budget, credits (₡)
+  readiness: 52 # combat readiness, %: an old, short-handed ship
+  crew: 45 # crew relations (enlisted morale), 0–100: Steady, but unsettled
+  highCommand: 0 # High Command standing, −100…+100: Unremarkable
+  fatigue: 20 # crew-wide fatigue, 0–100
+  # Relations (−100…+100) with named characters who don't start at 0, by character id.
+  relations:
+    okafor: -10 # wanted this command herself

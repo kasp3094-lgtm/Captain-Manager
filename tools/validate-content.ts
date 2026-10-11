@@ -55,6 +55,10 @@ export function validateContent(
     }
 
     checked++;
+    if (kind.text) {
+      data.set(file, readFileSync(absolute, 'utf8'));
+      continue;
+    }
     const document = parseDocument(readFileSync(absolute, 'utf8'));
     if (document.errors.length > 0) {
       for (const error of document.errors)

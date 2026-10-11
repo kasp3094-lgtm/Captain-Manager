@@ -12,6 +12,7 @@ Working rules for Claude Code, and anyone else, building this game.
 - `docs/04-getting-started-and-budget.md`: open decisions, timeline and budget.
 - `src/README.md`: the code map, i.e. what every source file is for.
 - `content/dialog/README.md`: how to write the crew's walk-by dialog.
+- `content/events/README.md`: how to write events (missions, incidents, story beats): a YAML record plus an Ink scene.
 
 ## How we work
 
@@ -39,9 +40,9 @@ Working rules for Claude Code, and anyone else, building this game.
 
 `npm run sim` (headless playthrough bots) arrives in M2.
 
-Keys in the game: WASD walk, mouse look, Shift walk faster, E use (climb a ladder, take the lift, talk to someone), M ship map, Esc pause. In the lift, 1–4 pick a deck.
+Keys in the game: WASD walk, mouse look, Shift walk faster, E use (climb a ladder, take the lift, talk to someone), M ship map, Esc pause. In the lift, 1–4 pick a deck. In an event's dialogue, Space or Enter goes on and 1–9 pick a choice.
 
-URL parameters: `?debug` shows the debug panel, `?debug=colliders` also shows collision boxes, `?seed=42` fixes the random seed, `?cam=<viewpoint>` starts at a viewpoint (any room id such as `junior-berthing-a`, a shaft stop such as `ladder-fwd-deck2` or `lift-deck3`, or `spawn`), `?autostart` skips the start screen, `?noui` hides the interface, `?time=1555` starts at that ship's time, `?timescale=20` runs time and the crew 20 times faster (`0` freezes them, for screenshots), `?dialog=<entry id>` plays a walk-by dialog entry as soon as people who fit it are on the captain's deck.
+URL parameters: `?debug` shows the debug panel, `?debug=colliders` also shows collision boxes, `?seed=42` fixes the random seed, `?cam=<viewpoint>` starts at a viewpoint (any room id such as `junior-berthing-a`, a shaft stop such as `ladder-fwd-deck2` or `lift-deck3`, or `spawn`), `?autostart` skips the start screen, `?noui` hides the interface, `?time=1555` starts at that ship's time, `?timescale=20` runs time and the crew 20 times faster (`0` freezes them, for screenshots), `?dialog=<entry id>` plays a walk-by dialog entry as soon as people who fit it are on the captain's deck, `?event=<id>` calls an event at once (for example `?event=stranded-trader&cam=bridge`).
 
 ## Conventions
 
@@ -51,4 +52,4 @@ URL parameters: `?debug` shows the debug panel, `?debug=colliders` also shows co
 - Every source file starts with a comment saying what it does. When you add a file, add it to the table in `src/README.md`.
 - Import Babylon.js only through `src/world/babylon.ts`. Module-by-module imports keep the bundle small, and ESLint enforces it.
 - `@playwright/test` is pinned to the version whose Chromium is preinstalled in Claude's cloud sandbox (1.56.1). Upgrade the two together.
-- CI (`.github/workflows/ci.yml`) runs on every push. `deploy.yml` publishes the default branch to GitHub Pages after CI passes.
+- CI (`.github/workflows/ci.yml`: checks, unit tests, validation, build and end-to-end tests) runs on every push. `deploy.yml` publishes the default branch to GitHub Pages after CI passes. `screenshots.yml` takes the review screenshots on every push without holding up the deploy; they're in each run's `screenshots` artifact.

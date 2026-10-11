@@ -1,7 +1,7 @@
 /**
  * The game's content as the running game sees it. Files in content/ become plain data at build
- * time (the YAML plugin in vite.config.ts) and are checked against their schemas at startup:
- * balance, the ship, the crew and the walk-by dialog.
+ * time (the YAML and Ink plugins in vite.config.ts) and are checked against their schemas at
+ * startup: balance, the ship, the crew, the walk-by dialog and the events.
  */
 import balanceData from '../../content/balance.yaml';
 import billetsData from '../../content/crew/billets.yaml';
@@ -10,6 +10,7 @@ import namesData from '../../content/crew/names.yaml';
 import routineData from '../../content/crew/routine.yaml';
 import shipData from '../../content/ship/ship.yaml';
 import { readDialog, type DialogEntry } from '../sim/dialog';
+import type { GameEvent } from '../sim/events';
 import { BalanceSchema, type Balance } from './balance';
 import {
   BilletsSchema,
@@ -19,6 +20,7 @@ import {
   type CrewContent,
 } from './crew';
 import { DialogFileSchema } from './dialog';
+import { EventSchema } from './events';
 import { DeckSchema, ShipInfoSchema, assembleShip, type Ship } from './ship';
 
 const deckData = import.meta.glob<unknown>('../../content/ship/deck*.yaml', {
@@ -26,6 +28,15 @@ const deckData = import.meta.glob<unknown>('../../content/ship/deck*.yaml', {
   import: 'default',
 });
 const dialogData = import.meta.glob<unknown>('../../content/dialog/*.yaml', {
+  eager: true,
+  import: 'default',
+});
+const eventData = import.meta.glob<unknown>('../../content/events/**/*.yaml', {
+  eager: true,
+  import: 'default',
+});
+// Compiled by the inkStories plugin in vite.config.ts.
+const eventScripts = import.meta.glob<string>('../../content/events/**/*.ink', {
   eager: true,
   import: 'default',
 });
@@ -62,3 +73,12 @@ export const dialog: readonly DialogEntry[] = (() => {
   for (const problem of problems) console.warn(`Dialog: ${problem}`);
   return entries;
 })();
+
+/** Events (content/events/): each record with its compiled Ink script. */
+export const events: readonly GameEvent[] = Object.entries(eventData).map(([path, data]) => {
+  const event = EventSchema.parse(data);
+  const scriptPath = path.replace(/[^/]+$/, event.script);
+  const story = eventScripts[scriptPath];
+  if (story === undefined) throw new Error(`${path}: its script ${event.script} is missing`);
+  return { ...event, story, file: path.replace('../../content/', '') };
+});

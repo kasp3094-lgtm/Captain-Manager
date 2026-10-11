@@ -1,4 +1,7 @@
-/** Schema for content/balance.yaml: every tunable number. For now, movement and ship's time. */
+/**
+ * Schema for content/balance.yaml: every tunable number. Movement, ship's time, the crew's
+ * walking, and where the captain's command meters start.
+ */
 import { z } from 'zod';
 
 /** How the captain moves and looks around. Units are metres, seconds, radians and degrees. */
@@ -36,11 +39,23 @@ const CrewTuningSchema = z.strictObject({
   climbSeconds: z.number().min(0).max(30),
 });
 
+/** Where the command meters start (design doc §5). */
+const CommandStartSchema = z.strictObject({
+  budget: z.number().int().min(0),
+  readiness: z.number().min(0).max(100),
+  crew: z.number().min(0).max(100),
+  highCommand: z.number().min(-100).max(100),
+  fatigue: z.number().min(0).max(100),
+  /** By character id (content/crew/characters.yaml); everyone else starts at 0. */
+  relations: z.record(z.string(), z.number().min(-100).max(100)).default({}),
+});
+
 /** Every tunable number in the game (content/balance.yaml). */
 export const BalanceSchema = z.strictObject({
   player: PlayerTuningSchema,
   time: TimeSchema,
   crew: CrewTuningSchema,
+  command: CommandStartSchema,
 });
 
 export type Balance = z.infer<typeof BalanceSchema>;

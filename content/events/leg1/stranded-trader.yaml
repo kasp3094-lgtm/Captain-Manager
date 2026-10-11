@@ -1,0 +1,17 @@
+# The first patrol encounter: a trader that is supposedly stranded and needs help.
+# Story and choices: stranded-trader.ink. How to write events: content/events/README.md.
+# The ship and the people from off the Kestrel are placeholders, like every name in the docs.
+id: stranded-trader
+title: Mayday from the Sable Wren
+type: patrol-encounter
+script: stranded-trader.ink
+trigger:
+  # Day 0 is the first day aboard in this build; with the day loop (M2) it becomes Leg 1, Day 1.
+  day: 0
+  after: '08:10'
+  room: bridge
+  call: Captain to the bridge.
+# On watch on the bridge at 0810 (the XO and the ensign), and the tactical officer from CIC.
+summon: [okafor, ashford, sethi]
+cast:
+  varga: { name: Captain Ilse Varga, role: Master of the Sable Wren }

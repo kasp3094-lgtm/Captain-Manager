@@ -1,12 +1,13 @@
 /**
  * The 2D interface laid over the 3D view. Shows what fits the current mode: the start screen,
- * the HUD with the minimap while playing, the pause screen, the full ship map, or the lift's
- * deck buttons; and the fade to black between decks.
+ * the HUD with the minimap while playing, the pause screen, the full ship map, the lift's deck
+ * buttons, or an event's dialogue; and the fade to black between decks.
  * `?noui` hides it all (clean screenshots); `?debug` adds the debug panel.
  */
 import type { Ship } from '../content/ship';
 import type { LaunchParams } from '../debug/params';
 import { DebugPanel } from './DebugPanel';
+import { EventPanel } from './EventPanel';
 import { Hud } from './Hud';
 import { LiftPanel } from './LiftPanel';
 import { ShipMap } from './map/ShipMap';
@@ -34,6 +35,7 @@ export function App({ game, params, ship }: AppProps) {
       {mode === 'paused' && <PauseScreen onResume={game.requestPlay} />}
       {mode === 'map' && <ShipMap ship={ship} onClose={game.toggleMap} />}
       {mode === 'lift' && <LiftPanel ship={ship} deck={deck} onChoose={game.chooseDeck} />}
+      {mode === 'event' && <EventPanel game={game} />}
       <div className="fade" data-on={fading ? '' : undefined} aria-hidden="true" />
       {params.debug && <DebugPanel />}
     </>

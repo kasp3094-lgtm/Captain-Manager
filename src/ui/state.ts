@@ -7,10 +7,11 @@ import type { PoiKind } from '../content/ship';
 import { createStore } from './store';
 
 /**
- * loading → start screen → playing ⇄ paused, playing ⇄ map (the full ship map), and
- * playing ⇄ lift (choosing a deck in the lift).
+ * loading → start screen → playing ⇄ paused, playing ⇄ map (the full ship map),
+ * playing ⇄ lift (choosing a deck in the lift), and playing ⇄ event (a scene of an event, with
+ * its dialogue and choices).
  */
-export type GameMode = 'loading' | 'start' | 'playing' | 'paused' | 'map' | 'lift';
+export type GameMode = 'loading' | 'start' | 'playing' | 'paused' | 'map' | 'lift' | 'event';
 
 export interface CurrentRoom {
   readonly id: string;
@@ -40,6 +41,10 @@ export interface GameUiState {
   /** Ship's time, "0752", and the day aboard (0 is the first). */
   readonly time: string;
   readonly day: number;
+  /** A ship-wide call ("Now hear this: Captain to the bridge."), new key per call. */
+  readonly call: { readonly key: number; readonly text: string } | null;
+  /** Where the captain is wanted: "Go to the bridge (deck 1)". */
+  readonly objective: string | null;
   /** Debug panel figures. */
   readonly fps: number;
   readonly drawCalls: number;
@@ -55,6 +60,8 @@ export const gameUi = createStore<GameUiState>({
   fading: false,
   time: '',
   day: 0,
+  call: null,
+  objective: null,
   fps: 0,
   drawCalls: 0,
   seed: 0,
@@ -91,6 +98,50 @@ export interface PlayerPose {
 
 export const playerPose = createStore<PlayerPose>({ deck: 1, x: 0, y: 0, yawDegrees: 0 });
 
+/** A line of an event's scene: who says it (none for narration) and what. */
+export interface EventLine {
+  readonly key: number;
+  readonly speaker: { readonly name: string; readonly role: string } | null;
+  readonly text: string;
+  /** The captain's own choice, repeated in the transcript. */
+  readonly captain?: boolean;
+}
+
+export interface EventChoice {
+  readonly index: number;
+  readonly text: string;
+  /** "₡300", if it costs something. */
+  readonly cost: string | null;
+  /** Why it can't be picked, if it can't. */
+  readonly locked: string | null;
+}
+
+/** "−₡300", "Lt. Cmdr. Okafor will remember that." */
+export interface EventNotice {
+  readonly key: number;
+  readonly text: string;
+  readonly tone: 'up' | 'down' | 'even';
+}
+
+/** The event being played, as the dialogue panel shows it. */
+export interface EventUiState {
+  readonly title: string;
+  readonly lines: readonly EventLine[];
+  /** The choices to make now; null while a line waits for Continue. */
+  readonly choices: readonly EventChoice[] | null;
+  readonly notices: readonly EventNotice[];
+  /** When it's over: what it changed, for the outcome card. */
+  readonly outcome: readonly EventNotice[] | null;
+}
+
+export const eventUi = createStore<EventUiState>({
+  title: '',
+  lines: [],
+  choices: null,
+  notices: [],
+  outcome: null,
+});
+
 /** What the interface may ask the game to do. */
 export interface GameControls {
   /** Hand control to the player (locks the mouse pointer where the browser allows it). */
@@ -99,4 +150,10 @@ export interface GameControls {
   toggleMap(): void;
   /** In the lift: go to a deck, or stay (null). */
   chooseDeck(deck: number | null): void;
+  /** In an event: show the next line. */
+  continueEvent(): void;
+  /** In an event: make a choice (its index from EventChoice). */
+  chooseOption(index: number): void;
+  /** Close an event's outcome card and play on. */
+  closeOutcome(): void;
 }

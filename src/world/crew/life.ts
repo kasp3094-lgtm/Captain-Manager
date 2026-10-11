@@ -208,6 +208,8 @@ class Walker implements CrewView {
   /** Someone to face and until when (seconds of crew time); `speaking` gestures. */
   attention: { point: Point; until: number } | null = null;
   speaking = false;
+  /** Where an event needs them, whatever their plan says; null to follow the plan. */
+  override: Block | null = null;
   /** Someone standing about nearby to chat with (without words) while at leisure. */
   buddy: Walker | null = null;
   /** Of a pair of buddies, the one whose turn to gesture comes first. */
@@ -278,6 +280,8 @@ export class CrewLife {
   private readonly claims = new Map<string, Walker>();
   /** Walks still to plan this update: path finding is spread over frames at a shift change. */
   private budget = 0;
+  /** Ship time at the last update, total minutes. */
+  private now: number;
 
   constructor(
     private readonly map: CrewMap,
@@ -295,6 +299,7 @@ export class CrewLife {
     });
     this.byId = new Map(this.walkers.map((walker) => [walker.member.id, walker]));
     this.people = this.walkers;
+    this.now = now;
     // Everyone starts where their plan says, already settled in.
     for (const walker of this.walkers) this.placeAt(walker, walker.blockAt(now), now);
   }
@@ -309,6 +314,7 @@ export class CrewLife {
    */
   update(seconds: number, now: number, captain: CaptainAt | null): void {
     this.seconds += seconds;
+    this.now = now;
     this.budget = PLANS_PER_UPDATE;
     for (const walker of this.walkers) {
       if (walker.route.length > 0) this.walk(walker, seconds, now, captain);
@@ -328,6 +334,25 @@ export class CrewLife {
     walker.speaking = speaking;
   }
 
+  /**
+   * Sends someone to a room to wait there (an event needs them) until released, whatever their
+   * plan says. They set off at once, even from the middle of another walk.
+   */
+  summon(id: string, room: string): void {
+    const walker = this.byId.get(id);
+    if (!walker || !this.map.deckOfSpace.has(room)) return;
+    walker.override = { from: 0, to: DAY, activity: 'duty', room };
+    if (walker.block?.room !== room || walker.block.activity !== 'duty') {
+      this.setOff(walker, walker.override, this.now);
+    }
+  }
+
+  /** Lets someone summoned go back to their day. */
+  dismiss(id: string): void {
+    const walker = this.byId.get(id);
+    if (walker) walker.override = null;
+  }
+
   /** The space at a point on a deck, or null outside every space. */
   spaceAt(deck: number, x: number, y: number): string | null {
     const place = this.map.decks.get(deck);
@@ -343,7 +368,7 @@ export class CrewLife {
   // ---- Staying put --------------------------------------------------------------------------
 
   private stay(walker: Walker, now: number): void {
-    const wanted = walker.blockAt(now + walker.lead);
+    const wanted = walker.override ?? walker.blockAt(now + walker.lead);
     if (!sameStint(wanted, walker.block)) {
       // Setting off plans a walk: when this update's budget is spent, they go next update.
       if (this.budget > 0) {

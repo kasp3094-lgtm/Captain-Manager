@@ -13,13 +13,13 @@ test('the crew is aboard, the watch at its posts', async ({ page }) => {
   const bridge = crew.filter((person) => person.space === 'bridge' && person.settled);
   expect(bridge.length).toBeGreaterThanOrEqual(4);
   expect(bridge.every((person) => person.activity === 'duty')).toBe(true);
-  // Ship's time shows on the minimap.
-  await expect(page.getByTestId('ship-time')).toHaveText('1000');
   expect(errors).toEqual([]);
 });
 
 test('the 1600 change of watch reshuffles the crew', async ({ page }) => {
   const { errors } = await openGame(page, '?autostart&seed=3&time=1550&timescale=30&cam=passage-2');
+  // Ship's time shows on the minimap.
+  await expect(page.getByTestId('ship-time')).toHaveText(/^1[56]\d\d$/);
   const before = await page.evaluate(() =>
     Object.fromEntries(window.__captain!.crew().map((person) => [person.id, person.space])),
   );

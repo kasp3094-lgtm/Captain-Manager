@@ -2,9 +2,10 @@
  * Which schema checks which file in content/, plus the checks that need several files at once.
  * Used by `npm run validate` (tools/validate-content.ts) and the unit tests.
  */
-import type { ZodType } from 'zod';
+import { z, type ZodType } from 'zod';
 import { buildRoster } from '../sim/crew';
 import { neverHappen, readDialog } from '../sim/dialog';
+import { checkEventScript } from '../sim/events';
 import { checkSchedules } from '../sim/schedule';
 import { checkShip } from '../sim/ship';
 import { planShip } from '../world/ship/layout';
@@ -17,6 +18,8 @@ import {
   type CrewContent,
 } from './crew';
 import { DialogFileSchema, type DialogFile } from './dialog';
+import { EventSchema, type EventData } from './events';
+import { compileInk } from './ink';
 import {
   DeckSchema,
   ShipInfoSchema,
@@ -32,10 +35,14 @@ export interface ContentKind {
   /** Matched against the path relative to content/, with forward slashes. */
   readonly pattern: RegExp;
   readonly schema: ZodType;
+  /** Read as plain text rather than YAML (Ink scripts). */
+  readonly text?: boolean;
 }
 
 const DECK_FILE = /^ship\/deck\d+\.yaml$/;
 const DIALOG_FILE = /^dialog\/[a-z0-9-]+\.yaml$/;
+const EVENT_FILE = /^events\/[a-z0-9-]+\/[a-z0-9-]+\.yaml$/;
+const SCRIPT_FILE = /^events\/[a-z0-9-]+\/[a-z0-9-]+\.ink$/;
 
 /** Every file in content/ must match one of these (README.md files excepted). */
 export const CONTENT_KINDS: readonly ContentKind[] = [
@@ -47,6 +54,8 @@ export const CONTENT_KINDS: readonly ContentKind[] = [
   { name: 'names', pattern: /^crew\/names\.yaml$/, schema: NamesSchema },
   { name: 'routine', pattern: /^crew\/routine\.yaml$/, schema: RoutineSchema },
   { name: 'dialog', pattern: DIALOG_FILE, schema: DialogFileSchema },
+  { name: 'event', pattern: EVENT_FILE, schema: EventSchema },
+  { name: 'event script', pattern: SCRIPT_FILE, schema: z.string(), text: true },
 ];
 
 /** A rule that spans several files. Runs only once every file has passed its own schema. */
@@ -120,6 +129,61 @@ export const CONTENT_CHECKS: readonly ContentCheck[] = [
       // Every entry must be able to happen, given who is where in the crew's day.
       const roster = buildRoster(crew, ship);
       return roster.problems.length > 0 ? [] : neverHappen(entries, roster, crew.routine, ship);
+    },
+  },
+  {
+    name: 'events',
+    files: 'events/**',
+    run(data) {
+      const ship = shipFrom(data);
+      const crew = crewFrom(data);
+      if (!ship || !crew) return ['the ship and crew files are needed to check the events'];
+      const problems: string[] = [];
+      const ids = new Map<string, string>();
+      for (const [path, value] of data) {
+        if (!EVENT_FILE.test(path)) continue;
+        const event = value as EventData;
+        const earlier = ids.get(event.id);
+        if (earlier) problems.push(`${path}: id "${event.id}" is also used by ${earlier}`);
+        ids.set(event.id, path);
+        const scriptPath = path.replace(/[^/]+$/, event.script);
+        const source = data.get(scriptPath) as string | undefined;
+        if (source === undefined) {
+          problems.push(`${path}: script ${event.script} is missing (looked for ${scriptPath})`);
+          continue;
+        }
+        const { errors } = compileInk(source, scriptPath);
+        problems.push(...errors);
+        problems.push(...checkEventScript(event, scriptPath, source, ship, crew));
+      }
+      // Every script belongs to an event.
+      for (const path of data.keys()) {
+        if (!SCRIPT_FILE.test(path)) continue;
+        const owned = [...data].some(
+          ([eventPath, value]) =>
+            EVENT_FILE.test(eventPath) &&
+            eventPath.replace(/[^/]+$/, (value as EventData).script) === path,
+        );
+        if (!owned) problems.push(`${path}: no event in its folder names it as its script`);
+      }
+      return problems;
+    },
+  },
+  {
+    name: 'command',
+    files: 'balance.yaml',
+    run(data) {
+      const crew = crewFrom(data);
+      const balance = data.get('balance.yaml') as
+        { command?: { relations?: Record<string, number> } } | undefined;
+      if (!crew || !balance?.command) return [];
+      const characters = new Set(crew.characters.characters.map((character) => character.id));
+      return Object.keys(balance.command.relations ?? {})
+        .filter((id) => !characters.has(id))
+        .map(
+          (id) =>
+            `command.relations: "${id}" is not a named character (content/crew/characters.yaml)`,
+        );
     },
   },
 ];

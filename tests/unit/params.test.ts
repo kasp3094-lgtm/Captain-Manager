@@ -13,6 +13,7 @@ describe('parseLaunchParams', () => {
       time: null,
       timeScale: 1,
       dialog: null,
+      event: null,
     });
     expect(params.debugFlags.size).toBe(0);
   });
@@ -30,6 +31,11 @@ describe('parseLaunchParams', () => {
     expect(parseLaunchParams('?timescale=0.5').timeScale).toBe(0.5);
     expect(parseLaunchParams('?timescale=-3').timeScale).toBe(1);
     expect(parseLaunchParams('?timescale=9999').timeScale).toBe(1);
+  });
+
+  it('reads an event id', () => {
+    expect(parseLaunchParams('?event=stranded-trader').event).toBe('stranded-trader');
+    expect(parseLaunchParams('?event=../x').event).toBeNull();
   });
 
   it('reads a dialog entry id', () => {

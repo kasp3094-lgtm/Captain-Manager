@@ -10,15 +10,18 @@
  */
 import type { Balance } from './content/balance';
 import { minutes, type CrewContent } from './content/crew';
+import { EventPlayer } from './eventPlayer';
 import type { Deck, Ship } from './content/ship';
 import type { LaunchParams } from './debug/params';
 import { ShipClock } from './sim/clock';
+import { Command } from './sim/command';
 import { buildRoster, type CrewMember } from './sim/crew';
 import { spokenShipName, type DialogEntry } from './sim/dialog';
+import type { GameEvent } from './sim/events';
 import { Rng } from './sim/rng';
 import { clock } from './sim/schedule';
 import { findRoom, nearestPoi, roomAt, shaftsOnDeck } from './sim/ship';
-import { gameUi, playerPose, speech, type GameControls, type GameMode } from './ui/state';
+import { eventUi, gameUi, playerPose, speech, type GameControls, type GameMode } from './ui/state';
 import {
   Engine,
   Matrix,
@@ -79,6 +82,19 @@ interface TestHook {
   }[];
   /** The line being said, if any. */
   speech(): { name: string; text: string; onScreen: boolean } | null;
+  /** The command meters, relations by character id, and story flags. */
+  command(): {
+    budget: number;
+    readiness: number;
+    crew: number;
+    highCommand: number;
+    fatigue: number;
+    relations: Record<string, number>;
+    flags: string[];
+  };
+  /** The event under way, if any, and every event already done. */
+  event(): { id: string; status: string; room: string } | null;
+  eventsDone(): string[];
 }
 
 declare global {
@@ -106,6 +122,7 @@ export interface GameContent {
   readonly ship: Ship;
   readonly crew: CrewContent;
   readonly dialog: readonly DialogEntry[];
+  readonly events: readonly GameEvent[];
 }
 
 interface Trip {
@@ -129,6 +146,8 @@ export class Game implements GameControls {
   private readonly life: CrewLife;
   private readonly crowd: Crowd;
   private readonly chatter: Chatter;
+  private readonly command: Command;
+  private readonly events: EventPlayer;
   private readonly timeScale: number;
   private readonly sightLine = new Ray(Vector3.Zero(), new Vector3(0, 0, 1), 1);
   /** The deck the captain is on. */
@@ -141,6 +160,8 @@ export class Game implements GameControls {
   private lastDebugRefresh = 0;
   private shownMinute = -1;
   private readonly ship: Ship;
+  /** The room the captain is in (a room id from the deck plans), or null in a shaft. */
+  private roomId: string | null = null;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -208,6 +229,20 @@ export class Game implements GameControls {
       this.rng.nextUint32() | 0,
       params.dialog,
     );
+    // The captain's standing, and the events that put it to the test.
+    this.command = new Command(
+      balance.command,
+      crew.characters.characters.map((character) => character.id),
+    );
+    this.events = new EventPlayer(
+      content.events,
+      this.command,
+      this.life,
+      ship,
+      roster.members,
+      spokenShipName(ship.name),
+      (mode) => (mode === 'event' ? this.enterEvent() : this.requestPlay()),
+    );
     this.reportWhereabouts();
     this.reportTime();
 
@@ -271,6 +306,7 @@ export class Game implements GameControls {
       this.reportTime();
     }
     if (playing) this.chatter.update(dt, this.captainView(), this.clock.minute);
+    if (playing && !this.trip) this.events.update(this.clock.day, this.clock.minute, this.roomId);
     this.crowd.update(this.deck.deck, this.life.seconds, this.captainView());
     if (playing && !this.trip) this.findTarget();
     this.placeSpeech();
@@ -293,6 +329,26 @@ export class Game implements GameControls {
       });
     }
   };
+
+  readonly continueEvent = (): void => {
+    if (gameUi.get().mode === 'event') this.events.continue();
+  };
+
+  readonly chooseOption = (index: number): void => {
+    if (gameUi.get().mode === 'event') this.events.choose(index);
+  };
+
+  readonly closeOutcome = (): void => {
+    if (gameUi.get().mode === 'event') this.events.closeOutcome();
+  };
+
+  /** Opens the dialogue panel: the pointer is let go so choices can be clicked. */
+  private enterEvent(): void {
+    this.setMode('event');
+    gameUi.set({ prompt: null });
+    this.target = null;
+    if (document.pointerLockElement === this.canvas) document.exitPointerLock();
+  }
 
   // ---- Getting around -------------------------------------------------------------------
 
@@ -476,6 +532,7 @@ export class Game implements GameControls {
         ? { id: shaft.id, code: '', name: shaft.name, deck }
         : null;
     if (here?.id !== ui.room?.id || here?.deck !== ui.room?.deck) gameUi.set({ room: here });
+    this.roomId = room?.id ?? null;
 
     const hit = nearestPoi(this.deck, x, y, NEARBY_POI_RANGE);
     const nearby = hit && {
@@ -494,6 +551,9 @@ export class Game implements GameControls {
     this.ready = true;
     document.body.dataset['ready'] = 'true';
     this.setMode(this.params.autostart ? 'playing' : 'start');
+    if (this.params.event && !this.events.force(this.params.event)) {
+      console.warn(`?event=${this.params.event}: there is no such event`);
+    }
   }
 
   private setMode(mode: GameMode): void {
@@ -521,6 +581,18 @@ export class Game implements GameControls {
 
   private readonly onKeyDown = (event: KeyboardEvent): void => {
     const mode = gameUi.get().mode;
+    if (mode === 'event') {
+      // Space or Enter goes on; a number picks that choice (as numbered in the panel).
+      if (event.code === 'Space' || event.code === 'Enter') {
+        event.preventDefault();
+        if (!event.repeat) this.events.continue();
+        return;
+      }
+      const digit = /^(?:Digit|Numpad)([1-9])$/.exec(event.code);
+      const choice = digit ? eventUi.get().choices?.[Number(digit[1]) - 1] : undefined;
+      if (choice && !event.repeat) this.events.choose(choice.index);
+      return;
+    }
     if (mode === 'lift') {
       const digit = /^Digit(\d)$/.exec(event.code);
       if (digit) this.chooseDeck(Number(digit[1]));
@@ -611,6 +683,24 @@ export class Game implements GameControls {
         const bubble = speech.get().bubble;
         return bubble && { name: bubble.name, text: bubble.text, onScreen: bubble.x !== null };
       },
+      command: () => {
+        const relations: Record<string, number> = {};
+        for (const id of this.command.characters) relations[id] = this.command.value(`rel.${id}`);
+        return {
+          budget: this.command.value('budget'),
+          readiness: this.command.value('readiness'),
+          crew: this.command.value('crew'),
+          highCommand: this.command.value('highCommand'),
+          fatigue: this.command.value('fatigue'),
+          relations,
+          flags: [...this.command.flags],
+        };
+      },
+      event: () => {
+        const active = this.events.director.active;
+        return active && { id: active.event.id, status: active.status, room: active.room };
+      },
+      eventsDone: () => [...this.events.director.finished],
     };
   }
 }
