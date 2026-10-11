@@ -12,7 +12,7 @@
 | UI | React overlay (HTML/CSS) | Dialogue, datapad, menus and HUD are easier in HTML than in 3D |
 | Build / dev server | Vite | Fast and standard |
 | Tests | Vitest (unit, content, headless runs) and Playwright (end-to-end, screenshots) | Everything runs in CI and in Claude's cloud sandbox |
-| CI / hosting | GitHub Actions + GitHub Pages | Free for this public repo; every merge to `main` becomes a playable link |
+| CI / hosting | GitHub Actions + GitHub Pages | Free for this public repo; every green push to the default branch becomes a playable link |
 | Desktop release | Electron wrapper + Steamworks bindings (e.g. steamworks.js) | The same build, shipped on Steam |
 | Content tools | Inky (story), Blender (optional, models), any text editor (data) | All free |
 
@@ -54,6 +54,7 @@ Rules:
 | `src/sim/battle` | Fixed-step deterministic battle simulation: orders, AI, damage, casualties |
 | `src/sim/campaign` | Days, command time, patrol legs, sector map, stations, budget cycle, endings |
 | `src/sim/save` | Versioned save files and migrations |
+| `src/world/babylon.ts` | The only place that imports Babylon.js, module by module, to keep the bundle small |
 | `src/world/ship` | Deck plan → meshes, props, lights, signs, doors, ladders, lift, navigation mesh |
 | `src/world/player` | First-person controller, interaction ray, ladder and lift transitions |
 | `src/world/npcs` | Crew placement from the schedule, animations, ambient walkers, general quarters |
@@ -168,7 +169,7 @@ Convention: the game checks `#req` and `#cost` tags. Unmet choices are shown gre
 | Screenshots | `npm run shots` | Fixed camera bookmarks for every room and UI state, saved for review |
 | Performance | `npm run perf` | Frame times on a scripted walk through every deck |
 
-All of these run in GitHub Actions on every push. `main` must always be green and deployable.
+All of these run in GitHub Actions on every push. The default branch must always be green and deployable.
 
 Debug tools (behind `?debug` in the URL): set any meter, jump to any day or event, teleport to any room, show the navigation mesh, frame stats, free camera.
 
@@ -199,7 +200,7 @@ Durations assume daily Claude Code sessions plus 10–15 hours a week of your ti
 Build:
 
 - Vite + TypeScript (strict) + Babylon.js + React overlay; ESLint and Prettier.
-- Vitest and Playwright; GitHub Actions running typecheck, lint, tests and build; deploy to GitHub Pages from `main`.
+- Vitest and Playwright; GitHub Actions running typecheck, lint, tests and build; deploy to GitHub Pages from the default branch once CI passes.
 - Debug-flag system, seeded RNG, empty `content/` with schemas wired into `npm run validate`.
 - The commands section of `CLAUDE.md`.
 

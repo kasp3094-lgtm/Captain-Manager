@@ -24,4 +24,23 @@ Working rules for Claude Code, and anyone else, building this game.
 
 ## Commands
 
-To be filled in at milestone M0 (`dev`, `test`, `validate`, `sim`, `e2e`, `shots`, `build`).
+| Command | What it does |
+|---|---|
+| `npm run dev` | Dev server at http://localhost:5173 |
+| `npm test` | Unit tests (Vitest, `tests/unit/`) |
+| `npm run validate` | Checks every file in `content/` against its schema (`src/content/registry.ts`) |
+| `npm run e2e` | End-to-end tests in headless Chromium against a production build (`PW_SKIP_BUILD=1` reuses `dist/`) |
+| `npm run shots` | Screenshots of fixed camera bookmarks into `artifacts/shots/`; look at them after visual changes |
+| `npm run build` | Production build into `dist/` |
+| `npm run typecheck`, `npm run lint`, `npm run format` | Static checks and formatting |
+| `npm run check` | Typecheck, lint, format check, unit tests and content validation in one go |
+
+`npm run sim` (headless playthrough bots) arrives in M2.
+
+URL parameters: `?debug` shows the debug panel, `?debug=colliders` also shows collision boxes, `?seed=42` fixes the random seed, `?cam=<bookmark>` starts at a camera bookmark, `?autostart` skips the start screen, `?noui` hides the interface.
+
+## Conventions
+
+- Import Babylon.js only through `src/world/babylon.ts`. Module-by-module imports keep the bundle small, and ESLint enforces it.
+- `@playwright/test` is pinned to the version whose Chromium is preinstalled in Claude's cloud sandbox (1.56.1). Upgrade the two together.
+- CI (`.github/workflows/ci.yml`) runs on every push. `deploy.yml` publishes the default branch to GitHub Pages after CI passes.

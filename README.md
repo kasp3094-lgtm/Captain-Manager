@@ -2,7 +2,21 @@
 
 A story-driven, first-person command game. You are the new captain of a military patrol vessel with about a hundred people aboard, sent to a lawless frontier. Walk every deck of your ship, live with your crew, and make decisions that trade off your **discretionary budget**, **combat readiness**, and your standing with **your officers**, **your enlisted crew** and **High Command**. Battles are rare, and when one comes, everything you did before it decides how well your crew fights.
 
-**Status:** pre-production. Design documents only; Act 1 is the first target.
+**Status:** milestone M0 (foundations): a walkable test compartment. Act 1 is the first target.
+
+**Play:** https://kasp3094-lgtm.github.io/Captain-Manager/ (live once GitHub Pages is switched on: Settings → Pages → Source: GitHub Actions). Add `?debug` to the address for the debug panel.
+
+## Run it locally
+
+Needs Node.js 22 or later.
+
+```sh
+npm ci
+npm run dev        # http://localhost:5173
+npm run check      # typecheck, lint, unit tests, content validation
+```
+
+Other commands are listed in [CLAUDE.md](CLAUDE.md#commands).
 
 ## Documents
 

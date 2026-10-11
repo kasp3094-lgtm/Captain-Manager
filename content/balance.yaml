@@ -1,0 +1,11 @@
+# Every tunable number in the game lives here. Checked by `npm run validate`.
+
+player:
+  walkSpeed: 3.0 # metres per second
+  runMultiplier: 1.6 # speed multiplier while Shift is held
+  acceleration: 10 # how quickly speed catches up with input (per second)
+  eyeHeight: 1.65 # metres above the deck
+  bodyHeight: 1.8 # metres
+  radius: 0.3 # metres; corridors are about 1.2 m wide
+  mouseSensitivity: 0.0022 # radians per pixel of mouse movement
+  fieldOfView: 58 # vertical, in degrees (about 90° horizontal at 16:9)
