@@ -29,19 +29,22 @@ Act 1 ends at the border, with an order to stand down and a decision only you ca
 - **Must** have at least **50 racks**. This design has **76 racks**, plus 4 sickbay beds and 2 brig bunks. Junior enlisted hot-rack: 48 people in 24 racks.
 - Every room below **must** exist, be signed (name plus compartment number) and be reachable on foot from the captain's quarters.
 - Every room **must** have a gameplay purpose: events, interactions, or a crew-schedule location (duty station, seat, rack).
-- Each deck is about 90 × 16 m inside, compressed from real proportions so walking stays pleasant. About 40 rooms in total.
+- Each deck is about 70 × 14 m inside (the command deck is shorter), compressed from real proportions so walking stays pleasant. About 50 rooms in total, plus passages, tanks and voids.
+- The exact layout lives in the deck plans, `content/ship/deck1.yaml` … `deck4.yaml`. The in-game ship map (M) is drawn from them, and from M1 so is the 3D ship.
 - The weapons spaces are walkable: the railgun room, the missile magazine and point-defence control.
 
-### 3.2 Side view
+### 3.2 Layout
 
-```
-           FORWARD ◄──────────────────────────────────────────────────────────────────► AFT
-Deck 1 │ Bridge │ CIC │ Captain's qtrs │ XO │ Staterooms ×4 │ Wardroom │ Ready room │ Comms │
-Deck 2 │ Sickbay │ Ship's office │ Mess + galley │ PO berthing A/B │ Junior A │ Chiefs │ Heads │ Gym │ Laundry │ Quiet rm │
-Deck 3 │ Railgun room │ Junior B │ PD control │ Magazine │ Armory │ Marines │ Brig │ DC central │ Hangar + airlock │ Stores │
-Deck 4 │ Aux machinery │ Workshop │ Main engineering │ Reactor │ Jump drive │ Drive room │ Shaft alley │
-              ▲ forward ladderwell                    ▲ lift                                 ▲ aft ladderwell
-```
+Rooms from bow to stern, as in the deck plans. A main passageway runs along the centreline of every deck; ladders sit at frames 22 (decks 1–4) and 66 (decks 2–4), the lift at frame 46 (decks 1–4).
+
+| Deck | Starboard side | Port side |
+|---|---|---|
+| 1 Command | Bridge (full width, in the bow) · CIC · Captain's quarters · XO's cabin · Wardroom · Officers' head | Ready room · Comms room · Staterooms 1–4 · Officers' stores |
+| 2 Habitation | Sickbay · Ship's office · Crew mess · Galley · PO berthing A and B · Chiefs' quarters · void | Quiet room · Laundry · Heads · Berthing passage · Junior berthing A · Heads · Food stores · Gym · fresh water tank |
+| 3 Weapons & operations | Railgun room · Junior berthing B · PD control · Missile magazine · Armory · Marine berthing · Brig · DC central | Forward stores · Hangar and boarding airlock · Stores · fuel tank |
+| 4 Engineering | Aux machinery · Workshop · Engineering stores · Main engineering · Reactor · Jump drive; Drive room across the stern | Ballast tank · Shaft alley · Electrical room · Coolant pump room |
+
+The plans add a few support spaces not listed below: officers' stores, a berthing passage, forward stores, engineering stores, an electrical room, a coolant pump room, and tanks and voids.
 
 ### 3.3 Rooms by deck
 
@@ -129,7 +132,7 @@ Hot-rack pairs always come from different watch sections (A+B, B+C, A+C; 8 racks
 - Racks three high, each with a stowage locker, reading light and privacy curtain.
 - One head per ~10 crew; the mess seats one watch section at a time.
 - A damage-control locker every ~20 m; a fire extinguisher at every hatch.
-- Naval-style compartment numbers, deck–frame–position–use: `2-45-1-L` is deck 2, frame 45, first compartment to starboard, living space.
+- Naval-style compartment numbers, deck–frame–position–use: `2-30-2-L` (Junior Berthing A) is deck 2, frame 30, first compartment to port (odd numbers are starboard, even are port), living space.
 - Pipes, cable trays and labels overhead; hatches with raised sills; warning signs at the magazine and reactor.
 - The watch bill on each berthing noticeboard is generated from the live crew schedule.
 

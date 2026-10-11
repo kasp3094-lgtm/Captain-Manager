@@ -10,17 +10,24 @@ import {
   type Scene,
   CreateGround,
 } from './babylon';
+import type { Room as PlanRoom } from '../content/ship';
 import { Builder } from './builder';
 import { createPanel, paintClock, paintDeckPlate, paintNoticeboard, paintSign } from './painted';
 import { Materials } from './palette';
 
 /**
- * The M0 test compartment: a slice of junior enlisted berthing, built in code to try out the
- * art direction and the first-person controller. From M1 rooms are generated from deck plans
- * in content/ship/, and this file goes away.
+ * The M0 test compartment: Junior Enlisted Berthing A, built by hand in code to try out the art
+ * direction and the first-person controller. It stands in for that room of the deck plan
+ * (content/ship/deck2.yaml) until M1 generates every room from the plans; then this file goes.
+ *
+ * Local coordinates: the room's centre is the origin, x runs along the room (the hatch is at
+ * x = -5), z across it (racks at +z, lockers at -z), y up from the deck.
  */
 
-/** Where to stand and look. Angles in degrees; positive pitch looks down. */
+/** The deck-plan room this compartment stands in for. */
+export const TEST_ROOM_ID = 'junior-berthing-a';
+
+/** Where to stand and look, in local coordinates. Angles in degrees; positive pitch looks down. */
 export interface CameraBookmark {
   readonly x: number;
   readonly z: number;
@@ -28,24 +35,17 @@ export interface CameraBookmark {
   readonly pitch: number;
 }
 
-export interface Room {
-  /** Naval compartment number: deck–frame–position–use. */
-  readonly code: string;
-  readonly name: string;
-  readonly deckY: number;
-  readonly bounds: {
-    readonly minX: number;
-    readonly maxX: number;
-    readonly minZ: number;
-    readonly maxZ: number;
-  };
+export interface TestRoom {
+  /** Named viewpoints for `?cam=` (screenshots and tests). */
   readonly bookmarks: Readonly<Record<string, CameraBookmark>>;
+  /** Converts a local position to deck-plan metres (x from the bow, y from starboard). */
+  toPlan(x: number, z: number): { x: number; y: number };
 }
 
-const ROOM = { minX: -5, maxX: 5, minZ: -3.5, maxZ: 3.5, height: 2.6 } as const;
+const ROOM = { minX: -5, maxX: 5, minZ: -3, maxZ: 3, height: 2.6 } as const;
 const WALL = 0.2;
 
-export const TEST_ROOM_BOOKMARKS = {
+const BOOKMARKS = {
   spawn: { x: -4.0, z: 0.9, yaw: 95, pitch: 4 },
   racks: { x: -1.9, z: 0.4, yaw: 35, pitch: -2 },
   lockers: { x: 0.4, z: 0.2, yaw: 150, pitch: 6 },
@@ -54,11 +54,23 @@ export const TEST_ROOM_BOOKMARKS = {
   'facing-wall': { x: -3.5, z: 0.9, yaw: -90, pitch: 0 },
 } as const satisfies Record<string, CameraBookmark>;
 
+/**
+ * Builds the compartment around the origin. `plan` is its room in the deck plan: the sign over
+ * the hatch shows the plan's code and name, and the room's size must match the plan's.
+ */
 export function buildTestRoom(
   scene: Scene,
   glow: GlowLayer,
+  plan: PlanRoom,
   options: { showColliders: boolean },
-): Room {
+): TestRoom {
+  const [planX, planY, planWidth, planDepth] = plan.rect;
+  if (planWidth !== ROOM.maxX - ROOM.minX || planDepth !== ROOM.maxZ - ROOM.minZ) {
+    throw new Error(
+      `The test compartment is 10 × 6 m but ${plan.id} is ${planWidth} × ${planDepth} m`,
+    );
+  }
+
   const builder = new Builder(scene, new Materials(scene));
   buildShell(builder, scene);
   buildLighting(builder, scene);
@@ -66,16 +78,15 @@ export function buildTestRoom(
   buildRacks(builder);
   buildLockers(builder);
   buildTable(builder);
-  buildHatchWall(builder, scene);
+  buildHatchWall(builder, scene, plan);
   buildFarWall(builder, scene);
   builder.finish(glow, options);
 
+  const centre = { x: planX + planWidth / 2, y: planY + planDepth / 2 };
   return {
-    code: '2-40-1-L',
-    name: 'Junior Enlisted Berthing A (test)',
-    deckY: 0,
-    bounds: { minX: ROOM.minX, maxX: ROOM.maxX, minZ: ROOM.minZ, maxZ: ROOM.maxZ },
-    bookmarks: TEST_ROOM_BOOKMARKS,
+    bookmarks: BOOKMARKS,
+    // Seen from above, Babylon's +z points up the screen while the plan's y points down it.
+    toPlan: (x, z) => ({ x: centre.x + x, y: centre.y - z }),
   };
 }
 
@@ -222,9 +233,9 @@ function buildOverhead(b: Builder): void {
   }
 
   // Ventilation duct over the racks, with registers.
-  b.slab('duct', { x: minX, y: 2.32, z: 2.8 }, { x: maxX, y: height, z: 3.45 });
+  b.slab('duct', { x: minX, y: 2.32, z: 2.3 }, { x: maxX, y: height, z: 2.95 });
   for (const x of [-3, 0, 3]) {
-    b.slab('ductVent', { x: x - 0.3, y: 2.31, z: 2.95 }, { x: x + 0.3, y: 2.32, z: 3.3 });
+    b.slab('ductVent', { x: x - 0.3, y: 2.31, z: 2.45 }, { x: x + 0.3, y: 2.32, z: 2.8 });
   }
 }
 
@@ -232,7 +243,8 @@ function buildOverhead(b: Builder): void {
 const RACK_STACKS = [-2.85, -0.8, 1.25, 3.3] as const;
 const RACK_LEVELS = [0.36, 1.0, 1.64] as const;
 const RACK_TOP = 2.2;
-const RACK_FRONT = 2.65;
+/** The racks' open side; they are 0.85 m deep against the +z bulkhead. */
+const RACK_FRONT = ROOM.maxZ - 0.85;
 type Curtain = 'open' | 'half' | 'closed';
 const CURTAINS: readonly (readonly Curtain[])[] = [
   ['open', 'closed', 'half'],
@@ -394,7 +406,7 @@ function buildTable(b: Builder): void {
   b.collider({ x: cx - 0.75, y: 0, z: cz - 1.0 }, { x: cx + 0.75, y: 0.8, z: cz + 1.0 });
 }
 
-function buildHatchWall(b: Builder, scene: Scene): void {
+function buildHatchWall(b: Builder, scene: Scene, plan: PlanRoom): void {
   const x = ROOM.minX;
 
   // Watertight door: frame, raised sill, door leaf and dogs.
@@ -415,8 +427,8 @@ function buildHatchWall(b: Builder, scene: Scene): void {
     paint: paintSign(
       '#1d2a33',
       [
-        { text: '2-40-1-L', size: 0.4, color: '#ffbe55' },
-        { text: 'JR. BERTHING A · TEST', size: 0.2, color: '#e8e2d4' },
+        { text: plan.code, size: 0.4, color: '#ffbe55' },
+        { text: (plan.short ?? plan.name).toUpperCase(), size: 0.2, color: '#e8e2d4' },
       ],
       '#5f7480',
     ),
@@ -457,8 +469,8 @@ function buildHatchWall(b: Builder, scene: Scene): void {
     facing: '+x',
     paint: paintNoticeboard,
   });
-  b.box('lanternBody', { x: x + 0.07, y: 2.1, z: 2.95 }, { x: 0.14, y: 0.18, z: 0.22 });
-  b.box('lanternLens', { x: x + 0.145, y: 2.1, z: 2.95 }, { x: 0.01, y: 0.12, z: 0.15 });
+  b.box('lanternBody', { x: x + 0.07, y: 2.1, z: 2.55 }, { x: 0.14, y: 0.18, z: 0.22 });
+  b.box('lanternLens', { x: x + 0.145, y: 2.1, z: 2.55 }, { x: 0.01, y: 0.12, z: 0.15 });
 }
 
 function buildFarWall(b: Builder, scene: Scene): void {

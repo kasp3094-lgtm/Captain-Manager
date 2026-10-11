@@ -1,3 +1,7 @@
+/**
+ * Flat panels with a face painted on a canvas: signs, the noticeboard, the clock, and the deck
+ * plating texture. Painting is deterministic, so screenshots never change between runs.
+ */
 import {
   Color3,
   DynamicTexture,
@@ -22,8 +26,7 @@ const FACING_YAW: Record<Facing, number> = {
 
 const PIXELS_PER_METRE = 600;
 
-export const FONT_MONO = 'ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace';
-export const FONT_SANS = 'system-ui, "DejaVu Sans", "Segoe UI", Roboto, sans-serif';
+const FONT_MONO = 'ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace';
 
 export interface PanelOptions {
   readonly width: number;
@@ -63,8 +66,6 @@ export interface SignLine {
   /** Text height as a fraction of the sign's height. */
   readonly size: number;
   readonly color: string;
-  readonly font?: 'mono' | 'sans';
-  readonly bold?: boolean;
 }
 
 /** Centred lines of text on a plain background, with an optional border. */
@@ -89,12 +90,10 @@ export function paintSign(
     let top = (height - block) / 2;
     for (const line of lines) {
       const px = Math.round(line.size * height);
-      const family = line.font === 'sans' ? FONT_SANS : FONT_MONO;
-      const weight = line.bold === false ? 400 : 700;
-      ctx.font = `${weight} ${px}px ${family}`;
+      ctx.font = `700 ${px}px ${FONT_MONO}`;
       // Shrink text that would not fit across the sign.
       const fit = Math.min(1, (width * 0.9) / ctx.measureText(line.text).width);
-      if (fit < 1) ctx.font = `${weight} ${Math.floor(px * fit)}px ${family}`;
+      if (fit < 1) ctx.font = `700 ${Math.floor(px * fit)}px ${FONT_MONO}`;
       ctx.fillStyle = line.color;
       const textWidth = ctx.measureText(line.text).width;
       ctx.fillText(line.text, (width - textWidth) / 2, top + px * 0.8);

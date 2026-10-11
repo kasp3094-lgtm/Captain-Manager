@@ -1,3 +1,11 @@
+/*
+ * All interface styling. The look is a military datapad: dark panels, amber accents, monospace
+ * labels. Sections: base and page, cards and screens, HUD, minimap, full ship map, map drawing,
+ * debug.
+ */
+
+/* ── Base and page ─────────────────────────────────────────────────────────── */
+
 :root {
   --bg: #0b0f12;
   --panel: rgba(10, 16, 20, 0.84);
@@ -6,6 +14,7 @@
   --green: #7fe0a0;
   --text: #e8e2d4;
   --muted: #a3aba7;
+  --map-bg: #0b1013;
   --mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
   --sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'DejaVu Sans', sans-serif;
   color-scheme: dark;
@@ -29,6 +38,7 @@ body {
   touch-action: none;
 }
 
+/* The interface layer lets clicks through to the 3D view, except on its own panels. */
 #ui-root {
   position: fixed;
   inset: 0;
@@ -36,6 +46,21 @@ body {
   font-family: var(--sans);
   color: var(--text);
 }
+
+kbd {
+  display: inline-block;
+  min-width: 1.1em;
+  text-align: center;
+  font: 12px var(--mono);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 1px 5px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ── Cards and screens (start, pause, error, map) ──────────────────────────── */
 
 .screen {
   position: absolute;
@@ -45,6 +70,7 @@ body {
   padding: 16px;
   background: radial-gradient(ellipse at center, rgba(5, 8, 10, 0.35), rgba(5, 8, 10, 0.85));
   pointer-events: auto;
+  overflow-y: auto;
 }
 
 .card {
@@ -127,42 +153,14 @@ body {
   align-self: center;
 }
 
-kbd {
-  display: inline-block;
-  min-width: 1.1em;
-  text-align: center;
+.error-detail {
+  margin: 0;
+  white-space: pre-wrap;
   font: 12px var(--mono);
-  color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom-width: 2px;
-  border-radius: 3px;
-  padding: 1px 5px;
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
 }
 
-.hud-room {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 8px 12px;
-  background: rgba(8, 12, 15, 0.55);
-  border-left: 2px solid var(--amber);
-}
-
-.hud-room-code {
-  font: 700 13px var(--mono);
-  letter-spacing: 0.12em;
-  color: var(--amber);
-}
-
-.hud-room-name {
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
+/* ── HUD ───────────────────────────────────────────────────────────────────── */
 
 .crosshair {
   position: absolute;
@@ -184,12 +182,357 @@ kbd {
   font: 12px var(--mono);
   color: var(--muted);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
 }
 
-.debug-panel {
+/* ── Minimap (top right, always on while playing) ──────────────────────────── */
+
+.minimap {
   position: absolute;
   top: 12px;
   right: 12px;
+  width: min(300px, 44vw);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.minimap-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 2px 8px;
+  padding: 8px 10px 6px;
+}
+
+.minimap-deck {
+  grid-column: 1 / -1;
+  font: 600 11px var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.minimap-code {
+  font: 700 13px var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--amber);
+}
+
+.minimap-room {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.minimap-svg {
+  display: block;
+  width: 100%;
+  aspect-ratio: 24 / 15;
+  background: var(--map-bg);
+  pointer-events: none;
+}
+
+.minimap-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 7px;
+  font: 12px var(--mono);
+  color: var(--muted);
+}
+
+.minimap-nearby {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Full ship map (M) ─────────────────────────────────────────────────────── */
+
+.map-card {
+  width: min(1180px, 100%);
+  box-sizing: border-box;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 22px 24px 18px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+}
+
+.map-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px 24px;
+  margin-bottom: 14px;
+}
+
+.map-header .title {
+  margin-bottom: 0;
+}
+
+.map-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.map-tab {
+  font: 600 13px var(--sans);
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+.map-tab:hover {
+  color: var(--text);
+}
+
+.map-tab[aria-selected='true'] {
+  color: #11161a;
+  background: var(--amber);
+  border-color: var(--amber);
+}
+
+.map-tab:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.map-tab-number {
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+}
+
+.map-tab-here {
+  color: var(--green);
+}
+
+.map-tab[aria-selected='true'] .map-tab-here {
+  color: #1d5c34;
+}
+
+.map-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--map-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
+.map-info {
+  min-height: 1.5em;
+  margin: 10px 0 0;
+  font: 13px var(--mono);
+}
+
+.map-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px 24px;
+  margin-top: 12px;
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.map-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.map-note {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.poi-swatch {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+/* ── Map drawing (shared by the minimap and the full map; units are metres) ── */
+
+.map-hull {
+  fill: #10161a;
+  stroke: #3c4a52;
+  stroke-width: 0.15;
+}
+
+.map-edge-label {
+  fill: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.08em;
+}
+
+/* Rooms are colour-coded by zone (design doc §11). */
+.map-room {
+  stroke: #0a0e11;
+  stroke-width: 0.16;
+}
+.map-room[data-type='command'] {
+  fill: #2d4861;
+}
+.map-room[data-type='habitation'] {
+  fill: #44553f;
+}
+.map-room[data-type='berthing'] {
+  fill: #5b5440;
+}
+.map-room[data-type='medical'] {
+  fill: #2c5f5a;
+}
+.map-room[data-type='weapons'] {
+  fill: #5f3333;
+}
+.map-room[data-type='engineering'] {
+  fill: #65511f;
+}
+.map-room[data-type='stores'] {
+  fill: #433e37;
+}
+.map-room[data-type='passage'] {
+  fill: #1d272e;
+}
+.map-room[data-type='tank'] {
+  fill: url(#map-tank-hatch);
+}
+/* Rooms not yet built in 3D. */
+.map-room[data-planned] {
+  opacity: 0.62;
+}
+.map-svg .map-room:hover {
+  stroke: var(--text);
+}
+
+.map-tank-fill {
+  fill: #12181c;
+}
+.map-tank-line {
+  stroke: #232c32;
+  stroke-width: 0.12;
+}
+
+.map-room-current {
+  fill: rgba(255, 190, 85, 0.12);
+  stroke: var(--amber);
+  stroke-width: 0.22;
+  pointer-events: none;
+}
+
+.map-door {
+  stroke: #c9c1aa;
+  stroke-width: 0.22;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.map-shaft rect {
+  fill: #26323a;
+  stroke: #0a0e11;
+  stroke-width: 0.16;
+}
+.map-shaft path {
+  fill: none;
+  stroke: #a9bcc7;
+  stroke-width: 0.14;
+}
+.map-shaft[data-type='lift'] path {
+  fill: #a9bcc7;
+  stroke: none;
+}
+
+.map-label {
+  fill: #ece6d8;
+  font-family: var(--sans);
+  font-weight: 600;
+  pointer-events: none;
+}
+.map-label[data-type='tank'] {
+  fill: #8a949a;
+  font-weight: 400;
+}
+
+/* Points of interest: shape per kind (poi.tsx), colour here. */
+.map-poi-icon {
+  stroke: #0b0f12;
+  stroke-width: 0.1;
+}
+.poi--station {
+  fill: #ffbe55;
+}
+.poi--info {
+  fill: #6fd3ff;
+}
+.poi--safety {
+  fill: #ff6b5b;
+}
+.poi--social {
+  fill: #7fe0a0;
+}
+.poi--rest {
+  fill: #a9b8ff;
+}
+.poi--medical {
+  fill: #e6f5f1;
+}
+.poi--weapon {
+  fill: #ff9a4d;
+}
+.poi--machinery {
+  fill: #e8d36a;
+}
+.map-poi-ring {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 0.12;
+}
+
+.map-player-cone {
+  fill: rgba(255, 190, 85, 0.2);
+}
+.map-player-arrow {
+  fill: var(--amber);
+  stroke: #11161a;
+  stroke-width: 0.12;
+}
+
+/* ── Debug panel (?debug), bottom left ─────────────────────────────────────── */
+
+.debug-panel {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
   min-width: 190px;
   padding: 8px 10px;
   font: 12px/1.55 var(--mono);
@@ -197,11 +540,4 @@ kbd {
   background: rgba(0, 0, 0, 0.62);
   border: 1px solid rgba(127, 224, 160, 0.35);
   border-radius: 4px;
-}
-
-.error-detail {
-  margin: 0;
-  white-space: pre-wrap;
-  font: 12px var(--mono);
-  color: var(--muted);
 }

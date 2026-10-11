@@ -1,3 +1,4 @@
+/** Shared helpers for the Playwright tests in tests/e2e and tests/shots. */
 import { expect, type Page } from '@playwright/test';
 
 /** Opens the game with URL parameters and waits until the first frames have rendered. */

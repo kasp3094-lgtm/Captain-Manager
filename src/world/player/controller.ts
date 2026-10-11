@@ -1,3 +1,4 @@
+/** The first-person controller: moves the captain's body with collisions and aims the camera. */
 import { FreeCamera, Mesh, Vector3, type Scene } from '../babylon';
 import type { PlayerTuning } from '../../content/balance';
 import type { PlayerInput } from './input';

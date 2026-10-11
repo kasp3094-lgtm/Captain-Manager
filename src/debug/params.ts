@@ -19,7 +19,7 @@ export interface LaunchParams {
 }
 
 /** Optional debug features, switched on with `?debug=<flag>,<flag>`. */
-export const DEBUG_FLAGS = {
+const DEBUG_FLAGS = {
   colliders: 'Show the invisible collision boxes',
 } as const;
 

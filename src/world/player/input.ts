@@ -1,3 +1,4 @@
+/** Keyboard and mouse input for the captain, read by the PlayerController each frame. */
 import type { MoveKeys } from './movement';
 
 const MOVE_CODES = new Set([
@@ -55,13 +56,6 @@ export class PlayerInput {
     this.mouseX = 0;
     this.mouseY = 0;
     return delta;
-  }
-
-  dispose(): void {
-    window.removeEventListener('keydown', this.onKeyDown);
-    window.removeEventListener('keyup', this.onKeyUp);
-    window.removeEventListener('blur', this.clear);
-    document.removeEventListener('mousemove', this.onMouseMove);
   }
 
   private readonly onKeyDown = (event: KeyboardEvent): void => {

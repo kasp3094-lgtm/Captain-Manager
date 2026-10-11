@@ -1,0 +1,124 @@
+# Deck 3: Weapons and operations. Guns, magazines, marines, the brig and the boarding cutter.
+# Coordinates and codes are explained in ship.yaml.
+
+deck: 3
+name: Weapons & Operations
+hull: [[0, 8], [10, 1], [80, 1], [80, 15], [10, 15]]
+
+rooms:
+  - id: passage-3
+    name: Main passageway
+    code: 3-10-0-L
+    type: passage
+    rect: [10, 7, 70, 2]
+
+  # Starboard side
+  - id: railgun-room
+    name: Railgun Room
+    code: 3-10-1-M
+    type: weapons
+    rect: [10, 1, 14, 6]
+    doors: [[17, 7]]
+    pois:
+      - { name: Railgun breech, kind: weapon, at: [15, 4] }
+      - { name: Capacitor bank, kind: machinery, at: [22.5, 4] }
+
+  - id: junior-berthing-b
+    name: Junior Enlisted Berthing B
+    short: Junior berthing B
+    code: 3-24-1-L
+    type: berthing
+    rect: [24, 1, 10, 6]
+    doors: [[29, 7]]
+    racks: 12
+    hotRacked: true
+
+  - id: pd-control
+    name: Point-Defence Control
+    short: PD control
+    code: 3-34-1-C
+    type: weapons
+    rect: [34, 1, 6, 6]
+    doors: [[37, 7]]
+    pois:
+      - { name: Turret consoles, kind: station, at: [37, 3.5] }
+
+  - id: missile-magazine
+    name: Missile Magazine
+    short: Magazine
+    code: 3-40-1-M
+    type: weapons
+    rect: [40, 1, 12, 6]
+    doors: [[46, 7]]
+    pois:
+      - { name: Launch cells, kind: weapon, at: [46, 3.5] }
+
+  - id: armory
+    name: Armory
+    code: 3-52-1-M
+    type: weapons
+    rect: [52, 1, 6, 6]
+    doors: [[55, 7]]
+    pois:
+      - { name: Small arms, kind: weapon, at: [55, 3.5] }
+
+  - id: marine-berthing
+    name: Marine Berthing & Ready Room
+    short: Marine berthing
+    code: 3-58-1-L
+    type: berthing
+    rect: [58, 1, 10, 6]
+    doors: [[63, 7]]
+    racks: 12
+
+  - id: brig
+    name: Brig
+    code: 3-68-1-Q
+    type: weapons
+    rect: [68, 1, 6, 6]
+    doors: [[71, 7]]
+
+  - id: dc-central
+    name: Damage-Control Central
+    short: DC central
+    code: 3-74-1-C
+    type: command
+    rect: [74, 1, 6, 6]
+    doors: [[77, 7]]
+    pois:
+      - { name: Damage board, kind: safety, at: [77, 3.5] }
+
+  # Port side
+  - id: forward-stores
+    name: Forward Stores
+    code: 3-10-2-A
+    type: stores
+    rect: [10, 9, 12, 6]
+    doors: [[16, 9]]
+
+  - id: hangar
+    name: Hangar & Boarding Airlock
+    short: Hangar
+    code: 3-24-2-Q
+    type: command
+    rect: [24, 9, 22, 6]
+    doors: [[35, 9]]
+    pois:
+      - { name: Boarding cutter, kind: station, at: [33, 12] }
+      - { name: Boarding airlock, kind: safety, at: [42, 14.4] }
+
+  - id: stores
+    name: Stores
+    code: 3-48-2-A
+    type: stores
+    rect: [48, 9, 18, 6]
+    doors: [[52, 9], [62, 9]]
+    pois:
+      - { name: Spare parts, kind: machinery, at: [56, 12] }
+      - { name: Munitions overflow, kind: weapon, at: [62, 12.5] }
+
+  - id: fuel-tank
+    name: Fuel Tank
+    code: 3-68-2-F
+    type: tank
+    rect: [68, 9, 12, 6]

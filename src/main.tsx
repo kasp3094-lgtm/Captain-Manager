@@ -1,10 +1,14 @@
+/**
+ * Entry point (loaded by index.html). Reads the URL parameters, starts the Game on the canvas,
+ * and mounts the React interface on top. If the 3D view can't start, shows an error instead.
+ */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { balance } from './content/gameContent';
+import { balance, ship } from './content/gameContent';
 import { parseLaunchParams } from './debug/params';
 import { Game } from './game';
 import { App } from './ui/App';
-import { FatalError } from './ui/FatalError';
+import { FatalError } from './ui/screens';
 import './ui/styles.css';
 
 const params = parseLaunchParams(window.location.search);
@@ -16,10 +20,10 @@ if (!(canvas instanceof HTMLCanvasElement) || !uiRoot) {
 const root = createRoot(uiRoot);
 
 try {
-  const game = new Game(canvas, params, balance);
+  const game = new Game(canvas, params, balance, ship);
   root.render(
     <StrictMode>
-      <App game={game} params={params} />
+      <App game={game} params={params} ship={ship} />
     </StrictMode>,
   );
   game.start();

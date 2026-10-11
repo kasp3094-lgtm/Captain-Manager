@@ -1,3 +1,4 @@
+/** `npm run validate`: checks content/ and prints each problem; exits 1 if there are any. */
 import { fileURLToPath } from 'node:url';
 import { validateContent } from './validate-content';
 

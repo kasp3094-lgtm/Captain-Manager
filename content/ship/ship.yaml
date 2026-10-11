@@ -1,0 +1,36 @@
+# The ship as a whole. Each deck's rooms are in deck1.yaml … deck4.yaml.
+#
+# All positions are metres on a top-down plan, the same way the in-game ship map draws it:
+#   x runs from the bow (0) towards the stern, y from the starboard side (0) to the port side.
+#   A rectangle is [x, y, width, depth]; a point is [x, y].
+# Compartment codes follow the naval pattern deck-frame-position-use: frame = metres from the
+# bow, position 0 = centreline, odd = starboard, even = port; use letters: C control, L living,
+# Q other, A stores, M ammunition, E machinery, W water, F fuel, V void.
+
+name: CNS Kestrel # placeholder
+class: Sentinel-class patrol vessel # placeholder
+
+# Where every day starts. Every room must be reachable on foot from here (npm run validate).
+startRoom: captains-quarters
+
+# Ladders and the lift sit at the same place on every deck they serve.
+# `opening` is the point on the shaft's edge where you step on and off.
+shafts:
+  - id: ladder-fwd
+    name: Forward ladderwell
+    type: ladder
+    rect: [22, 9, 2, 5]
+    opening: [23, 9]
+    decks: [1, 2, 3, 4]
+  - id: lift
+    name: Lift
+    type: lift
+    rect: [46, 9, 2, 2]
+    opening: [47, 9]
+    decks: [1, 2, 3, 4]
+  - id: ladder-aft
+    name: Aft ladderwell
+    type: ladder
+    rect: [66, 9, 2, 5]
+    opening: [67, 9]
+    decks: [2, 3, 4]

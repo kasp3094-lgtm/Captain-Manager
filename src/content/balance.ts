@@ -1,7 +1,8 @@
+/** Schema for content/balance.yaml: every tunable number. For now, how the captain moves. */
 import { z } from 'zod';
 
 /** How the captain moves and looks around. Units are metres, seconds, radians and degrees. */
-export const PlayerTuningSchema = z
+const PlayerTuningSchema = z
   .strictObject({
     walkSpeed: z.number().positive().max(10),
     runMultiplier: z.number().min(1).max(3),

@@ -1,3 +1,4 @@
+/** End-to-end tests of the running game in headless Chromium: start, walk, collide, pause. */
 import { expect, test, type Page } from '@playwright/test';
 import { openGame } from '../support';
 
@@ -19,7 +20,7 @@ test('boots to the start screen without errors', async ({ page }) => {
 test('Take command hands over control and shows the room', async ({ page }) => {
   const { errors } = await openGame(page, '?debug');
   await page.getByRole('button', { name: 'Take command' }).click();
-  await expect(page.locator('.hud-room')).toContainText('2-40-1-L');
+  await expect(page.locator('.minimap')).toContainText('2-30-2-L');
   expect(await page.evaluate(() => window.__captain?.mode())).toBe('playing');
   expect(errors).toEqual([]);
 });
@@ -55,6 +56,6 @@ test('Esc pauses and Resume hands control back', async ({ page }) => {
   const resume = page.getByRole('button', { name: 'Resume' });
   await expect(resume).toBeVisible();
   await resume.click();
-  await expect(page.locator('.hud-room')).toBeVisible();
+  await expect(page.locator('.minimap')).toBeVisible();
   expect(errors).toEqual([]);
 });

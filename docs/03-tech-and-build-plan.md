@@ -54,18 +54,21 @@ Rules:
 | `src/sim/battle` | Fixed-step deterministic battle simulation: orders, AI, damage, casualties |
 | `src/sim/campaign` | Days, command time, patrol legs, sector map, stations, budget cycle, endings |
 | `src/sim/save` | Versioned save files and migrations |
+| `src/sim/ship` | Ship layout queries (room at a point, nearest point of interest) and the deck-plan rules checked by `npm run validate` |
 | `src/world/babylon.ts` | The only place that imports Babylon.js, module by module, to keep the bundle small |
 | `src/world/ship` | Deck plan → meshes, props, lights, signs, doors, ladders, lift, navigation mesh |
 | `src/world/player` | First-person controller, interaction ray, ladder and lift transitions |
 | `src/world/npcs` | Crew placement from the schedule, animations, ambient walkers, general quarters |
 | `src/world/tactical` | Tactical plot and external battle camera |
 | `src/ui` | Dialogue, datapad, HUD, menus, settings, debug panel |
+| `src/ui/map` | The minimap and the full ship map (M), drawn from the deck plans |
 | `tools/` | Content validator, deck-map renderer, playthrough bots, screenshot script |
 
 ### 2.2 Repository layout
 
 ```
 content/
+  ship/ship.yaml                    the ship as a whole: ladders, lift, start room
   ship/deck1.yaml … deck4.yaml      deck plans
   ship/templates.yaml               furniture templates per room type (berthing, mess, …)
   crew/characters.yaml              named characters
@@ -84,31 +87,29 @@ CREDITS.md                          every third-party asset and its licence
 
 ## 3. Data formats (sketches)
 
-These show intent; exact schemas are fixed in M1 and M2 and validated in CI.
+The deck-plan format is fixed (schema in `src/content/ship.ts`); the others show intent and are fixed in M2 and M3. All are validated in CI.
 
-**Deck plan**
+**Deck plan** (`content/ship/deck2.yaml`, abridged). Metres on a top-down plan: x from the bow, y from starboard.
 
 ```yaml
 deck: 2
 name: Habitation
-grid: { cell: 1.0, length: 90, beam: 16 }        # metres
+hull: [[0, 8], [10, 1], [80, 1], [80, 15], [10, 15]]   # outline for the map
 rooms:
-  - id: berthing_junior_a
+  - id: junior-berthing-a
     name: Junior Enlisted Berthing A
-    compartment: 2-40-1-L
-    type: berthing
-    rect: [30, 1, 8, 6]                            # x, y, width, depth (cells)
-    racks: { stacks: 4, tiers: 3, sharing: hot }   # 12 racks, 2 sleepers each
-    doors: [{ wall: south, at: 34 }]
-  - id: mess
-    name: Crew Mess
-    type: mess
-    rect: [40, 1, 14, 7]
-    seats: 36
-links:
-  - { type: ladder, id: ladder_fwd, at: [12, 8], decks: [1, 2, 3, 4] }
-  - { type: lift,   id: lift_main,  at: [45, 8], decks: [1, 2, 3, 4] }
+    short: Junior berthing A          # label on the map
+    code: 2-30-2-L                    # deck-frame-position-use
+    type: berthing                    # sets the map colour
+    rect: [30, 9, 10, 6]              # x, y, width, depth
+    doors: [[30, 12]]                 # door centres, on the room's edge
+    racks: 12
+    hotRacked: true
+    pois:
+      - { name: Watch bill, kind: info, at: [30.4, 10] }
 ```
+
+Ladders and the lift are defined once in `content/ship/ship.yaml`, with the decks they serve.
 
 **Crew member**
 
@@ -217,12 +218,12 @@ Build:
 - Room templates that place furniture by room type (rack stacks with lockers, mess tables, consoles…).
 - First-person controller: walk, look, interact; ladder and lift transitions between decks; collisions.
 - All four decks of the *Kestrel* greyboxed per the [Act 1 spec](02-act1-content.md#3-the-ship-cns-kestrel).
-- A 2D deck-map renderer (SVG) from the same data; a room-name HUD when entering a room.
+- A 2D deck-map renderer (SVG) from the same data; a room-name HUD when entering a room. *(Done early, with the ship map: deck plans for all four decks, the minimap and the full map.)*
 
 Done when:
 
-- [ ] Every room in the Act 1 spec exists, is signed, and is reachable from the captain's quarters (validator).
-- [ ] The validator counts 76 racks (and fails if it ever drops below 50).
+- [ ] Every room in the Act 1 spec exists, is signed, and is reachable from the captain's quarters (validator). *(On the plan: done. In 3D: M1.)*
+- [x] The validator counts 76 racks (and fails if it ever drops below 50).
 - [ ] An end-to-end test walks captain's quarters → bridge → engineering by ladder, and back by lift.
 - [ ] A screenshot of every room is produced.
 - [ ] 60 fps on the reference laptop while walking all four decks.

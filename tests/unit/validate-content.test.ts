@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -55,12 +55,25 @@ describe('validateContent', () => {
     const root = contentDir({
       'balance.yaml': realBalance,
       'README.md': '# notes',
-      'ship/deck9.yaml': 'deck: 9\n',
+      'battles/cutter.yaml': 'enemy: pirate\n',
     });
     const { problems, checked } = validateContent(root);
     expect(checked).toBe(1);
     expect(problems).toEqual([
-      { file: 'ship/deck9.yaml', message: expect.stringMatching(/no schema/) },
+      { file: 'battles/cutter.yaml', message: expect.stringMatching(/no schema/) },
+    ]);
+  });
+
+  it('runs the cross-file ship checks once every file is valid', () => {
+    const root = mkdtempSync(join(tmpdir(), 'captain-content-'));
+    cpSync(contentRoot, root, { recursive: true });
+    const deck2 = join(root, 'ship/deck2.yaml');
+    writeFileSync(deck2, readFileSync(deck2, 'utf8').replace('doors: [[30, 12]]', 'doors: []'));
+    expect(validateContent(root).problems).toEqual([
+      {
+        file: 'ship/*.yaml',
+        message: "deck 2 / junior-berthing-a: can't be reached on foot from captains-quarters",
+      },
     ]);
   });
 });

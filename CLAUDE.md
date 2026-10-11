@@ -10,6 +10,7 @@ Working rules for Claude Code, and anyone else, building this game.
 - `docs/02-act1-content.md`: the Act 1 ship, cast, story, events and battles.
 - `docs/03-tech-and-build-plan.md`: stack, architecture and milestones. Read it before writing code.
 - `docs/04-getting-started-and-budget.md`: open decisions, timeline and budget.
+- `src/README.md`: the code map, i.e. what every source file is for.
 
 ## How we work
 
@@ -37,10 +38,14 @@ Working rules for Claude Code, and anyone else, building this game.
 
 `npm run sim` (headless playthrough bots) arrives in M2.
 
+Keys in the game: WASD walk, mouse look, Shift walk faster, M ship map, Esc pause.
+
 URL parameters: `?debug` shows the debug panel, `?debug=colliders` also shows collision boxes, `?seed=42` fixes the random seed, `?cam=<bookmark>` starts at a camera bookmark, `?autostart` skips the start screen, `?noui` hides the interface.
 
 ## Conventions
 
+- The deck plans in `content/ship/` are the one source for the ship's layout. The map draws them now; from M1 the 3D ship is generated from them. `npm run validate` checks the layout rules in `src/sim/ship.ts`: rooms inside the hull, doors that lead somewhere, every room reachable, enough racks.
+- Every source file starts with a comment saying what it does. When you add a file, add it to the table in `src/README.md`.
 - Import Babylon.js only through `src/world/babylon.ts`. Module-by-module imports keep the bundle small, and ESLint enforces it.
 - `@playwright/test` is pinned to the version whose Chromium is preinstalled in Claude's cloud sandbox (1.56.1). Upgrade the two together.
 - CI (`.github/workflows/ci.yml`) runs on every push. `deploy.yml` publishes the default branch to GitHub Pages after CI passes.

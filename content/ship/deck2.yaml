@@ -1,0 +1,167 @@
+# Deck 2: Habitation. Where the crew eats, sleeps and washes.
+# Coordinates and codes are explained in ship.yaml.
+
+deck: 2
+name: Habitation
+hull: [[0, 8], [10, 1], [80, 1], [80, 15], [10, 15]]
+
+rooms:
+  - id: passage-2
+    name: Main passageway
+    code: 2-10-0-L
+    type: passage
+    rect: [10, 7, 70, 2]
+
+  # Starboard side
+  - id: sickbay
+    name: Sickbay
+    code: 2-10-1-L
+    type: medical
+    rect: [10, 1, 12, 6]
+    doors: [[16, 7]]
+    pois:
+      - { name: Surgery, kind: medical, at: [13, 3.5] }
+      - { name: Sickbay beds, kind: medical, at: [19, 3] }
+
+  - id: ships-office
+    name: Ship's Office
+    code: 2-22-1-Q
+    type: habitation
+    rect: [22, 1, 6, 6]
+    doors: [[25, 7]]
+    pois:
+      - { name: Yeoman's desk, kind: info, at: [25, 3] }
+
+  - id: crew-mess
+    name: Crew Mess
+    code: 2-28-1-L
+    type: habitation
+    rect: [28, 1, 16, 6]
+    doors: [[32, 7], [40, 7]]
+    pois:
+      - { name: Mess tables, kind: social, at: [36, 4] }
+      - { name: Coffee machine, kind: social, at: [29, 1.8] }
+
+  - id: galley
+    name: Galley
+    code: 2-44-1-Q
+    type: habitation
+    rect: [44, 1, 8, 6]
+    doors: [[48, 7]]
+    pois:
+      - { name: Galley range, kind: station, at: [48, 2.5] }
+
+  - id: po-berthing-a
+    name: PO Berthing A
+    code: 2-52-1-L
+    type: berthing
+    rect: [52, 1, 8, 6]
+    doors: [[56, 7]]
+    racks: 12
+
+  - id: po-berthing-b
+    name: PO Berthing B
+    code: 2-60-1-L
+    type: berthing
+    rect: [60, 1, 8, 6]
+    doors: [[64, 7]]
+    racks: 12
+
+  - id: chiefs-quarters
+    name: Chiefs' Quarters & Mess
+    short: Chiefs' quarters
+    code: 2-68-1-L
+    type: berthing
+    rect: [68, 1, 8, 6]
+    doors: [[72, 7]]
+    racks: 6
+
+  - id: void-2-76
+    name: Void
+    code: 2-76-1-V
+    type: tank
+    rect: [76, 1, 4, 6]
+
+  # Port side
+  - id: quiet-room
+    name: Quiet Room
+    code: 2-10-2-Q
+    type: habitation
+    rect: [10, 9, 6, 6]
+    doors: [[13, 9]]
+    pois:
+      - { name: Memorial wall, kind: info, at: [13, 14.4] }
+
+  - id: laundry
+    name: Laundry
+    code: 2-16-2-Q
+    type: habitation
+    rect: [16, 9, 6, 6]
+    doors: [[19, 9]]
+    pois:
+      - { name: Washers & dryers, kind: machinery, at: [19, 13] }
+
+  - id: heads-fwd
+    name: Crew Heads & Showers (forward)
+    short: Heads
+    code: 2-24-2-L
+    type: habitation
+    rect: [24, 9, 4, 6]
+    doors: [[26, 9]]
+
+  - id: berthing-passage
+    name: Berthing Passage
+    code: 2-28-2-L
+    type: passage
+    rect: [28, 9, 2, 6]
+    doors: [[29, 9]]
+
+  # The M0 test compartment stands in for this room until M1; its points of interest match it.
+  - id: junior-berthing-a
+    name: Junior Enlisted Berthing A
+    short: Junior berthing A
+    code: 2-30-2-L
+    type: berthing
+    rect: [30, 9, 10, 6]
+    doors: [[30, 12]]
+    racks: 12
+    hotRacked: true
+    pois:
+      - { name: Racks (shared by watch), kind: rest, at: [35.2, 9.5] }
+      - { name: Watch bill, kind: info, at: [30.4, 10] }
+      - { name: Fire extinguisher, kind: safety, at: [30.4, 13] }
+      - { name: Damage-control locker, kind: safety, at: [30.4, 14.2] }
+      - { name: Card table, kind: social, at: [38.4, 12.2] }
+      - { name: Lockers, kind: rest, at: [36.8, 14.6] }
+
+  - id: heads-aft
+    name: Crew Heads & Showers (aft)
+    short: Heads
+    code: 2-40-2-L
+    type: habitation
+    rect: [40, 9, 6, 6]
+    doors: [[43, 9]]
+
+  - id: food-stores
+    name: Cold & Dry Stores
+    short: Food stores
+    code: 2-48-2-A
+    type: stores
+    rect: [48, 9, 8, 6]
+    doors: [[52, 9]]
+
+  - id: gym
+    name: Gym & Recreation
+    short: Gym
+    code: 2-56-2-Q
+    type: habitation
+    rect: [56, 9, 10, 6]
+    doors: [[61, 9]]
+    pois:
+      - { name: Exercise machines, kind: social, at: [61, 12.5] }
+
+  - id: fresh-water-tank
+    name: Fresh Water Tank
+    code: 2-68-2-W
+    type: tank
+    rect: [68, 9, 12, 6]

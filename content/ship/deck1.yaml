@@ -1,0 +1,131 @@
+# Deck 1: Command. The superstructure, shorter and narrower than the decks below.
+# Coordinates and codes are explained in ship.yaml.
+
+deck: 1
+name: Command
+hull: [[2, 8], [10, 2], [60, 2], [60, 14], [10, 14]]
+
+rooms:
+  - id: bridge
+    name: Bridge
+    code: 1-10-0-C
+    type: command
+    rect: [10, 2, 12, 12]
+    doors: [[22, 8]]
+    pois:
+      - { name: Helm & navigation, kind: station, at: [12.5, 8] }
+      - { name: Captain's chair, kind: station, at: [17, 8] }
+      - { name: Sensor console, kind: station, at: [16, 4] }
+      - { name: Comms console, kind: station, at: [16, 12] }
+
+  - id: passage-1
+    name: Main passageway
+    code: 1-22-0-L
+    type: passage
+    rect: [22, 7, 38, 2]
+
+  # Starboard side
+  - id: cic
+    name: Combat Information Centre
+    short: CIC
+    code: 1-22-1-C
+    type: command
+    rect: [22, 2, 8, 5]
+    doors: [[26, 7]]
+    pois:
+      - { name: Tactical holotable, kind: station, at: [26, 4.5] }
+
+  - id: captains-quarters
+    name: Captain's Quarters
+    code: 1-30-1-L
+    type: command
+    rect: [30, 2, 10, 5]
+    doors: [[33, 7]]
+    racks: 1
+    pois:
+      - { name: Desk & logbook, kind: info, at: [37.5, 3.5] }
+      - { name: Captain's bunk, kind: rest, at: [31.5, 3.2] }
+
+  - id: xo-cabin
+    name: XO's Cabin
+    code: 1-40-1-L
+    type: command
+    rect: [40, 2, 4, 5]
+    doors: [[42, 7]]
+    racks: 1
+
+  - id: wardroom
+    name: Wardroom
+    code: 1-44-1-L
+    type: habitation
+    rect: [44, 2, 12, 5]
+    doors: [[50, 7]]
+    pois:
+      - { name: Wardroom table, kind: social, at: [50, 4.5] }
+
+  - id: officers-head
+    name: Officers' Head & Showers
+    short: Officers' head
+    code: 1-56-1-L
+    type: habitation
+    rect: [56, 2, 4, 5]
+    doors: [[58, 7]]
+
+  # Port side
+  - id: ready-room
+    name: Ready Room
+    code: 1-24-2-Q
+    type: command
+    rect: [24, 9, 8, 5]
+    doors: [[28, 9]]
+    pois:
+      - { name: Briefing screen, kind: info, at: [28, 13.3] }
+
+  - id: comms-room
+    name: Comms Equipment Room
+    short: Comms room
+    code: 1-32-2-C
+    type: command
+    rect: [32, 9, 6, 5]
+    doors: [[35, 9]]
+    pois:
+      - { name: Signal racks, kind: station, at: [35, 12] }
+
+  - id: stateroom-1
+    name: Stateroom 1
+    code: 1-38-2-L
+    type: berthing
+    rect: [38, 9, 4, 5]
+    doors: [[40, 9]]
+    racks: 2
+
+  - id: stateroom-2
+    name: Stateroom 2
+    code: 1-42-2-L
+    type: berthing
+    rect: [42, 9, 4, 5]
+    doors: [[44, 9]]
+    racks: 2
+
+  - id: stateroom-3
+    name: Stateroom 3
+    code: 1-48-2-L
+    type: berthing
+    rect: [48, 9, 4, 5]
+    doors: [[50, 9]]
+    racks: 2
+
+  - id: stateroom-4
+    name: Stateroom 4
+    code: 1-52-2-L
+    type: berthing
+    rect: [52, 9, 4, 5]
+    doors: [[54, 9]]
+    racks: 2
+
+  - id: officers-stores
+    name: Officers' Stores
+    code: 1-56-2-A
+    type: stores
+    rect: [56, 9, 4, 5]
+    doors: [[58, 9]]

@@ -1,3 +1,7 @@
+/**
+ * Build and dev-server settings (Vite), plus the unit-test settings (Vitest), plus a small
+ * plugin that turns content/*.yaml into plain data at build time.
+ */
 import react from '@vitejs/plugin-react';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
@@ -21,8 +25,8 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: true,
-    // Babylon.js is one large chunk by design; don't warn about it.
-    chunkSizeWarningLimit: 6000,
+    // The main chunk is ~1.3 MB because of Babylon.js; warn only if it grows well past that.
+    chunkSizeWarningLimit: 2000,
   },
   test: {
     include: ['tests/unit/**/*.test.ts'],

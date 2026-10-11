@@ -1,3 +1,4 @@
+/** The Babylon.js scene and its shared look. One scene holds the whole ship. */
 import { Color4, GlowLayer, Scene, type Engine } from './babylon';
 
 /** A scene with the shared look: dark clear colour, gentle contrast and vignette, glowing lights. */

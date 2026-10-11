@@ -1,3 +1,5 @@
+// Lint rules. Besides the recommended sets: Babylon.js only through src/world/babylon.ts, and
+// src/sim kept free of rendering, React and browser globals so it runs headless in Node.
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import reactHooks from 'eslint-plugin-react-hooks';

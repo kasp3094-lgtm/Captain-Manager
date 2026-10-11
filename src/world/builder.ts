@@ -1,3 +1,7 @@
+/**
+ * Builds static room geometry out of boxes and cylinders, then merges it per colour so a room
+ * costs a couple of dozen draw calls. Used by testRoom.ts now, by the ship generator from M1.
+ */
 import {
   Color3,
   Mesh,
@@ -49,11 +53,11 @@ export class Builder {
     return this.add(swatch, mesh);
   }
 
-  /** A faceted cylinder standing upright, or lying along x or z. */
+  /** A faceted cylinder, standing upright or lying along x (pipes). */
   cylinder(
     swatch: Swatch,
     center: Vec3,
-    options: { diameter: number; height: number; axis?: 'x' | 'y' | 'z'; tessellation?: number },
+    options: { diameter: number; height: number; axis?: 'x' | 'y'; tessellation?: number },
   ): Mesh {
     const mesh = CreateCylinder(
       `${swatch}-${this.count++}`,
@@ -66,7 +70,6 @@ export class Builder {
     );
     mesh.position.set(center.x, center.y, center.z);
     if (options.axis === 'x') mesh.rotation.z = Math.PI / 2;
-    if (options.axis === 'z') mesh.rotation.x = Math.PI / 2;
     mesh.convertToFlatShadedMesh();
     return this.add(swatch, mesh);
   }

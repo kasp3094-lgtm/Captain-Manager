@@ -66,10 +66,6 @@ export function isGlowing(swatch: Swatch): boolean {
   return GLOWING.has(swatch);
 }
 
-export function hex(swatch: Swatch): string {
-  return SWATCHES[swatch];
-}
-
 /** One material per swatch, shared by every mesh of that colour. */
 export class Materials {
   private readonly cache = new Map<Swatch, StandardMaterial>();
