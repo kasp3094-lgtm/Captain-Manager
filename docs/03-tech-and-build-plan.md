@@ -206,8 +206,8 @@ Build:
 
 Done when:
 
-- [ ] CI is green, and the Pages link shows a lit test room you can walk around (WASD + mouse, pointer lock).
-- [ ] `npm test`, `npm run validate`, `npm run e2e` and `npm run shots` all run locally and in CI.
+- [x] CI is green, and the Pages link shows a lit test room you can walk around (WASD + mouse, pointer lock).
+- [x] `npm test`, `npm run validate`, `npm run e2e` and `npm run shots` all run locally and in CI.
 
 ### M1 — Walkable greybox ship (1–2 weeks)
 

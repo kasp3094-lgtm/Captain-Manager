@@ -1,5 +1,13 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { openGame } from '../support';
+
+function feet(page: Page) {
+  return page.evaluate(() => window.__captain!.feet());
+}
+
+// Software rendering on CI machines can be slow, and the game slows down rather than skip
+// frames, so movement tests wait for a distance instead of holding keys for a fixed time.
+const MOVE_TIMEOUT = 20_000;
 
 test('boots to the start screen without errors', async ({ page }) => {
   const { errors } = await openGame(page);
@@ -18,27 +26,26 @@ test('Take command hands over control and shows the room', async ({ page }) => {
 
 test('W walks the captain forward', async ({ page }) => {
   const { errors } = await openGame(page, '?autostart&cam=spawn');
-  const start = await page.evaluate(() => window.__captain!.feet());
+  const start = await feet(page);
   await page.keyboard.down('KeyW');
-  await page.waitForTimeout(1500);
-  await page.keyboard.up('KeyW');
-  const end = await page.evaluate(() => window.__captain!.feet());
   // The spawn bookmark faces along the room, towards +x.
-  expect(end.x - start.x).toBeGreaterThan(1);
-  expect(Math.abs(end.z - start.z)).toBeLessThan(0.5);
+  await expect
+    .poll(async () => (await feet(page)).x - start.x, { timeout: MOVE_TIMEOUT })
+    .toBeGreaterThan(1);
+  await page.keyboard.up('KeyW');
+  expect(Math.abs((await feet(page)).z - start.z)).toBeLessThan(0.5);
   expect(errors).toEqual([]);
 });
 
 test('bulkheads stop the captain', async ({ page }) => {
-  // 1.5 m from the hatch bulkhead (x = -5), facing it.
+  // 1.5 m from the hatch bulkhead (x = -5), facing it. The captain's radius is 0.3 m.
   const { errors } = await openGame(page, '?autostart&cam=facing-wall');
   await page.keyboard.down('KeyW');
-  await page.waitForTimeout(2500);
+  await expect.poll(async () => (await feet(page)).x, { timeout: MOVE_TIMEOUT }).toBeLessThan(-4.6);
+  // Keep pushing against the bulkhead: the captain must get no further.
+  await page.waitForTimeout(1000);
   await page.keyboard.up('KeyW');
-  const feet = await page.evaluate(() => window.__captain!.feet());
-  const radius = 0.3;
-  expect(feet.x).toBeGreaterThan(-5 + radius - 0.02);
-  expect(feet.x).toBeLessThan(-4.5);
+  expect((await feet(page)).x).toBeGreaterThan(-5 + 0.3 - 0.02);
   expect(errors).toEqual([]);
 });
 
