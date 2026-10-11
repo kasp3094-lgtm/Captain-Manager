@@ -6,12 +6,15 @@
 import type { PoiKind } from '../content/ship';
 import { createStore } from './store';
 
-/** loading → start screen → playing ⇄ paused, and playing ⇄ map (the full ship map). */
-export type GameMode = 'loading' | 'start' | 'playing' | 'paused' | 'map';
+/**
+ * loading → start screen → playing ⇄ paused, playing ⇄ map (the full ship map), and
+ * playing ⇄ lift (choosing a deck in the lift).
+ */
+export type GameMode = 'loading' | 'start' | 'playing' | 'paused' | 'map' | 'lift';
 
 export interface CurrentRoom {
   readonly id: string;
-  /** Naval compartment number, e.g. 2-30-2-L. */
+  /** Naval compartment number, e.g. 2-30-2-L; empty in ladderwells and the lift. */
   readonly code: string;
   readonly name: string;
   readonly deck: number;
@@ -30,8 +33,10 @@ export interface GameUiState {
   readonly room: CurrentRoom | null;
   /** The closest point of interest within a few metres, shown on the minimap. */
   readonly nearbyPoi: NearbyPoi | null;
-  /** Rooms that exist in 3D so far; the map shows the rest as planned. */
-  readonly builtRooms: readonly string[];
+  /** What pressing E would do, e.g. "Climb down to Deck 2"; null when nothing is in reach. */
+  readonly prompt: string | null;
+  /** True while the view fades to black for a trip between decks. */
+  readonly fading: boolean;
   /** Debug panel figures. */
   readonly fps: number;
   readonly drawCalls: number;
@@ -43,7 +48,8 @@ export const gameUi = createStore<GameUiState>({
   mode: 'loading',
   room: null,
   nearbyPoi: null,
-  builtRooms: [],
+  prompt: null,
+  fading: false,
   fps: 0,
   drawCalls: 0,
   seed: 0,
@@ -67,4 +73,6 @@ export interface GameControls {
   requestPlay(): void;
   /** Open or close the full ship map. */
   toggleMap(): void;
+  /** In the lift: go to a deck, or stay (null). */
+  chooseDeck(deck: number | null): void;
 }

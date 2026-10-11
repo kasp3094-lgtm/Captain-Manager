@@ -15,7 +15,6 @@ export function MiniMap({ ship }: { ship: Ship }) {
   const pose = useStore(playerPose, (state) => state);
   const room = useStore(gameUi, (state) => state.room);
   const nearby = useStore(gameUi, (state) => state.nearbyPoi);
-  const builtRooms = useStore(gameUi, (state) => state.builtRooms);
   const deck = ship.decks.find((candidate) => candidate.deck === pose.deck);
   if (!deck) return null;
 
@@ -28,7 +27,7 @@ export function MiniMap({ ship }: { ship: Ship }) {
         </span>
         {room && (
           <>
-            <span className="minimap-code">{room.code}</span>
+            {room.code && <span className="minimap-code">{room.code}</span>}
             {/* Keep a short last word ("…Berthing A") from wrapping onto a line of its own. */}
             <span className="minimap-room">{room.name.replace(/ (\S{1,3})$/, '\u00a0$1')}</span>
           </>
@@ -39,7 +38,6 @@ export function MiniMap({ ship }: { ship: Ship }) {
           ship={ship}
           deck={deck}
           currentRoomId={room?.id ?? null}
-          builtRooms={builtRooms}
           nearbyPoiName={nearby?.name ?? null}
         />
         <PlayerMarker pose={pose} />

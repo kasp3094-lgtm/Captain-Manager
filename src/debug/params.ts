@@ -1,9 +1,10 @@
 /**
- * Launch parameters read from the page URL, e.g. `?debug=colliders&seed=42&cam=racks&autostart`.
+ * Launch parameters read from the page URL, e.g. `?debug=colliders&seed=42&cam=bridge&autostart`.
  *
  * - `debug`      Show the debug panel. `?debug=a,b` also turns on debug flags (see DEBUG_FLAGS).
  * - `seed`       Integer seed for the simulation's random number generator.
- * - `cam`        Start at a named camera bookmark (used by screenshots and tests).
+ * - `cam`        Start at a viewpoint: a room id, a shaft stop such as `ladder-fwd-deck2`, or
+ *                `spawn` (src/world/ship/layout.ts makes them; screenshots and tests use them).
  * - `autostart`  Skip the start screen and hand over control at once (tests, screenshots).
  * - `noui`       Hide the 2D interface (clean screenshots).
  *

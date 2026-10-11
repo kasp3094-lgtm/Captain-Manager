@@ -5,7 +5,6 @@
  */
 import { useMemo, useState } from 'react';
 import { POI_KINDS, type Deck, type Ship } from '../../content/ship';
-import { findRoom } from '../../sim/ship';
 import { gameUi, playerPose, type CurrentRoom } from '../state';
 import { useStore } from '../store';
 import { DeckPlan, PlayerMarker, type MapHover } from './DeckPlan';
@@ -15,13 +14,11 @@ export function ShipMap({ ship, onClose }: { ship: Ship; onClose: () => void }) 
   const pose = useStore(playerPose, (state) => state);
   const room = useStore(gameUi, (state) => state.room);
   const nearby = useStore(gameUi, (state) => state.nearbyPoi);
-  const builtRooms = useStore(gameUi, (state) => state.builtRooms);
   const [deckNumber, setDeckNumber] = useState(pose.deck);
   const [hover, setHover] = useState<MapHover | null>(null);
   const viewBox = useMemo(() => shipViewBox(ship), [ship]);
 
   const deck = ship.decks.find((candidate) => candidate.deck === deckNumber) ?? ship.decks[0]!;
-  const builtNames = builtRooms.map((id) => findRoom(ship, id)?.room.name ?? id).join(', ');
 
   return (
     <div className="screen map-screen">
@@ -87,7 +84,6 @@ export function ShipMap({ ship, onClose }: { ship: Ship; onClose: () => void }) 
             ship={ship}
             deck={deck}
             currentRoomId={room?.id ?? null}
-            builtRooms={builtRooms}
             nearbyPoiName={nearby?.name ?? null}
             onHover={setHover}
           />
@@ -95,7 +91,7 @@ export function ShipMap({ ship, onClose }: { ship: Ship; onClose: () => void }) 
         </svg>
 
         <p className="map-info" aria-live="polite">
-          {describe(hover, room, deck, builtRooms)}
+          {describe(hover, room, deck)}
         </p>
 
         <footer className="map-footer">
@@ -118,8 +114,8 @@ export function ShipMap({ ship, onClose }: { ship: Ship; onClose: () => void }) 
           </button>
         </footer>
         <p className="map-note">
-          <kbd>M</kbd> closes the map, <kbd>Esc</kbd> pauses. Built so far: {builtNames}. The rest
-          of the ship is planned and becomes walkable in milestone M1.
+          <kbd>M</kbd> closes the map, <kbd>Esc</kbd> pauses. Ladders and the lift join the decks:
+          look at one and press <kbd>E</kbd>.
         </p>
       </div>
     </div>
@@ -127,12 +123,7 @@ export function ShipMap({ ship, onClose }: { ship: Ship; onClose: () => void }) 
 }
 
 /** The line under the map: what the pointer is over, or else where the captain is. */
-function describe(
-  hover: MapHover | null,
-  current: CurrentRoom | null,
-  deck: Deck,
-  builtRooms: readonly string[],
-): string {
+function describe(hover: MapHover | null, current: CurrentRoom | null, deck: Deck): string {
   if (hover?.kind === 'poi') return `${hover.poi.name} · ${hover.room.name}`;
   if (hover?.kind === 'shaft') return `${hover.shaft.name} · decks ${hover.shaft.decks.join(', ')}`;
   if (hover?.kind === 'room') {
@@ -140,13 +131,11 @@ function describe(
     const parts = [room.code, room.name];
     if (room.racks) parts.push(`${room.racks} racks${room.hotRacked ? ', shared by watch' : ''}`);
     if (room.id === current?.id) parts.push('you are here');
-    else if (room.type !== 'passage' && room.type !== 'tank' && !builtRooms.includes(room.id)) {
-      parts.push('planned');
-    }
     return parts.join(' · ');
   }
-  if (current && current.deck === deck.deck)
-    return `You are here: ${current.code} · ${current.name}`;
+  if (current && current.deck === deck.deck) {
+    return `You are here: ${[current.code, current.name].filter(Boolean).join(' · ')}`;
+  }
   return `Deck ${deck.deck} · ${deck.name}. Point at a room or symbol to see what it is.`;
 }
 

@@ -55,6 +55,13 @@ export class PlayerController {
     this.syncCamera();
   }
 
+  /** Turns to face yaw/pitch (radians) without moving. */
+  face(yaw: number, pitch: number): void {
+    this.yaw = wrapAngle(yaw);
+    this.pitch = clampPitch(pitch);
+    this.syncCamera();
+  }
+
   update(dt: number): void {
     const look = this.input.takeMouseDelta();
     this.yaw = wrapAngle(this.yaw + look.dx * this.tuning.mouseSensitivity);
@@ -83,6 +90,12 @@ export class PlayerController {
   /** Facing in radians. */
   get facing(): { yaw: number; pitch: number } {
     return { yaw: this.yaw, pitch: this.pitch };
+  }
+
+  /** Where the eyes are. */
+  get eye(): { x: number; y: number; z: number } {
+    const position = this.camera.position;
+    return { x: position.x, y: position.y, z: position.z };
   }
 
   private bodyCentreY(): number {

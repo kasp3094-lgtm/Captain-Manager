@@ -31,20 +31,21 @@ Working rules for Claude Code, and anyone else, building this game.
 | `npm test` | Unit tests (Vitest, `tests/unit/`) |
 | `npm run validate` | Checks every file in `content/` against its schema (`src/content/registry.ts`) |
 | `npm run e2e` | End-to-end tests in headless Chromium against a production build (`PW_SKIP_BUILD=1` reuses `dist/`) |
-| `npm run shots` | Screenshots of fixed camera bookmarks into `artifacts/shots/`; look at them after visual changes |
+| `npm run shots` | Screenshots of the interface and of every room from its viewpoint into `artifacts/shots/`; look at them after visual changes |
 | `npm run build` | Production build into `dist/` |
 | `npm run typecheck`, `npm run lint`, `npm run format` | Static checks and formatting |
 | `npm run check` | Typecheck, lint, format check, unit tests and content validation in one go |
 
 `npm run sim` (headless playthrough bots) arrives in M2.
 
-Keys in the game: WASD walk, mouse look, Shift walk faster, M ship map, Esc pause.
+Keys in the game: WASD walk, mouse look, Shift walk faster, E use (climb a ladder, take the lift), M ship map, Esc pause. In the lift, 1–4 pick a deck.
 
-URL parameters: `?debug` shows the debug panel, `?debug=colliders` also shows collision boxes, `?seed=42` fixes the random seed, `?cam=<bookmark>` starts at a camera bookmark, `?autostart` skips the start screen, `?noui` hides the interface.
+URL parameters: `?debug` shows the debug panel, `?debug=colliders` also shows collision boxes, `?seed=42` fixes the random seed, `?cam=<viewpoint>` starts at a viewpoint (any room id such as `junior-berthing-a`, a shaft stop such as `ladder-fwd-deck2` or `lift-deck3`, or `spawn`), `?autostart` skips the start screen, `?noui` hides the interface.
 
 ## Conventions
 
-- The deck plans in `content/ship/` are the one source for the ship's layout. The map draws them now; from M1 the 3D ship is generated from them. `npm run validate` checks the layout rules in `src/sim/ship.ts`: rooms inside the hull, doors that lead somewhere, every room reachable, enough racks.
+- The deck plans in `content/ship/` are the one source for the ship's layout: the map and the 3D ship are both generated from them. A room's `fit` picks its furniture template (`src/world/ship/fits.ts`); a point of interest's `prop` builds that object where the point is. `npm run validate` checks the layout rules in `src/sim/ship.ts` (rooms inside the hull, doors that lead somewhere, every room reachable, enough racks), then furnishes the whole ship and reports anything that doesn't fit.
+- The layout planner (`src/world/ship/coords.ts`, `layout.ts`, `fits.ts`) is plain maths with no Babylon.js, so the validator and unit tests run it in Node. ESLint enforces it.
 - Every source file starts with a comment saying what it does. When you add a file, add it to the table in `src/README.md`.
 - Import Babylon.js only through `src/world/babylon.ts`. Module-by-module imports keep the bundle small, and ESLint enforces it.
 - `@playwright/test` is pinned to the version whose Chromium is preinstalled in Claude's cloud sandbox (1.56.1). Upgrade the two together.

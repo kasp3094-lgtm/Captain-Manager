@@ -22,8 +22,6 @@ interface DeckPlanProps {
   readonly deck: Deck;
   /** The room the captain is in, outlined in amber. */
   readonly currentRoomId: string | null;
-  /** Rooms built in 3D so far; the others are drawn faded as planned. */
-  readonly builtRooms: readonly string[];
   /** The point of interest to ring, if the captain is near one. */
   readonly nearbyPoiName: string | null;
   /** Given on the full map only: reports what the pointer is over. */
@@ -35,7 +33,6 @@ export const DeckPlan = memo(function DeckPlan({
   ship,
   deck,
   currentRoomId,
-  builtRooms,
   nearbyPoiName,
   onHover,
 }: DeckPlanProps) {
@@ -66,7 +63,6 @@ export const DeckPlan = memo(function DeckPlan({
             key={room.id}
             className="map-room"
             data-type={room.type}
-            data-planned={builtRooms.includes(room.id) ? undefined : ''}
             x={x}
             y={y}
             width={width}

@@ -7,7 +7,7 @@ export function StartScreen({ loading, onStart }: { loading: boolean; onStart: (
   return (
     <div className="screen">
       <div className="card" role="dialog" aria-labelledby="title">
-        <p className="eyebrow">Prototype · test compartment</p>
+        <p className="eyebrow">Prototype · the ship</p>
         <h1 id="title" className="title">
           Captain Manager
         </h1>
@@ -68,6 +68,10 @@ function Controls() {
         <kbd>Shift</kbd>
       </dt>
       <dd>Walk faster</dd>
+      <dt>
+        <kbd>E</kbd>
+      </dt>
+      <dd>Use: climb a ladder, take the lift</dd>
       <dt>
         <kbd>M</kbd>
       </dt>

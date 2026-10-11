@@ -56,7 +56,7 @@ Rules:
 | `src/sim/save` | Versioned save files and migrations |
 | `src/sim/ship` | Ship layout queries (room at a point, nearest point of interest) and the deck-plan rules checked by `npm run validate` |
 | `src/world/babylon.ts` | The only place that imports Babylon.js, module by module, to keep the bundle small |
-| `src/world/ship` | Deck plan → meshes, props, lights, signs, doors, ladders, lift, navigation mesh |
+| `src/world/ship` | Deck plan → layout plan (walls, doors, lighting cells, furniture; pure and unit-tested) → meshes, props, lights, signs, ladders, lift; later the navigation mesh |
 | `src/world/player` | First-person controller, interaction ray, ladder and lift transitions |
 | `src/world/npcs` | Crew placement from the schedule, animations, ambient walkers, general quarters |
 | `src/world/tactical` | Tactical plot and external battle camera |
@@ -69,8 +69,7 @@ Rules:
 ```
 content/
   ship/ship.yaml                    the ship as a whole: ladders, lift, start room
-  ship/deck1.yaml … deck4.yaml      deck plans
-  ship/templates.yaml               furniture templates per room type (berthing, mess, …)
+  ship/deck1.yaml … deck4.yaml      deck plans, including each room's furniture template (`fit`)
   crew/characters.yaml              named characters
   crew/names/                       name lists for generated crew
   events/<leg>/<event>.yaml + .ink  event data and scripts
@@ -105,11 +104,15 @@ rooms:
     doors: [[30, 12]]                 # door centres, on the room's edge
     racks: 12
     hotRacked: true
+    fit: berthing                     # furniture template (default for berthing rooms)
     pois:
-      - { name: Watch bill, kind: info, at: [30.4, 10] }
+      - { name: Watch bill, kind: info, at: [30.2, 10.2], prop: noticeboard }
+      - { name: Card table, kind: social, at: [38.4, 12.2], prop: card-table, facing: port }
 ```
 
 Ladders and the lift are defined once in `content/ship/ship.yaml`, with the decks they serve.
+
+Furniture comes from two places. A room's `fit` names a template in `src/world/ship/fits.ts` (berthing, mess, galley, operations, machinery…) that fills the room around its doors. A point of interest's `prop` builds that object where the point is: against a wall if it is close to one, otherwise free-standing with the given `facing`. A point without a prop marks something the template builds (the racks above). The templates are code rather than the `templates.yaml` this plan first sketched: placing furniture around doors and other furniture is logic, not data, while the choice of template and every prop's position stay in the deck plans. `npm run validate` furnishes the whole ship and reports anything that doesn't fit.
 
 **Crew member**
 
@@ -167,7 +170,7 @@ Convention: the game checks `#req` and `#cost` tags. Unmet choices are shown gre
 | Content validation | `npm run validate` | Every file matches its schema; every Ink script compiles; every referenced room, character, meter and flag exists; ≥ 50 racks; every room reachable; no rack double-booked in any watch |
 | Playthrough bots | `npm run sim` | 1,000 headless runs with random and greedy choices: no crashes or dead ends; every event and ending reachable; meters stay in their designed ranges |
 | End-to-end | `npm run e2e` | The real game in headless Chromium: boot, walk, open the datapad, play an event, save and load |
-| Screenshots | `npm run shots` | Fixed camera bookmarks for every room and UI state, saved for review |
+| Screenshots | `npm run shots` | A fixed viewpoint for every room and shaft, and the main UI states, saved for review |
 | Performance | `npm run perf` | Frame times on a scripted walk through every deck |
 
 All of these run in GitHub Actions on every push. The default branch must always be green and deployable.
@@ -220,13 +223,15 @@ Build:
 - All four decks of the *Kestrel* greyboxed per the [Act 1 spec](02-act1-content.md#3-the-ship-cns-kestrel).
 - A 2D deck-map renderer (SVG) from the same data; a room-name HUD when entering a room. *(Done early, with the ship map: deck plans for all four decks, the minimap and the full map.)*
 
+How it is built (`src/world/ship/`): `layout.ts` turns the deck plans into a plan of every wall, doorway, lighting cell, sign, ladder and viewpoint; `fits.ts` furnishes each room; both are pure and unit-tested, including a walk test that checks every room can still be reached past the furniture. `build.ts` and `props.ts` turn the plan into meshes merged per lighting cell. Rooms are split into cells of at most 10 m with at most three ceiling lights each, and a light only reaches its own cell and the cells beside it in the same room, so no light shines through a wall and no surface needs more than six lights. Each deck hangs off its own node; only the captain's deck is drawn.
+
 Done when:
 
-- [ ] Every room in the Act 1 spec exists, is signed, and is reachable from the captain's quarters (validator). *(On the plan: done. In 3D: M1.)*
-- [x] The validator counts 76 racks (and fails if it ever drops below 50).
-- [ ] An end-to-end test walks captain's quarters → bridge → engineering by ladder, and back by lift.
-- [ ] A screenshot of every room is produced.
-- [ ] 60 fps on the reference laptop while walking all four decks.
+- [x] Every room in the Act 1 spec exists, is signed, and is reachable from the captain's quarters (validator, plus the walk test in `tests/unit/layout.test.ts`).
+- [x] The validator counts 76 racks (and fails if it ever drops below 50). Every one of them is built in 3D.
+- [x] An end-to-end test walks captain's quarters → bridge → engineering by ladder, and back by lift (`tests/e2e/route.spec.ts`).
+- [x] A screenshot of every room is produced (`npm run shots` → `artifacts/shots/rooms/`).
+- [ ] 60 fps on the reference laptop while walking all four decks. *(Can't be measured in the cloud sandbox, which renders in software. Check with `?debug`: the panel shows fps and draw calls, about 20–120 per view against a budget of 300.)*
 
 ### M2 — Command core (1–2 weeks)
 

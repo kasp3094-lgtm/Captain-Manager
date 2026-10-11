@@ -17,39 +17,43 @@ rooms:
     name: Sickbay
     code: 2-10-1-L
     type: medical
+    fit: sickbay
     rect: [10, 1, 12, 6]
     doors: [[16, 7]]
     pois:
-      - { name: Surgery, kind: medical, at: [13, 3.5] }
-      - { name: Sickbay beds, kind: medical, at: [19, 3] }
+      - { name: Surgery, kind: medical, at: [13, 3.5], prop: operating-table, facing: aft }
+      - { name: Sickbay beds, kind: medical, at: [19, 2.2], prop: medical-beds }
 
   - id: ships-office
     name: Ship's Office
     code: 2-22-1-Q
     type: habitation
+    fit: office
     rect: [22, 1, 6, 6]
     doors: [[25, 7]]
     pois:
-      - { name: Yeoman's desk, kind: info, at: [25, 3] }
+      - { name: Yeoman's desk, kind: info, at: [25, 3.2], prop: desk, facing: stbd }
 
   - id: crew-mess
     name: Crew Mess
     code: 2-28-1-L
     type: habitation
+    fit: mess
     rect: [28, 1, 16, 6]
     doors: [[32, 7], [40, 7]]
     pois:
-      - { name: Mess tables, kind: social, at: [36, 4] }
-      - { name: Coffee machine, kind: social, at: [29, 1.8] }
+      - { name: Mess tables, kind: social, at: [36, 2.2] }
+      - { name: Coffee machine, kind: social, at: [29, 1.4], prop: coffee-machine }
 
   - id: galley
     name: Galley
     code: 2-44-1-Q
     type: habitation
+    fit: galley
     rect: [44, 1, 8, 6]
     doors: [[48, 7]]
     pois:
-      - { name: Galley range, kind: station, at: [48, 2.5] }
+      - { name: Galley range, kind: station, at: [48, 1.6], prop: range }
 
   - id: po-berthing-a
     name: PO Berthing A
@@ -87,25 +91,28 @@ rooms:
     name: Quiet Room
     code: 2-10-2-Q
     type: habitation
+    fit: chapel
     rect: [10, 9, 6, 6]
     doors: [[13, 9]]
     pois:
-      - { name: Memorial wall, kind: info, at: [13, 14.4] }
+      - { name: Memorial wall, kind: info, at: [10.3, 12.2], prop: memorial }
 
   - id: laundry
     name: Laundry
     code: 2-16-2-Q
     type: habitation
+    fit: laundry
     rect: [16, 9, 6, 6]
     doors: [[19, 9]]
     pois:
-      - { name: Washers & dryers, kind: machinery, at: [19, 13] }
+      - { name: Washers & dryers, kind: machinery, at: [19, 14.5], prop: washers }
 
   - id: heads-fwd
     name: Crew Heads & Showers (forward)
     short: Heads
     code: 2-24-2-L
     type: habitation
+    fit: head
     rect: [24, 9, 4, 6]
     doors: [[26, 9]]
 
@@ -116,7 +123,6 @@ rooms:
     rect: [28, 9, 2, 6]
     doors: [[29, 9]]
 
-  # The M0 test compartment stands in for this room until M1; its points of interest match it.
   - id: junior-berthing-a
     name: Junior Enlisted Berthing A
     short: Junior berthing A
@@ -128,10 +134,10 @@ rooms:
     hotRacked: true
     pois:
       - { name: Racks (shared by watch), kind: rest, at: [35.2, 9.5] }
-      - { name: Watch bill, kind: info, at: [30.4, 10] }
-      - { name: Fire extinguisher, kind: safety, at: [30.4, 13] }
-      - { name: Damage-control locker, kind: safety, at: [30.4, 14.2] }
-      - { name: Card table, kind: social, at: [38.4, 12.2] }
+      - { name: Watch bill, kind: info, at: [30.2, 10.2], prop: noticeboard }
+      - { name: Fire extinguisher, kind: safety, at: [30.2, 13.1], prop: extinguisher }
+      - { name: Damage-control locker, kind: safety, at: [30.2, 14.2], prop: dc-locker }
+      - { name: Card table, kind: social, at: [38.4, 12.2], prop: card-table, facing: port }
       - { name: Lockers, kind: rest, at: [36.8, 14.6] }
 
   - id: heads-aft
@@ -139,6 +145,7 @@ rooms:
     short: Heads
     code: 2-40-2-L
     type: habitation
+    fit: head
     rect: [40, 9, 6, 6]
     doors: [[43, 9]]
 
@@ -147,6 +154,7 @@ rooms:
     short: Food stores
     code: 2-48-2-A
     type: stores
+    fit: stores
     rect: [48, 9, 8, 6]
     doors: [[52, 9]]
 
@@ -155,10 +163,11 @@ rooms:
     short: Gym
     code: 2-56-2-Q
     type: habitation
+    fit: gym
     rect: [56, 9, 10, 6]
     doors: [[61, 9]]
     pois:
-      - { name: Exercise machines, kind: social, at: [61, 12.5] }
+      - { name: Exercise machines, kind: social, at: [61, 13.9], prop: gym-machines }
 
   - id: fresh-water-tank
     name: Fresh Water Tank

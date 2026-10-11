@@ -8,7 +8,7 @@ Every file here must match a schema registered in `src/content/registry.ts` (REA
 |---|---|---|
 | `balance.yaml` | Every tunable number | M0 |
 | `ship/ship.yaml` | The ship as a whole: name, ladders and lift, the start room | M0 (ship map) |
-| `ship/deck1.yaml` … `deck4.yaml` | Deck plans: hull outline, rooms, doors, racks, points of interest | M0 (ship map) |
+| `ship/deck1.yaml` … `deck4.yaml` | Deck plans: hull outline, rooms, doors, racks, furniture templates (`fit`), points of interest and their props | M0 (ship map), M1 (3D) |
 | `crew/` | Named characters and name lists | M3 |
 | `events/` | Event data (`.yaml`) and story scripts (`.ink`) | M2 |
 | `battles/` | Battle scenarios, ship and weapon stats | M5 |

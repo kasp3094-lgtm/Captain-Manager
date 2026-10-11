@@ -1,7 +1,7 @@
 /*
  * All interface styling. The look is a military datapad: dark panels, amber accents, monospace
- * labels. Sections: base and page, cards and screens, HUD, minimap, full ship map, map drawing,
- * debug.
+ * labels. Sections: base and page, cards and screens, HUD, lift, minimap, full ship map, map
+ * drawing, debug.
  */
 
 /* ── Base and page ─────────────────────────────────────────────────────────── */
@@ -185,6 +185,80 @@ kbd {
   white-space: nowrap;
 }
 
+/* What E would do, just under the crosshair. */
+.interact-prompt {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 22px);
+  transform: translateX(-50%);
+  font: 600 14px var(--sans);
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+.interact-prompt kbd {
+  margin-right: 6px;
+  color: var(--amber);
+  border-color: var(--line);
+}
+
+/* The fade to black when changing decks. */
+.fade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+
+.fade[data-on] {
+  opacity: 1;
+}
+
+/* ── Lift (deck buttons) ───────────────────────────────────────────────────── */
+
+.lift-decks {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 6px;
+}
+
+.lift-deck {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  font: 600 15px var(--sans);
+  text-align: left;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.lift-deck:hover:not(:disabled),
+.lift-deck:focus-visible {
+  border-color: var(--amber);
+  outline: none;
+}
+
+.lift-deck:disabled {
+  cursor: default;
+  color: var(--amber);
+  border-color: var(--line);
+}
+
+.lift-deck-here {
+  font: 12px var(--mono);
+  color: var(--amber);
+}
+
 /* ── Minimap (top right, always on while playing) ──────────────────────────── */
 
 .minimap {
@@ -245,6 +319,11 @@ kbd {
   padding: 6px 10px 7px;
   font: 12px var(--mono);
   color: var(--muted);
+}
+
+.minimap-footer > :last-child {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .minimap-nearby {
@@ -426,10 +505,6 @@ kbd {
 }
 .map-room[data-type='tank'] {
   fill: url(#map-tank-hatch);
-}
-/* Rooms not yet built in 3D. */
-.map-room[data-planned] {
-  opacity: 0.62;
 }
 .map-svg .map-room:hover {
   stroke: var(--text);

@@ -18,26 +18,29 @@ rooms:
     short: Aux machinery
     code: 4-10-1-E
     type: engineering
+    fit: machinery
     rect: [10, 1, 12, 6]
     doors: [[16, 7]]
     pois:
-      - { name: Life support, kind: machinery, at: [14, 3.5] }
-      - { name: Water reclamation, kind: machinery, at: [19, 3.5] }
+      - { name: Life support, kind: machinery, at: [13.5, 1.9], prop: life-support }
+      - { name: Water reclamation, kind: machinery, at: [19.3, 1.8], prop: water-reclaimer }
 
   - id: workshop
     name: Workshop
     code: 4-22-1-Q
     type: engineering
+    fit: workshop
     rect: [22, 1, 8, 6]
     doors: [[26, 7]]
     pois:
-      - { name: Machine tools, kind: machinery, at: [26, 3.5] }
+      - { name: Machine tools, kind: machinery, at: [26, 3.6], prop: lathe, facing: port }
 
   - id: engineering-stores
     name: Engineering Stores
     short: Eng. stores
     code: 4-30-1-A
     type: stores
+    fit: stores
     rect: [30, 1, 6, 6]
     doors: [[33, 7]]
 
@@ -45,30 +48,33 @@ rooms:
     name: Main Engineering
     code: 4-36-1-C
     type: engineering
+    fit: operations
     rect: [36, 1, 14, 6]
     doors: [[43, 7]]
     pois:
-      - { name: Reactor & drive control, kind: station, at: [43, 3.5] }
+      - { name: Reactor & drive control, kind: station, at: [43, 1.9], prop: console-bank }
 
   - id: reactor
     name: Reactor Compartment
     short: Reactor
     code: 4-50-1-E
     type: engineering
+    fit: reactor
     rect: [50, 1, 12, 6]
     doors: [[56, 7]]
     pois:
-      - { name: Fusion reactor, kind: machinery, at: [56, 3.5] }
+      - { name: Fusion reactor, kind: machinery, at: [56, 3], prop: reactor, facing: port }
 
   - id: jump-drive
     name: Jump Drive Room
     short: Jump drive
     code: 4-62-1-E
     type: engineering
+    fit: machinery
     rect: [62, 1, 6, 6]
     doors: [[65, 7]]
     pois:
-      - { name: Jump drive core, kind: machinery, at: [65, 3.5] }
+      - { name: Jump drive core, kind: machinery, at: [65, 3.3], prop: jump-core, facing: port }
 
   # Port side
   - id: ballast-tank-fwd
@@ -81,6 +87,7 @@ rooms:
     name: Shaft Alley
     code: 4-24-2-E
     type: engineering
+    fit: crawlway
     rect: [24, 9, 22, 2]
     doors: [[25, 9]]
 
@@ -94,27 +101,30 @@ rooms:
     name: Electrical Room
     code: 4-48-2-E
     type: engineering
+    fit: equipment
     rect: [48, 9, 8, 6]
     doors: [[52, 9]]
     pois:
-      - { name: Switchboards, kind: machinery, at: [52, 12] }
+      - { name: Switchboards, kind: machinery, at: [52, 14.5], prop: switchboards }
 
   - id: coolant-pumps
     name: Coolant Pump Room
     short: Coolant pumps
     code: 4-56-2-E
     type: engineering
+    fit: machinery
     rect: [56, 9, 10, 6]
     doors: [[61, 9]]
     pois:
-      - { name: Coolant pumps, kind: machinery, at: [61, 12] }
+      - { name: Coolant pumps, kind: machinery, at: [61, 12.6], prop: pumps, facing: stbd }
 
   # Stern, full width
   - id: drive-room
     name: Drive Room
     code: 4-68-0-E
     type: engineering
+    fit: drive
     rect: [68, 1, 12, 14]
     doors: [[68, 8]]
     pois:
-      - { name: Main drive, kind: machinery, at: [75, 8] }
+      - { name: Main drive, kind: machinery, at: [75.5, 8], prop: main-drive, facing: fwd }

@@ -30,7 +30,7 @@ Act 1 ends at the border, with an order to stand down and a decision only you ca
 - Every room below **must** exist, be signed (name plus compartment number) and be reachable on foot from the captain's quarters.
 - Every room **must** have a gameplay purpose: events, interactions, or a crew-schedule location (duty station, seat, rack).
 - Each deck is about 70 × 14 m inside (the command deck is shorter), compressed from real proportions so walking stays pleasant. About 50 rooms in total, plus passages, tanks and voids.
-- The exact layout lives in the deck plans, `content/ship/deck1.yaml` … `deck4.yaml`. The in-game ship map (M) is drawn from them, and from M1 so is the 3D ship.
+- The exact layout lives in the deck plans, `content/ship/deck1.yaml` … `deck4.yaml`. The in-game ship map (M) and the 3D ship are both generated from them.
 - The weapons spaces are walkable: the railgun room, the missile magazine and point-defence control.
 
 ### 3.2 Layout

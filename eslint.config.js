@@ -1,5 +1,6 @@
 // Lint rules. Besides the recommended sets: Babylon.js only through src/world/babylon.ts, and
-// src/sim kept free of rendering, React and browser globals so it runs headless in Node.
+// src/sim and the layout planner (src/world/ship/{coords,layout,fits}.ts) kept free of
+// rendering, React and browser globals so they run headless in Node.
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -55,6 +56,30 @@ export default defineConfig([
         'document',
         'navigator',
         'localStorage',
+        'requestAnimationFrame',
+      ],
+    },
+  },
+  {
+    // The 3D layout planner runs in Node too (validator, unit tests): plain maths only.
+    files: ['src/world/ship/coords.ts', 'src/world/ship/layout.ts', 'src/world/ship/fits.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@babylonjs/*', 'react', 'react-dom', '**/babylon', '**/ui/**'],
+              message: 'The layout planner must stay free of rendering and UI code.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-globals': [
+        'error',
+        'window',
+        'document',
+        'navigator',
         'requestAnimationFrame',
       ],
     },

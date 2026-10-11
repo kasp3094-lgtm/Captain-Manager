@@ -12,3 +12,16 @@ export async function openGame(page: Page, query = ''): Promise<{ errors: string
   await expect(page.locator('body[data-ready="true"]')).toBeAttached({ timeout: 60_000 });
   return { errors };
 }
+
+/** Where the captain stands on the plan (metres) and looks (degrees). */
+export function pose(page: Page) {
+  return page.evaluate(() => window.__captain!.pose());
+}
+
+/** Waits until the game has drawn `count` more frames. */
+export async function waitFrames(page: Page, count: number): Promise<void> {
+  const start = await page.evaluate(() => window.__captain!.frames());
+  await expect
+    .poll(() => page.evaluate(() => window.__captain!.frames()), { timeout: 30_000 })
+    .toBeGreaterThanOrEqual(start + count);
+}

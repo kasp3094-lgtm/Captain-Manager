@@ -4,6 +4,7 @@
  */
 import type { ZodType } from 'zod';
 import { checkShip } from '../sim/ship';
+import { planShip } from '../world/ship/layout';
 import { BalanceSchema } from './balance';
 import { DeckSchema, ShipInfoSchema, assembleShip, type Deck, type ShipInfo } from './ship';
 
@@ -44,7 +45,10 @@ export const CONTENT_CHECKS: readonly ContentCheck[] = [
       const decks = [...data]
         .filter(([path]) => DECK_FILE.test(path))
         .map(([, deck]) => deck as Deck);
-      return checkShip(assembleShip(info, decks));
+      const ship = assembleShip(info, decks);
+      // Furnish the ship in 3D (pure planning, no rendering) once the plan itself is sound.
+      const problems = checkShip(ship);
+      return problems.length > 0 ? problems : [...planShip(ship).problems];
     },
   },
 ];
