@@ -144,7 +144,7 @@ function Controls() {
       <dt>
         <kbd>E</kbd>
       </dt>
-      <dd>Use: climb a ladder, take the lift</dd>
+      <dd>Use: climb a ladder, take the lift, talk to someone</dd>
       <dt>
         <kbd>M</kbd>
       </dt>
@@ -152,7 +152,7 @@ function Controls() {
       <dt>
         <kbd>Esc</kbd>
       </dt>
-      <dd>Pause</dd>
+      <dd>Pause, save and load</dd>
     </dl>
   );
 }

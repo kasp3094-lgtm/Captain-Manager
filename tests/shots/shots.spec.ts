@@ -45,6 +45,10 @@ const SHOTS: readonly Shot[] = [
     name: '04-lift-panel',
     query: '?autostart&cam=lift-deck2',
     then: async (page) => {
+      // E does nothing until the game has seen what the captain is looking at.
+      await expect
+        .poll(() => page.evaluate(() => window.__captain!.prompt()))
+        .toBe('Take the lift');
       await page.keyboard.press('KeyE');
       await expect(page.getByRole('dialog', { name: 'Which deck?' })).toBeVisible();
     },
