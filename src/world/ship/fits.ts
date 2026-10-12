@@ -108,7 +108,6 @@ export const ITEMS = {
   memorial: { width: 2.4, depth: 0.25, bottom: 0.3, top: 2.2 },
   // Safety
   noticeboard: { width: 1.3, depth: 0.05, bottom: 1.0, top: 1.85 },
-  extinguisher: { width: 0.3, depth: 0.2, bottom: 0.35, top: 1.05 },
   'dc-locker': { width: 0.8, depth: 0.25, bottom: 0.95, top: 1.75 },
   clock: { width: 0.34, depth: 0.05, bottom: 1.85, top: 2.2 },
   // Weapons
@@ -701,14 +700,7 @@ const FITS: Record<Fit, FitFunction> = {
   empty: () => undefined,
 
   passage(f) {
-    // A fire extinguisher by every door, and a damage-control locker about every 20 m.
-    for (const opening of f.space.openings) {
-      if (opening.kind !== 'door') continue;
-      const offset = opening.width / 2 + 0.3;
-      if (!f.wall('extinguisher', opening.side, opening.at + offset)) {
-        f.wall('extinguisher', opening.side, opening.at - offset);
-      }
-    }
+    // A damage-control locker about every 20 m.
     const lengthwise = f.wallLength('stbd') >= f.wallLength('fwd');
     const sides: Facing[] = lengthwise ? ['stbd', 'port'] : ['fwd', 'aft'];
     const length = f.wallLength(sides[0]!);

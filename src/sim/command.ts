@@ -25,6 +25,14 @@ export interface CommandStart {
   readonly relations: Readonly<Record<string, number>>;
 }
 
+/** Everything about the command state a save file keeps (src/sim/save.ts). */
+export interface CommandSnapshot {
+  /** Every meter and relation, by target (`budget`, `rel.okafor`…). */
+  readonly values: Readonly<Record<string, number>>;
+  readonly flags: readonly string[];
+  readonly log: readonly Change[];
+}
+
 /** One change, as the log keeps it. */
 export interface Change {
   readonly target: Target;
@@ -75,12 +83,42 @@ export class Command {
   readonly log: Change[] = [];
 
   constructor(
-    start: CommandStart,
+    private readonly start: CommandStart,
     /** Every character with a relation: the named crew. */
     readonly characters: readonly string[],
   ) {
-    for (const meter of METERS) this.values.set(meter, start[meter]);
-    for (const id of characters) this.values.set(`rel.${id}`, start.relations[id] ?? 0);
+    this.reset();
+  }
+
+  /** Everything to save: every meter and relation, the flags and the log. */
+  snapshot(): CommandSnapshot {
+    return {
+      values: Object.fromEntries(this.values),
+      flags: [...this.flags],
+      log: this.log.map((change) => ({ ...change })),
+    };
+  }
+
+  /**
+   * Puts a saved state back. A meter or relation the save doesn't have (a character added since)
+   * keeps its starting value; one the game no longer has is dropped.
+   */
+  restore(saved: CommandSnapshot): void {
+    this.reset();
+    for (const [target, value] of Object.entries(saved.values)) {
+      if (this.values.has(target)) this.values.set(target, value);
+    }
+    for (const flag of saved.flags) this.flags.add(flag);
+    for (const change of saved.log) this.log.push({ ...change });
+  }
+
+  /** Back to the starting values, with no flags and an empty log. */
+  private reset(): void {
+    this.values.clear();
+    for (const meter of METERS) this.values.set(meter, this.start[meter]);
+    for (const id of this.characters) this.values.set(`rel.${id}`, this.start.relations[id] ?? 0);
+    this.flags.clear();
+    this.log.length = 0;
   }
 
   /** True when the target names a meter or a known character's relation. */

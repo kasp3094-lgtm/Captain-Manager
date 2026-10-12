@@ -35,7 +35,7 @@ Act 1 ends at the border, with an order to stand down and a decision only you ca
 
 ### 3.2 Layout
 
-Rooms from bow to stern, as in the deck plans. A main passageway runs along the centreline of every deck; ladders sit at frames 22 (decks 1–4) and 66 (decks 2–4), the lift at frame 46 (decks 1–4).
+Rooms from bow to stern, as in the deck plans. A main passageway, 3 m wide, runs along the centreline of every deck; ladders sit at frames 22 (decks 1–4) and 66 (decks 2–4), the lift at frame 46 (decks 1–4).
 
 | Deck | Starboard side | Port side |
 |---|---|---|
@@ -131,7 +131,7 @@ Hot-rack pairs always come from different watch sections (A+B, B+C, A+C; 8 racks
 
 - Racks three high, each with a stowage locker, reading light and privacy curtain.
 - One head per ~10 crew; the mess seats one watch section at a time.
-- A damage-control locker every ~20 m; a fire extinguisher at every hatch.
+- A damage-control locker every ~20 m along the passageways.
 - Naval-style compartment numbers, deck–frame–position–use: `2-30-2-L` (Junior Berthing A) is deck 2, frame 30, first compartment to port (odd numbers are starboard, even are port), living space.
 - Pipes, cable trays and labels overhead; hatches with raised sills; warning signs at the magazine and reactor.
 - The watch bill on each berthing noticeboard is generated from the live crew schedule.

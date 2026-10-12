@@ -20,10 +20,16 @@ import type { CrewLife } from './world/crew/life';
 const NOTICE_MS = 4500;
 const CALL_MS = 7000;
 
+/** What the event player needs from the game. */
+export interface EventPlayerHooks {
+  /** Switches the game into the dialogue panel ('event') or back to walking ('playing'). */
+  setMode(mode: 'event' | 'playing'): void;
+  /** An event is over and its outcome card closed: a good moment to autosave. */
+  finished(): void;
+}
+
 export class EventPlayer {
   readonly director: EventDirector;
-  /** Crew sent to rooms for the event under way, to let go when it ends. */
-  private summoned = new Set<string>();
   private key = 0;
 
   constructor(
@@ -33,8 +39,7 @@ export class EventPlayer {
     private readonly ship: Ship,
     private readonly roster: readonly CrewMember[],
     private readonly shipName: string,
-    /** Switches the game into the dialogue panel ('event') or back to walking ('playing'). */
-    private readonly setMode: (mode: 'event' | 'playing') => void,
+    private readonly hooks: EventPlayerHooks,
   ) {
     this.director = new EventDirector(events, command, (event) => this.host(event));
   }
@@ -76,7 +81,18 @@ export class EventPlayer {
   closeOutcome(): void {
     if (!eventUi.get().outcome) return;
     eventUi.set({ title: '', lines: [], choices: null, notices: [], outcome: null });
-    this.setMode('playing');
+    this.hooks.setMode('playing');
+    this.hooks.finished();
+  }
+
+  /**
+   * After a saved game is loaded (the director restored, the crew placed): no scene open, no
+   * call on screen, and the objective of the event under way, if any.
+   */
+  restored(): void {
+    eventUi.set({ title: '', lines: [], choices: null, notices: [], outcome: null });
+    const active = this.director.active;
+    gameUi.set({ call: null, objective: active ? this.objective(active.room) : null });
   }
 
   private handle(signal: EventSignal): void {
@@ -91,12 +107,12 @@ export class EventPlayer {
         }, CALL_MS);
       }
       gameUi.set({ objective: this.objective(event.trigger.room) });
-      for (const who of event.summon) this.summon(who, event.trigger.room);
+      for (const [who, room] of this.director.active?.summoned ?? []) this.life.summon(who, room);
       return;
     }
     gameUi.set({ objective: null, call: null });
     eventUi.set({ title: event.title, lines: [], choices: null, notices: [], outcome: null });
-    this.setMode('event');
+    this.hooks.setMode('event');
     this.pump();
   }
 
@@ -120,12 +136,12 @@ export class EventPlayer {
         this.director.away(beat.room);
         gameUi.set({ objective: this.objective(beat.room) });
         eventUi.set({ lines: [], choices: null });
-        this.setMode('playing');
+        this.hooks.setMode('playing');
         break;
       case 'end': {
+        const summoned = [...(this.director.active?.summoned.keys() ?? [])];
         const changes = this.director.finish();
-        for (const who of this.summoned) this.life.dismiss(who);
-        this.summoned.clear();
+        for (const who of summoned) this.life.dismiss(who);
         eventUi.set({ choices: null, outcome: this.summarise(changes) });
         break;
       }
@@ -151,11 +167,6 @@ export class EventPlayer {
     const found = findRoom(this.ship, room);
     if (!found) return `Go to ${room}`;
     return `Go to the ${found.room.short ?? found.room.name} (deck ${found.deck.deck})`;
-  }
-
-  private summon(who: string, room: string): void {
-    this.summoned.add(who);
-    this.life.summon(who, room);
   }
 
   /** What an event changed, meter by meter, for the outcome card. */
@@ -195,7 +206,7 @@ export class EventPlayer {
       cause: event.title,
       ship: this.shipName,
       speaker: (id) => this.speaker(id, event),
-      summon: (who, room) => this.summon(who, room),
+      summon: (who, room) => this.life.summon(who, room),
     };
   }
 

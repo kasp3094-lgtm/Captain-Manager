@@ -6,7 +6,7 @@ Every file here must match a schema registered in `src/content/registry.ts` (REA
 
 | Path | What it holds | Since |
 |---|---|---|
-| `balance.yaml` | Every tunable number | M0 |
+| `balance.yaml` | Every tunable number: movement, ship's time (and the time of the morning autosave), the crew's walking, the captain's starting meters | M0 |
 | `ship/ship.yaml` | The ship as a whole: name, ladders and lift, the start room | M0 (ship map) |
 | `ship/deck1.yaml` … `deck4.yaml` | Deck plans: hull outline, rooms, doors, racks, furniture templates (`fit`), points of interest and their props | M0 (ship map), M1 (3D) |
 | `crew/billets.yaml` | Every job aboard: how many hold it, department, watch, where they work, what they use there, patrols | M3 |

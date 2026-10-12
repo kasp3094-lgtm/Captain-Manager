@@ -247,7 +247,7 @@ export function paintDangerSign(warning: string): Painter {
   };
 }
 
-/** A small label, e.g. FIRE EXT. */
+/** A small label, e.g. DAMAGE CONTROL. */
 export function paintLabel(text: string, background: string, color: string): Painter {
   return paintSign(background, [{ text, size: 0.5, color }]);
 }

@@ -101,7 +101,6 @@ export const PROPS = [
   'desk',
   'dining-table',
   'equipment-racks',
-  'extinguisher',
   'gym-machines',
   'helm',
   'holotable',

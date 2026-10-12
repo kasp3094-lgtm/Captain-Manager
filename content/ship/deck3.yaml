@@ -10,7 +10,7 @@ rooms:
     name: Main passageway
     code: 3-10-0-L
     type: passage
-    rect: [10, 7, 70, 2]
+    rect: [10, 6.5, 70, 3]
 
   # Starboard side
   - id: railgun-room
@@ -18,8 +18,8 @@ rooms:
     code: 3-10-1-M
     type: weapons
     fit: railgun
-    rect: [10, 1, 14, 6]
-    doors: [[17, 7]]
+    rect: [10, 1, 14, 5.5]
+    doors: [[17, 6.5]]
     pois:
       - { name: Railgun breech, kind: weapon, at: [14.6, 4], prop: railgun, facing: aft }
       - { name: Capacitor bank, kind: machinery, at: [23.4, 4], prop: capacitor-bank }
@@ -29,8 +29,8 @@ rooms:
     short: Junior berthing B
     code: 3-24-1-L
     type: berthing
-    rect: [24, 1, 10, 6]
-    doors: [[29, 7]]
+    rect: [24, 1, 10, 5.5]
+    doors: [[29, 6.5]]
     racks: 12
     hotRacked: true
 
@@ -40,8 +40,8 @@ rooms:
     code: 3-34-1-C
     type: weapons
     fit: operations
-    rect: [34, 1, 6, 6]
-    doors: [[37, 7]]
+    rect: [34, 1, 6, 5.5]
+    doors: [[37, 6.5]]
     pois:
       - { name: Turret consoles, kind: station, at: [37, 1.8], prop: console-pair }
 
@@ -51,8 +51,8 @@ rooms:
     code: 3-40-1-M
     type: weapons
     fit: magazine
-    rect: [40, 1, 12, 6]
-    doors: [[46, 7]]
+    rect: [40, 1, 12, 5.5]
+    doors: [[46, 6.5]]
     pois:
       - { name: Launch cells, kind: weapon, at: [46, 2], prop: launch-cells }
 
@@ -61,8 +61,8 @@ rooms:
     code: 3-52-1-M
     type: weapons
     fit: armory
-    rect: [52, 1, 6, 6]
-    doors: [[55, 7]]
+    rect: [52, 1, 6, 5.5]
+    doors: [[55, 6.5]]
     pois:
       - { name: Small arms, kind: weapon, at: [55, 1.4], prop: weapon-racks }
 
@@ -71,8 +71,8 @@ rooms:
     short: Marine berthing
     code: 3-58-1-L
     type: berthing
-    rect: [58, 1, 10, 6]
-    doors: [[63, 7]]
+    rect: [58, 1, 10, 5.5]
+    doors: [[63, 6.5]]
     racks: 12
 
   - id: brig
@@ -80,8 +80,8 @@ rooms:
     code: 3-68-1-Q
     type: weapons
     fit: brig
-    rect: [68, 1, 6, 6]
-    doors: [[71, 7]]
+    rect: [68, 1, 6, 5.5]
+    doors: [[71, 6.5]]
 
   - id: dc-central
     name: Damage-Control Central
@@ -89,8 +89,8 @@ rooms:
     code: 3-74-1-C
     type: command
     fit: operations
-    rect: [74, 1, 6, 6]
-    doors: [[77, 7]]
+    rect: [74, 1, 6, 5.5]
+    doors: [[77, 6.5]]
     pois:
       - { name: Damage board, kind: safety, at: [77, 1.2], prop: damage-board }
 
@@ -100,8 +100,8 @@ rooms:
     code: 3-10-2-A
     type: stores
     fit: stores
-    rect: [10, 9, 12, 6]
-    doors: [[16, 9]]
+    rect: [10, 9.5, 12, 5.5]
+    doors: [[16, 9.5]]
 
   - id: hangar
     name: Hangar & Boarding Airlock
@@ -109,8 +109,8 @@ rooms:
     code: 3-24-2-Q
     type: command
     fit: hangar
-    rect: [24, 9, 22, 6]
-    doors: [[35, 9]]
+    rect: [24, 9.5, 22, 5.5]
+    doors: [[35, 9.5]]
     pois:
       - { name: Boarding cutter, kind: station, at: [32, 12.8], prop: cutter, facing: stbd }
       - { name: Boarding airlock, kind: safety, at: [42, 14.5], prop: airlock }
@@ -120,8 +120,8 @@ rooms:
     code: 3-48-2-A
     type: stores
     fit: stores
-    rect: [48, 9, 18, 6]
-    doors: [[52, 9], [62, 9]]
+    rect: [48, 9.5, 18, 5.5]
+    doors: [[52, 9.5], [62, 9.5]]
     pois:
       - { name: Spare parts, kind: machinery, at: [56, 12] }
       - { name: Munitions overflow, kind: weapon, at: [62, 12.5] }
@@ -130,4 +130,4 @@ rooms:
     name: Fuel Tank
     code: 3-68-2-F
     type: tank
-    rect: [68, 9, 12, 6]
+    rect: [68, 9.5, 12, 5.5]

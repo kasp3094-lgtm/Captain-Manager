@@ -2,7 +2,8 @@
  * When events happen. An event waits for its time (trigger.day and trigger.after), then the ship
  * calls the captain ("Captain to the bridge.") and the crew it needs head there. It starts when
  * the captain walks into its room; a `#goto` in the script sends the captain somewhere else
- * before it goes on; when the script ends, it's done for good. One event at a time.
+ * before it goes on; when the script ends, it's done for good. One event at a time. Between
+ * scenes, where things stand can be saved and restored (src/sim/save.ts).
  *
  * Pure: the game reads `active` to show the call, the objective and the dialogue.
  */
@@ -17,6 +18,7 @@ import {
   type Command,
   type Target,
 } from './command';
+import { hash } from './crew';
 import { Narrative, type NarrativeHost } from './narrative';
 
 /** An event as the game runs it: its record, its compiled script and the file it came from. */
@@ -43,6 +45,27 @@ export interface ActiveEvent {
   narrative: Narrative | null;
   /** Where the log was when it started, to sum up what it changed. */
   readonly logStart: number;
+  /** Crew sent to rooms for it (id → room), to let go when it ends. */
+  readonly summoned: Map<string, string>;
+}
+
+/** The events as a save file keeps them (src/sim/save.ts). */
+export interface EventsSnapshot {
+  /** Every event already done, by id. */
+  readonly done: readonly string[];
+  /** The event under way. Saves are made between its scenes, never in the middle of one. */
+  readonly active: {
+    readonly id: string;
+    readonly status: 'called' | 'away';
+    readonly room: string;
+    /** Where the script had got to, in Ink's own format; null before its first scene. */
+    readonly story: string | null;
+    /** A fingerprint of the compiled script, to tell whether it changed since the save. */
+    readonly script: string;
+    readonly logStart: number;
+    /** Crew sent to rooms for it, as [id, room]. */
+    readonly summoned: readonly (readonly [string, string])[];
+  } | null;
 }
 
 /** What the game hears from the director this frame. */
@@ -85,8 +108,7 @@ export class EventDirector {
     ) {
       const resuming = active.status === 'away';
       active.status = 'playing';
-      if (!active.narrative)
-        active.narrative = new Narrative(active.event.story, this.host(active.event));
+      active.narrative ??= new Narrative(active.event.story, this.hostFor(active));
       signals.push({ kind: resuming ? 'resume' : 'start', event: active.event });
     }
     return signals;
@@ -120,6 +142,67 @@ export class EventDirector {
     return this.done;
   }
 
+  /** True while a scene is playing: the game can't be saved until it ends or moves on. */
+  get inScene(): boolean {
+    return this.active?.status === 'playing';
+  }
+
+  /** Where things stand, for a save file. Not in the middle of a scene (see `inScene`). */
+  snapshot(): EventsSnapshot {
+    const active = this.active;
+    if (active?.status === 'playing') throw new Error("Can't save in the middle of a scene");
+    return {
+      done: [...this.done],
+      active: active && {
+        id: active.event.id,
+        status: active.status as 'called' | 'away',
+        room: active.room,
+        story: active.narrative?.save() ?? null,
+        script: fingerprint(active.event.story),
+        logStart: active.logStart,
+        summoned: [...active.summoned],
+      },
+    };
+  }
+
+  /**
+   * Puts saved events back; restore the command state first. An event the game no longer has
+   * is dropped. If the event's script has changed since the save (a newer version of the game),
+   * or its saved place in the script can't be read, the event starts over from its call.
+   */
+  restore(saved: EventsSnapshot): void {
+    this.done.clear();
+    for (const id of saved.done) this.done.add(id);
+    this.active = null;
+    const at = saved.active;
+    const event = at && this.events.find((candidate) => candidate.id === at.id);
+    if (!at || !event) return;
+    const active: ActiveEvent = {
+      event,
+      status: at.status,
+      room: at.room,
+      narrative: null,
+      logStart: Math.min(at.logStart, this.command.log.length),
+      summoned: new Map(at.summoned),
+    };
+    this.active = active;
+    if (at.story === null) return;
+    if (at.script === fingerprint(event.story)) {
+      const narrative = new Narrative(event.story, this.hostFor(active));
+      try {
+        narrative.load(at.story);
+        active.narrative = narrative;
+        return;
+      } catch {
+        // Unreadable: start over, below.
+      }
+    }
+    active.status = 'called';
+    active.room = event.trigger.room;
+    active.summoned.clear();
+    for (const who of event.summon) active.summoned.set(who, event.trigger.room);
+  }
+
   private call(event: GameEvent): EventSignal {
     this.active = {
       event,
@@ -127,9 +210,27 @@ export class EventDirector {
       room: event.trigger.room,
       narrative: null,
       logStart: this.command.log.length,
+      summoned: new Map(event.summon.map((who) => [who, event.trigger.room])),
     };
     return { kind: 'call', event, text: event.trigger.call ?? null };
   }
+
+  /** What the script needs, noting whoever it summons so they can be let go at the end. */
+  private hostFor(active: ActiveEvent): NarrativeHost {
+    const host = this.host(active.event);
+    return {
+      ...host,
+      summon: (who, room) => {
+        active.summoned.set(who, room);
+        host.summon(who, room);
+      },
+    };
+  }
+}
+
+/** A short fingerprint of a compiled script. */
+function fingerprint(story: string): string {
+  return hash(story).toString(16);
 }
 
 /**

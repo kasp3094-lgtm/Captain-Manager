@@ -62,6 +62,25 @@ describe('crew life', () => {
     }
   });
 
+  it('starts the day over for a loaded game, with whoever an event needs where it needs them', () => {
+    const { life, now } = startAt('07:50');
+    run(life, now, 20);
+    const loaded = minutes('13:20');
+    life.restart(loaded, new Map([['sethi', 'hangar']]));
+    for (const person of life.people) {
+      expect(person.settled, person.member.id).toBe(true);
+      const room = person.member.id === 'sethi' ? 'hangar' : blockOf(person, loaded).room;
+      expect(person.space, person.member.id).toBe(room);
+    }
+    // Waiting there until let go.
+    run(life, loaded, 15);
+    expect(life.person('sethi')!.space).toBe('hangar');
+    life.dismiss('sethi');
+    const later = run(life, loaded + 15, 15);
+    expect(life.person('sethi')!.space).not.toBe('hangar');
+    expect(blockOf(life.person('sethi')!, later).room).not.toBe('hangar');
+  });
+
   it('changes the watch at 0800: the new watch takes over the bridge', () => {
     const { life, now } = startAt('07:50');
     const onBridge = () =>

@@ -23,12 +23,16 @@ const PlayerTuningSchema = z
 
 export type PlayerTuning = z.infer<typeof PlayerTuningSchema>;
 
+const CLOCK_TIME = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'a time like "07:50"');
+
 /** How ship's time runs while you walk the ship. */
 const TimeSchema = z.strictObject({
   /** The time the game starts at, 24-hour clock. */
-  start: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'a time like "07:50"'),
+  start: CLOCK_TIME,
   /** Ship minutes per real second. */
   minutesPerSecond: z.number().min(0).max(60),
+  /** The game saves itself every morning at this time (the autosave slot). */
+  autosave: CLOCK_TIME,
 });
 
 /** How the crew walk. */

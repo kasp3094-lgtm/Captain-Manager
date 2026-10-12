@@ -849,13 +849,6 @@ const PROPS: Record<ItemKind, PropBuilder> = {
     panel(b, ctx.panels, paintNoticeboard, [0, 1.425, 0.03], 1.3, 0.85);
   },
 
-  extinguisher(b, ctx) {
-    b.slab('metalDark', [-0.12, 0.4, -0.1], [0.12, 0.88, -0.07]);
-    b.prism('fireRed', [0, 0.62, 0], { diameter: 0.17, length: 0.48, sides: 12 });
-    b.box('metalDark', [0, 0.9, 0], [0.06, 0.08, 0.1]);
-    panel(b, ctx.panels, paintLabel('FIRE EXT.', '#b8261d', '#ffffff'), [0, 1.0, -0.065], 0.3, 0.1);
-  },
-
   'dc-locker'(b, ctx) {
     b.slab('dcYellow', [-0.4, 0.95, -0.125], [0.4, 1.75, 0.115]);
     b.slab('metalDark', [-0.02, 1.0, 0.115], [0.02, 1.7, 0.125]);

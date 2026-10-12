@@ -102,7 +102,7 @@ describe('layout queries', () => {
   });
 
   it('finds the nearest point of interest within range', () => {
-    expect(nearestPoi(deck2, 30.8, 13.2, 3)?.poi.name).toBe('Fire extinguisher');
+    expect(nearestPoi(deck2, 30.8, 13.8, 3)?.poi.name).toBe('Damage-control locker');
     expect(nearestPoi(deck2, 35, 8, 0.5)).toBeNull();
   });
 });

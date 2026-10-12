@@ -4,6 +4,8 @@
  * the crew's day, finds what the captain can use, plays the crew's walk-by dialog, renders the
  * scene, and tells the interface where the captain is and what's being said.
  * Ladders and the lift move the captain between decks behind a short fade to black.
+ * It saves the game into the browser's save slots and loads it back in place: every morning, after
+ * each event, on pausing and on leaving the page (the autosave), and when the player asks.
  *
  * This is the one place where the 3D world (src/world), the content and rules (src/content,
  * src/sim) and the interface (src/ui) meet.
@@ -13,15 +15,25 @@ import { minutes, type CrewContent } from './content/crew';
 import { EventPlayer } from './eventPlayer';
 import type { Deck, Ship } from './content/ship';
 import type { LaunchParams } from './debug/params';
+import { listSlots, readSlot, slotName, writeSlot, type SlotId } from './saveSlots';
 import { ShipClock } from './sim/clock';
 import { Command } from './sim/command';
 import { buildRoster, type CrewMember } from './sim/crew';
 import { spokenShipName, type DialogEntry } from './sim/dialog';
 import type { GameEvent } from './sim/events';
 import { Rng } from './sim/rng';
-import { clock } from './sim/schedule';
+import { applySave, takeSave, type SaveFile, type SaveParts } from './sim/save';
+import { DAY, clock } from './sim/schedule';
 import { findRoom, nearestPoi, roomAt, shaftsOnDeck } from './sim/ship';
-import { eventUi, gameUi, playerPose, speech, type GameControls, type GameMode } from './ui/state';
+import {
+  eventUi,
+  gameUi,
+  playerPose,
+  savesUi,
+  speech,
+  type GameControls,
+  type GameMode,
+} from './ui/state';
 import {
   Engine,
   Matrix,
@@ -134,6 +146,7 @@ interface Trip {
 export class Game implements GameControls {
   /** This run's random numbers: the crew's choices and the dialog draw on them; events (M2) will. */
   readonly rng: Rng;
+  private readonly seed: number;
   private readonly engine: Engine;
   private readonly scene: Scene;
   private readonly input: PlayerInput;
@@ -162,6 +175,12 @@ export class Game implements GameControls {
   private readonly ship: Ship;
   /** The room the captain is in (a room id from the deck plans), or null in a shaft. */
   private roomId: string | null = null;
+  /** The player has taken command (or loaded a game): from now on there is a game to save. */
+  private started = false;
+  /** The morning autosave: its time of day (minutes), the mornings so far, and one waiting. */
+  private readonly autosaveAt: number;
+  private mornings: number;
+  private autosaveDue = false;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -193,6 +212,7 @@ export class Game implements GameControls {
     this.standAt(start);
 
     const seed = params.seed ?? Math.floor(Math.random() * 2 ** 31);
+    this.seed = seed;
     this.rng = Rng.fromSeed(seed);
     gameUi.set({ seed });
 
@@ -241,8 +261,14 @@ export class Game implements GameControls {
       ship,
       roster.members,
       spokenShipName(ship.name),
-      (mode) => (mode === 'event' ? this.enterEvent() : this.requestPlay()),
+      {
+        setMode: (mode) => (mode === 'event' ? this.enterEvent() : this.requestPlay()),
+        finished: () => this.autosave(),
+      },
     );
+    this.autosaveAt = minutes(balance.time.autosave);
+    this.mornings = this.morningsBy(this.clock.total);
+    this.refreshSlots();
     this.reportWhereabouts();
     this.reportTime();
 
@@ -250,6 +276,8 @@ export class Game implements GameControls {
       this.sceneReadyAtFrame = this.frames;
     });
     document.addEventListener('pointerlockchange', this.onPointerLockChange);
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
+    window.addEventListener('pagehide', this.onPageHide);
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('resize', this.onResize);
     canvas.addEventListener('click', this.onCanvasClick);
@@ -304,9 +332,18 @@ export class Game implements GameControls {
       this.clock.advance(dt);
       this.life.update(dt * this.timeScale, this.clock.total, this.captainView());
       this.reportTime();
+      const mornings = this.morningsBy(this.clock.total);
+      if (mornings !== this.mornings) {
+        this.mornings = mornings;
+        this.autosaveDue = true;
+      }
     }
     if (playing) this.chatter.update(dt, this.captainView(), this.clock.minute);
     if (playing && !this.trip) this.events.update(this.clock.day, this.clock.minute, this.roomId);
+    if (playing && this.autosaveDue && this.canSave()) {
+      this.autosaveDue = false;
+      this.autosave();
+    }
     this.crowd.update(this.deck.deck, this.life.seconds, this.captainView());
     if (playing && !this.trip) this.findTarget();
     this.placeSpeech();
@@ -341,6 +378,87 @@ export class Game implements GameControls {
   readonly closeOutcome = (): void => {
     if (gameUi.get().mode === 'event') this.events.closeOutcome();
   };
+
+  // ---- Saving and loading ---------------------------------------------------------------
+
+  readonly saveGame = (slot: SlotId): string => {
+    if (!this.canSave()) return "Can't save in the middle of a scene.";
+    return this.writeSave(slot)
+      ? `Saved in ${slotName(slot).toLowerCase()}.`
+      : "Couldn't save: this browser isn't keeping anything for this site.";
+  };
+
+  readonly loadGame = (slot: SlotId): string | null => {
+    if (!this.ready) return 'The ship is still loading.';
+    const { save, problem } = readSlot(slot);
+    if (!save) {
+      return `${slotName(slot)} ${problem ? `can't be loaded: ${problem}` : 'is empty'}.`;
+    }
+    this.restore(save);
+    this.requestPlay();
+    return null;
+  };
+
+  /** There's a game to save, and not in the middle of a scene. */
+  private canSave(): boolean {
+    return this.started && gameUi.get().mode !== 'event' && !this.events.director.inScene;
+  }
+
+  private autosave(): void {
+    if (this.canSave()) this.writeSave('auto');
+  }
+
+  /** Writes the game as it stands into a slot; false if the browser won't keep it. */
+  private writeSave(slot: SlotId): boolean {
+    const { x, z } = this.player.feet;
+    const { yaw, pitch } = this.player.facing;
+    const room = gameUi.get().room;
+    const save = takeSave(this.saveParts(), {
+      savedAt: new Date(),
+      place: room ? `${room.name}, deck ${room.deck}` : `Deck ${this.deck.deck}`,
+      seed: this.seed,
+      captain: { deck: this.deck.deck, x, y: -z, yaw: degrees(yaw), pitch: degrees(pitch) },
+    });
+    const saved = writeSlot(slot, save);
+    this.refreshSlots();
+    return saved;
+  }
+
+  /**
+   * Puts a saved game back in place: ship's time, the command state and the events; the crew
+   * where their day has them then (and whoever an event is keeping somewhere); the captain where
+   * they stood, or at the start if the ship has changed so that's no longer on board.
+   */
+  private restore(save: SaveFile): void {
+    applySave(save, this.saveParts());
+    this.life.restart(this.clock.total, this.events.director.active?.summoned);
+    this.chatter.hush();
+    this.events.restored();
+    this.trip = null;
+    gameUi.set({ fading: false });
+    const { deck, x, y } = save.captain;
+    const plan = this.ship.decks.find((candidate) => candidate.deck === deck);
+    const aboard = plan && (roomAt(plan, x, y) !== null || this.shaftAt(deck, x, y) !== undefined);
+    this.standAt(aboard ? save.captain : this.layout.bookmarks.get('spawn')!);
+    this.reportWhereabouts();
+    this.shownMinute = -1;
+    this.reportTime();
+    this.mornings = this.morningsBy(this.clock.total);
+    this.autosaveDue = false;
+  }
+
+  private saveParts(): SaveParts {
+    return { clock: this.clock, command: this.command, events: this.events.director };
+  }
+
+  private refreshSlots(): void {
+    savesUi.set({ slots: listSlots() });
+  }
+
+  /** Counts the autosave mornings up to a ship time (total minutes): goes up by one each morning. */
+  private morningsBy(total: number): number {
+    return Math.floor((total - this.autosaveAt) / DAY);
+  }
 
   /** Opens the dialogue panel: the pointer is let go so choices can be clicked. */
   private enterEvent(): void {
@@ -521,11 +639,7 @@ export class Game implements GameControls {
 
     const ui = gameUi.get();
     const room = roomAt(this.deck, x, y);
-    const shaft = room
-      ? null
-      : shaftsOnDeck(this.ship, deck).find(
-          ({ rect: [sx, sy, w, d] }) => x >= sx && x <= sx + w && y >= sy && y <= sy + d,
-        );
+    const shaft = room ? null : this.shaftAt(deck, x, y);
     const here = room
       ? { id: room.id, code: room.code, name: room.name, deck }
       : shaft
@@ -545,6 +659,13 @@ export class Game implements GameControls {
     }
   }
 
+  /** The ladderwell or lift at a point on a deck, if any. */
+  private shaftAt(deck: number, x: number, y: number) {
+    return shaftsOnDeck(this.ship, deck).find(
+      ({ rect: [sx, sy, w, d] }) => x >= sx && x <= sx + w && y >= sy && y <= sy + d,
+    );
+  }
+
   // ---- Modes and input ------------------------------------------------------------------
 
   private markReady(): void {
@@ -559,6 +680,8 @@ export class Game implements GameControls {
   private setMode(mode: GameMode): void {
     gameUi.set({ mode });
     this.input.setEnabled(mode === 'playing' && !this.trip);
+    if (mode === 'playing') this.started = true;
+    if (mode === 'paused') this.autosave();
   }
 
   private lockPointer(): void {
@@ -615,6 +738,15 @@ export class Game implements GameControls {
       if (document.pointerLockElement === this.canvas) document.exitPointerLock();
       else this.setMode('paused');
     }
+  };
+
+  /** Leaving the page (closing the tab, switching away): autosave, so nothing is lost. */
+  private readonly onVisibilityChange = (): void => {
+    if (document.visibilityState === 'hidden') this.autosave();
+  };
+
+  private readonly onPageHide = (): void => {
+    this.autosave();
   };
 
   private readonly onCanvasClick = (): void => {

@@ -1,7 +1,7 @@
 /*
  * All interface styling. The look is a military datapad: dark panels, amber accents, monospace
- * labels. Sections: base and page, cards and screens, HUD, speech, events, lift, minimap, full
- * ship map, map drawing, debug.
+ * labels. Sections: base and page, cards and screens, save slots, HUD, speech, events, lift,
+ * minimap, full ship map, map drawing, debug.
  */
 
 /* ── Base and page ─────────────────────────────────────────────────────────── */
@@ -158,6 +158,104 @@ kbd {
   white-space: pre-wrap;
   font: 12px var(--mono);
   color: var(--muted);
+}
+
+/* A column of buttons: the start and pause menus. */
+.menu {
+  display: grid;
+  gap: 10px;
+}
+
+/* Second choices: outlined rather than filled. */
+.button.quiet {
+  color: var(--amber);
+  background: transparent;
+  border: 1px solid var(--line);
+}
+
+.button.quiet:hover:not(:disabled) {
+  filter: none;
+  background: rgba(255, 190, 85, 0.08);
+}
+
+/* Under Continue: the save it picks up. */
+.button-detail {
+  display: block;
+  margin-top: 4px;
+  font: 12px var(--mono);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  opacity: 0.75;
+}
+
+/* ── Save slots (save and load lists) ──────────────────────────────────────── */
+
+.slots {
+  display: grid;
+  gap: 12px;
+}
+
+.slot-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.slot {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'name when'
+    'detail detail';
+  gap: 3px 12px;
+  width: 100%;
+  padding: 10px 14px;
+  font: inherit;
+  text-align: left;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.slot:hover:not(:disabled),
+.slot:focus-visible {
+  outline: none;
+  border-color: var(--amber);
+  background: rgba(255, 190, 85, 0.07);
+}
+
+.slot:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.slot-name {
+  grid-area: name;
+  font: 600 12px/1.4 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.slot-when {
+  grid-area: when;
+  font: 12px/1.4 var(--mono);
+  color: var(--muted);
+}
+
+.slot-detail {
+  grid-area: detail;
+  font-size: 14px;
+}
+
+.slot-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--green);
 }
 
 /* ── HUD ───────────────────────────────────────────────────────────────────── */

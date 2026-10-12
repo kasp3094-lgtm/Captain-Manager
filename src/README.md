@@ -13,8 +13,9 @@ index.html → main.tsx ─┬─ Game (game.ts) ── every frame: move the ca
                        │      ├─ content/  data from content/*.yaml, checked against schemas
                        │      └─ sim/      pure game rules: random numbers, ship layout queries, the
                        │                   crew roster and their day, dialog matching
-                       └─ App (ui/App.tsx) ── the React interface on top: start and pause screens,
-                                              HUD with the minimap and speech, the ship map (M), the lift
+                       └─ App (ui/App.tsx) ── the React interface on top: start and pause screens
+                                              (with saving and loading), HUD with the minimap and speech,
+                                              the ship map (M), the lift
 
 content/ship/*.yaml → world/ship/layout.ts + fits.ts (pure: walls, doors, cells, furniture)
                     → world/ship/build.ts + props.ts (Babylon meshes, lights, colliders)
@@ -26,11 +27,13 @@ content/dialog/*.yaml → sim/dialog.ts (pure: read, check, match) → world/cre
 content/events/** → content/ink.ts (Ink compiled at build time) → sim/events.ts (when) +
                     sim/narrative.ts (the scene) + sim/command.ts (the meters) → eventPlayer.ts
                     → ui/EventPanel.tsx (the dialogue and its choices)
+saving: sim/clock.ts + sim/command.ts + sim/events.ts → sim/save.ts (pure: the save file, checked
+                    and migrated) → saveSlots.ts (the browser's localStorage) → ui/SaveSlots.tsx
 ```
 
 - `game.ts` is the only file that touches all of `world/`, `sim/`, `content/` and `ui/` (with `eventPlayer.ts`, which it owns, for events).
 - `sim/` never imports `world/`, `ui/`, Babylon.js, React or browser globals, so it runs headless in Node for tests and tools. ESLint enforces this.
-- The game writes to four small stores in `ui/state.ts`; React components read from them. Nothing in `ui/` reaches into the 3D scene.
+- The game writes to small stores in `ui/state.ts`; React components read from them. Nothing in `ui/` reaches into the 3D scene.
 - Numbers a designer might tune, and anything about specific rooms, live in [`content/`](../content/), not in code.
 - The ship's layout planner (`world/ship/coords.ts`, `layout.ts`, `fits.ts`, `walkgrid.ts`, `spots.ts`) and the crew's movement, bodies and dialog (`world/crew/life.ts`, `body.ts`, `chatter.ts`) are plain maths without Babylon.js, so `npm run validate` and the unit tests run them in Node. ESLint enforces it. Only `world/crew/crowd.ts` draws people.
 
@@ -39,8 +42,9 @@ content/events/** → content/ink.ts (Ink compiled at build time) → sim/events
 | File | What it does |
 |---|---|
 | `main.tsx` | Entry point: reads URL parameters, starts the Game, mounts the interface |
-| `game.ts` | The Game: engine, scene, frame loop, modes (start, playing, paused, map, lift, event), ship's time, the crew and their dialog, the command meters and events, using things (E), trips between decks, speech bubbles on screen, and the test hook for end-to-end tests |
+| `game.ts` | The Game: engine, scene, frame loop, modes (start, playing, paused, map, lift, event), ship's time, the crew and their dialog, the command meters and events, using things (E), trips between decks, speech bubbles on screen, saving (autosave and slots) and loading in place, and the test hook for end-to-end tests |
 | `eventPlayer.ts` | Plays events in the game: the ship-wide call, the objective, summoned crew, and the dialogue panel scene by scene |
+| `saveSlots.ts` | The save slots in the browser's localStorage: the autosave and three of the player's own |
 | **content/** | **Content schemas and loading** |
 | `content/balance.ts` | Schema for `content/balance.yaml` (movement, ship's time and crew tuning) |
 | `content/crew.ts` | Schemas for `content/crew/`: billets (every job aboard), the named characters, name lists, the daily routine |
@@ -59,7 +63,8 @@ content/events/** → content/ink.ts (Ink compiled at build time) → sim/events
 | `sim/dialog.ts` | Walk-by dialog: reads and checks the scripts, finds entries that can never happen, matches entries to people, places and times, fills in names |
 | `sim/command.ts` | The command meters (budget, readiness, crew, High Command, fatigue, a relation per named character) and flags: effects within range, a log of every change and why, tiers, requirements |
 | `sim/narrative.ts` | Plays an event's Ink script: lines and speakers, choices with costs and locks, effects and the notices they make |
-| `sim/events.ts` | When events happen: due by ship's time, called, started in their room, moved by `#goto`, done; and the content check for their scripts |
+| `sim/events.ts` | When events happen: due by ship's time, called, started in their room, moved by `#goto`, done; who they summoned; saving and restoring them between scenes; and the content check for their scripts |
+| `sim/save.ts` | Save files: what one holds (ship's time, the captain's position, the command state, the events), making one and putting it back, and reading one back: checked, and brought up to date by migrations |
 | **world/** | **The 3D view** |
 | `world/babylon.ts` | The only door to Babylon.js, imported module by module |
 | `world/scene.ts` | Scene-wide look: background, contrast, vignette, glow |
@@ -73,7 +78,7 @@ content/events/** → content/ink.ts (Ink compiled at build time) → sim/events
 | `world/ship/build.ts` | Turns the plan into meshes per lighting cell, lights, colliders and things to use, plus an empty mesh per cell to draw its people in; one node per deck |
 | `world/ship/walkgrid.ts` | Where a person can stand, as a grid, and paths across a deck (A*, straightened) (pure, unit-tested) |
 | `world/ship/spots.ts` | Every place a person can be: seats, racks, consoles, machines, open floor (pure, unit-tested) |
-| `world/crew/life.ts` | The crew going about their day: setting off on time, walking, ladders and the lift, taking spots, making way for the captain (pure, unit-tested) |
+| `world/crew/life.ts` | The crew going about their day: setting off on time, walking, ladders and the lift, taking spots, making way for the captain; starting the day over when a game is loaded (pure, unit-tested) |
 | `world/crew/body.ts` | A person as posed boxes: standing, walking, sitting, working, lying, running, talking, eating; uniform colours (pure, unit-tested) |
 | `world/crew/crowd.ts` | Draws everyone on the captain's deck as thin instances per lighting cell, and the invisible boxes to bump into and talk to |
 | `world/crew/chatter.ts` | Plays walk-by dialog: overheard conversations, remarks to the captain, answers when spoken to (pure, unit-tested) |
@@ -83,7 +88,8 @@ content/events/** → content/ink.ts (Ink compiled at build time) → sim/events
 | `world/player/interaction.ts` | What the captain is looking at and can use (a ray from the eyes) |
 | **ui/** | **The interface** |
 | `ui/App.tsx` | Picks what to show for the current mode; the fade to black between decks |
-| `ui/screens.tsx` | Start, pause and error screens |
+| `ui/screens.tsx` | Start (take command, continue, load), pause (resume, save, load) and error screens |
+| `ui/SaveSlots.tsx` | The list of save slots to save in or load: day, time and place of each save, and how long ago |
 | `ui/Hud.tsx` | In-game HUD: minimap, crosshair, what E would do, speech, ship-wide calls, the objective, key hints |
 | `ui/Speech.tsx` | What the crew are saying: a bubble over the speaker, or a subtitle when they're out of view |
 | `ui/EventPanel.tsx` | An event's dialogue: lines, numbered choices (locked ones greyed with the reason), notices, and the outcome card |
@@ -94,7 +100,7 @@ content/events/** → content/ink.ts (Ink compiled at build time) → sim/events
 | `ui/map/ShipMap.tsx` | The full ship map (M): deck tabs, legend, hover to identify |
 | `ui/map/poi.tsx` | Point-of-interest symbols, one shape per kind |
 | `ui/map/labels.ts` | Fits room names inside rooms on the map |
-| `ui/state.ts` | The state the game shares with the interface, and the speech and event stores |
+| `ui/state.ts` | The state the game shares with the interface: the game's state, the captain's position, speech, the event being played and the save slots |
 | `ui/store.ts` | The tiny store behind `state.ts` |
 | `ui/styles.css` | All interface styling, in labelled sections |
 | **debug/** | |
@@ -103,4 +109,4 @@ content/events/** → content/ink.ts (Ink compiled at build time) → sim/events
 | `types/yaml.d.ts` | Lets TypeScript import `.yaml` files |
 | `types/ink.d.ts` | Lets TypeScript import `.ink` files (compiled stories) |
 
-Outside `src/`: [`tests/`](../tests/) holds unit tests (`unit/`, including every branch of every event), browser tests (`e2e/`, including the walk from the captain's quarters to engineering and back, the crew's change of watch and dialog, and the first mission played through) and screenshot scripts (`shots/`); [`tools/`](../tools/) holds the content validator.
+Outside `src/`: [`tests/`](../tests/) holds unit tests (`unit/`, including every branch of every event), browser tests (`e2e/`, including the walk from the captain's quarters to engineering and back, the crew's change of watch and dialog, the first mission played through, and saving and loading) and screenshot scripts (`shots/`); [`tools/`](../tools/) holds the content validator.

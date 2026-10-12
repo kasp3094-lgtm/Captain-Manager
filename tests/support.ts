@@ -25,3 +25,13 @@ export async function waitFrames(page: Page, count: number): Promise<void> {
     .poll(() => page.evaluate(() => window.__captain!.frames()), { timeout: 30_000 })
     .toBeGreaterThanOrEqual(start + count);
 }
+
+/** In an event's scene: presses Space until choices show (or the panel closes); their texts. */
+export async function untilChoices(page: Page): Promise<string[]> {
+  const choices = page.locator('.event-choices button');
+  for (let i = 0; i < 40 && (await choices.count()) === 0; i++) {
+    if ((await page.getByTestId('event').count()) === 0) break;
+    await page.keyboard.press('Space');
+  }
+  return choices.allInnerTexts();
+}

@@ -1,9 +1,10 @@
 /**
  * The state the game shares with the interface. The game (src/game.ts) writes it; React
- * components read it through `useStore`. Two stores, so that the player's position, which
- * changes every frame, doesn't make the rest of the interface re-render.
+ * components read it through `useStore`. Separate stores, so that what changes every frame (the
+ * player's position, speech) doesn't make the rest of the interface re-render.
  */
 import type { PoiKind } from '../content/ship';
+import type { SlotId, SlotSummary } from '../saveSlots';
 import { createStore } from './store';
 
 /**
@@ -142,6 +143,9 @@ export const eventUi = createStore<EventUiState>({
   outcome: null,
 });
 
+/** What's in the save slots, for the save and load lists. */
+export const savesUi = createStore<{ readonly slots: readonly SlotSummary[] }>({ slots: [] });
+
 /** What the interface may ask the game to do. */
 export interface GameControls {
   /** Hand control to the player (locks the mouse pointer where the browser allows it). */
@@ -156,4 +160,8 @@ export interface GameControls {
   chooseOption(index: number): void;
   /** Close an event's outcome card and play on. */
   closeOutcome(): void;
+  /** Save into one of the player's slots. Says how it went: "Saved in slot 1." */
+  saveGame(slot: SlotId): string;
+  /** Load a slot and play on from there. Null when it loaded; otherwise why it didn't. */
+  loadGame(slot: SlotId): string | null;
 }

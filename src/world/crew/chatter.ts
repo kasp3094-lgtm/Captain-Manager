@@ -357,6 +357,11 @@ export class Chatter {
     });
   }
 
+  /** Breaks off whatever is being said (a saved game was loaded). */
+  hush(): void {
+    this.stop();
+  }
+
   private stop(): void {
     if (!this.conversation) return;
     this.conversation = null;

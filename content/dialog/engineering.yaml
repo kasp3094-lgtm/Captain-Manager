@@ -162,7 +162,7 @@
   who: damage-control-rating
   doing: patrol
   lines: |
-    1: Fire main pressure good, hatches dogged, extinguisher in date. Next.
+    1: Fire main pressure good, hatches dogged, damage-control locker sealed. Next.
 
 - id: dc-hatch
   who: damage-control-rating

@@ -23,7 +23,7 @@ rooms:
     name: Main passageway
     code: 1-22-0-L
     type: passage
-    rect: [22, 7, 38, 2]
+    rect: [22, 6.5, 38, 3]
 
   # Starboard side
   - id: cic
@@ -32,18 +32,18 @@ rooms:
     code: 1-22-1-C
     type: command
     fit: operations
-    rect: [22, 2, 8, 5]
-    doors: [[26, 7]]
+    rect: [22, 2, 8, 4.5]
+    doors: [[24, 6.5]]
     pois:
-      - { name: Tactical holotable, kind: station, at: [26, 4.5], prop: holotable, facing: port }
+      - { name: Tactical holotable, kind: station, at: [26.5, 4.2], prop: holotable, facing: port }
 
   - id: captains-quarters
     name: Captain's Quarters
     code: 1-30-1-L
     type: command
     fit: captain
-    rect: [30, 2, 10, 5]
-    doors: [[33, 7]]
+    rect: [30, 2, 10, 4.5]
+    doors: [[33, 6.5]]
     racks: 1
     pois:
       - { name: Desk & logbook, kind: info, at: [37.5, 3.4], prop: desk, facing: stbd }
@@ -54,8 +54,8 @@ rooms:
     code: 1-40-1-L
     type: command
     fit: cabin
-    rect: [40, 2, 4, 5]
-    doors: [[42, 7]]
+    rect: [40, 2, 4, 4.5]
+    doors: [[42, 6.5]]
     racks: 1
 
   - id: wardroom
@@ -63,10 +63,10 @@ rooms:
     code: 1-44-1-L
     type: habitation
     fit: wardroom
-    rect: [44, 2, 12, 5]
-    doors: [[50, 7]]
+    rect: [44, 2, 12, 4.5]
+    doors: [[46, 6.5]]
     pois:
-      - { name: Wardroom table, kind: social, at: [50, 4.2], prop: dining-table, facing: port }
+      - { name: Wardroom table, kind: social, at: [50.5, 4.2], prop: dining-table, facing: port }
 
   - id: officers-head
     name: Officers' Head & Showers
@@ -74,8 +74,8 @@ rooms:
     code: 1-56-1-L
     type: habitation
     fit: head
-    rect: [56, 2, 4, 5]
-    doors: [[58, 7]]
+    rect: [56, 2, 4, 4.5]
+    doors: [[58, 6.5]]
 
   # Port side
   - id: ready-room
@@ -83,8 +83,8 @@ rooms:
     code: 1-24-2-Q
     type: command
     fit: briefing
-    rect: [24, 9, 8, 5]
-    doors: [[28, 9]]
+    rect: [24, 9.5, 8, 4.5]
+    doors: [[28, 9.5]]
     pois:
       - { name: Briefing screen, kind: info, at: [28, 13.8], prop: wall-screen }
 
@@ -94,8 +94,8 @@ rooms:
     code: 1-32-2-C
     type: command
     fit: equipment
-    rect: [32, 9, 6, 5]
-    doors: [[35, 9]]
+    rect: [32, 9.5, 6, 4.5]
+    doors: [[35, 9.5]]
     pois:
       - { name: Signal racks, kind: station, at: [35, 13.5], prop: equipment-racks }
 
@@ -104,8 +104,8 @@ rooms:
     code: 1-38-2-L
     type: berthing
     fit: stateroom
-    rect: [38, 9, 4, 5]
-    doors: [[40, 9]]
+    rect: [38, 9.5, 4, 4.5]
+    doors: [[40, 9.5]]
     racks: 2
 
   - id: stateroom-2
@@ -113,8 +113,8 @@ rooms:
     code: 1-42-2-L
     type: berthing
     fit: stateroom
-    rect: [42, 9, 4, 5]
-    doors: [[44, 9]]
+    rect: [42, 9.5, 4, 4.5]
+    doors: [[44, 9.5]]
     racks: 2
 
   - id: stateroom-3
@@ -122,8 +122,8 @@ rooms:
     code: 1-48-2-L
     type: berthing
     fit: stateroom
-    rect: [48, 9, 4, 5]
-    doors: [[50, 9]]
+    rect: [48, 9.5, 4, 4.5]
+    doors: [[50, 9.5]]
     racks: 2
 
   - id: stateroom-4
@@ -131,8 +131,8 @@ rooms:
     code: 1-52-2-L
     type: berthing
     fit: stateroom
-    rect: [52, 9, 4, 5]
-    doors: [[54, 9]]
+    rect: [52, 9.5, 4, 4.5]
+    doors: [[54, 9.5]]
     racks: 2
 
   - id: officers-stores
@@ -140,5 +140,5 @@ rooms:
     code: 1-56-2-A
     type: stores
     fit: stores
-    rect: [56, 9, 4, 5]
-    doors: [[58, 9]]
+    rect: [56, 9.5, 4, 4.5]
+    doors: [[58, 9.5]]

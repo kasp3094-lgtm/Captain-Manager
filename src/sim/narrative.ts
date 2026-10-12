@@ -114,9 +114,17 @@ export class Narrative {
     return notices;
   }
 
-  /** The script's saved state, for save files (M2). */
+  /** Where the script has got to, for save files (src/sim/save.ts). */
   save(): string {
     return this.story.state.ToJson() as string;
+  }
+
+  /** Picks the script up where a save left it (between scenes: never with choices waiting). */
+  load(saved: string): void {
+    this.story.state.LoadJson(saved);
+    this.pendingGoto = null;
+    this.offered = [];
+    this.notices = [];
   }
 
   private view(index: number, text: string, tags: Tags): ChoiceView | null {

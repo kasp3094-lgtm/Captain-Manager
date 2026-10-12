@@ -1,13 +1,13 @@
 /**
  * Screenshots for review after visual changes: `npm run shots`, then look at artifacts/shots/.
  * The interface in a few states, the ship map of each deck, the crew at different times of day,
- * the first mission, and every room and shaft from its viewpoint
+ * the first mission, saving, and every room and shaft from its viewpoint
  * (artifacts/shots/rooms/<deck>-<room>.png).
  * Viewpoints, seeds and times are fixed and the crew are frozen in place (`timescale=0`), so
  * images are comparable between runs.
  */
 import { expect, test, type Page } from '@playwright/test';
-import { openGame, pose, waitFrames } from '../support';
+import { openGame, pose, untilChoices, waitFrames } from '../support';
 
 /** Fixed seed, the crew frozen in place, no interface. */
 const CREW = '?autostart&noui&seed=3&timescale=0';
@@ -25,13 +25,6 @@ function mapOfDeck(deck: number) {
     await page.getByRole('tab', { name: new RegExp(`Deck ${deck}`) }).click();
     await expect(page.getByRole('dialog', { name: 'Ship map' })).toBeVisible();
   };
-}
-
-/** Presses Space through an event's lines until it offers choices. */
-async function untilChoices(page: Page) {
-  const choices = page.locator('.event-choices button');
-  for (let i = 0; i < 40 && (await choices.count()) === 0; i++) await page.keyboard.press('Space');
-  await expect(choices.first()).toBeVisible();
 }
 
 /** Looks down the ladderwell's hole, so the prompt shows. */
@@ -89,10 +82,32 @@ const SHOTS: readonly Shot[] = [
     name: '18-mission-choices',
     query: '?autostart&seed=3&timescale=0&event=stranded-trader&cam=bridge',
     then: async (page) => {
-      await untilChoices(page);
+      expect(await untilChoices(page)).toHaveLength(4);
       await page.keyboard.press('Digit1');
       await untilChoices(page);
       await expect(page.locator('.event-choices button:disabled')).toHaveCount(1);
+    },
+  },
+  // Saving: the pause screen's slots after a save, and Continue on the start screen.
+  {
+    name: '19-pause-save',
+    query: '?autostart&seed=3&timescale=0&cam=bridge',
+    then: async (page) => {
+      await page.keyboard.press('Escape');
+      await page.getByRole('button', { name: 'Save game' }).click();
+      await page.getByRole('button', { name: /Slot 1/ }).click();
+      await expect(page.getByRole('dialog').getByRole('status')).toHaveText('Saved in slot 1.');
+    },
+  },
+  {
+    name: '20-start-continue',
+    query: '?autostart&seed=3&timescale=0&cam=bridge',
+    then: async (page) => {
+      // Pausing autosaves; the start screen then offers to continue.
+      await page.keyboard.press('Escape');
+      await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
+      await openGame(page, '');
+      await expect(page.getByRole('button', { name: /Continue/ })).toBeVisible();
     },
   },
   {

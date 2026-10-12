@@ -77,7 +77,7 @@ test('quarters → bridge → down the ladders to engineering → back up by lif
 
   // Back out and into the forward ladderwell, then down three decks.
   await walkTo(page, 23, 8);
-  await walkTo(page, 23, 10);
+  await walkTo(page, 23, 10.5);
   await lookAt(page, 'Climb down to Deck 2');
   await page.keyboard.press('KeyE');
   await expectDeck(page, 2);
@@ -92,14 +92,14 @@ test('quarters → bridge → down the ladders to engineering → back up by lif
   // Aft along the engineering passageway into main engineering.
   await walkTo(page, 23, 8);
   await walkTo(page, 43, 8);
-  await walkTo(page, 43, 6);
+  await walkTo(page, 43, 5.5);
   await expectRoom(page, '4-36-1-C');
 
   // Into the lift and up to deck 1.
   await walkTo(page, 43, 8);
   await walkTo(page, 47, 8);
-  await walkTo(page, 47, 10);
-  await page.evaluate(() => window.__captain!.face(47, 11, 0));
+  await walkTo(page, 47, 10.5);
+  await page.evaluate(() => window.__captain!.face(47, 11.5, 0));
   await expect.poll(() => page.evaluate(() => window.__captain!.prompt())).toBe('Take the lift');
   await page.keyboard.press('KeyE');
   await expect(page.getByRole('dialog', { name: 'Which deck?' })).toBeVisible();
@@ -109,7 +109,7 @@ test('quarters → bridge → down the ladders to engineering → back up by lif
   // Out of the lift and home.
   await walkTo(page, 47, 8);
   await walkTo(page, 33, 8);
-  await walkTo(page, 33, 6);
+  await walkTo(page, 33, 5.5);
   await expectRoom(page, '1-30-1-L');
   expect(errors).toEqual([]);
 });
@@ -122,7 +122,7 @@ test('ladders go up as well as down', async ({ page }) => {
   // You arrive at the landing facing the way out.
   const here = await pose(page);
   expect(here.x).toBeCloseTo(23, 1);
-  expect(here.y).toBeCloseTo(10, 1);
+  expect(here.y).toBeCloseTo(10.5, 1);
   expect(here.yaw).toBeCloseTo(0, 0);
   expect(errors).toEqual([]);
 });

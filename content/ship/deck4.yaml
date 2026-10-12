@@ -10,7 +10,7 @@ rooms:
     name: Main passageway
     code: 4-10-0-L
     type: passage
-    rect: [10, 7, 58, 2]
+    rect: [10, 6.5, 58, 3]
 
   # Starboard side
   - id: aux-machinery
@@ -19,8 +19,8 @@ rooms:
     code: 4-10-1-E
     type: engineering
     fit: machinery
-    rect: [10, 1, 12, 6]
-    doors: [[16, 7]]
+    rect: [10, 1, 12, 5.5]
+    doors: [[16, 6.5]]
     pois:
       - { name: Life support, kind: machinery, at: [13.5, 1.9], prop: life-support }
       - { name: Water reclamation, kind: machinery, at: [19.3, 1.8], prop: water-reclaimer }
@@ -30,8 +30,8 @@ rooms:
     code: 4-22-1-Q
     type: engineering
     fit: workshop
-    rect: [22, 1, 8, 6]
-    doors: [[26, 7]]
+    rect: [22, 1, 8, 5.5]
+    doors: [[26, 6.5]]
     pois:
       - { name: Machine tools, kind: machinery, at: [26, 3.6], prop: lathe, facing: port }
 
@@ -41,16 +41,16 @@ rooms:
     code: 4-30-1-A
     type: stores
     fit: stores
-    rect: [30, 1, 6, 6]
-    doors: [[33, 7]]
+    rect: [30, 1, 6, 5.5]
+    doors: [[33, 6.5]]
 
   - id: main-engineering
     name: Main Engineering
     code: 4-36-1-C
     type: engineering
     fit: operations
-    rect: [36, 1, 14, 6]
-    doors: [[43, 7]]
+    rect: [36, 1, 14, 5.5]
+    doors: [[43, 6.5]]
     pois:
       - { name: Reactor & drive control, kind: station, at: [43, 1.9], prop: console-bank }
 
@@ -60,8 +60,8 @@ rooms:
     code: 4-50-1-E
     type: engineering
     fit: reactor
-    rect: [50, 1, 12, 6]
-    doors: [[56, 7]]
+    rect: [50, 1, 12, 5.5]
+    doors: [[56, 6.5]]
     pois:
       - { name: Fusion reactor, kind: machinery, at: [56, 3], prop: reactor, facing: port }
 
@@ -71,8 +71,8 @@ rooms:
     code: 4-62-1-E
     type: engineering
     fit: machinery
-    rect: [62, 1, 6, 6]
-    doors: [[65, 7]]
+    rect: [62, 1, 6, 5.5]
+    doors: [[65, 6.5]]
     pois:
       - { name: Jump drive core, kind: machinery, at: [65, 3.3], prop: jump-core, facing: port }
 
@@ -81,29 +81,29 @@ rooms:
     name: Ballast Tank
     code: 4-10-2-W
     type: tank
-    rect: [10, 9, 12, 6]
+    rect: [10, 9.5, 12, 5.5]
 
   - id: shaft-alley
     name: Shaft Alley
     code: 4-24-2-E
     type: engineering
     fit: crawlway
-    rect: [24, 9, 22, 2]
-    doors: [[25, 9]]
+    rect: [24, 9.5, 22, 2]
+    doors: [[25, 9.5]]
 
   - id: ballast-tank-mid
     name: Ballast Tank
     code: 4-24-4-W
     type: tank
-    rect: [24, 11, 22, 4]
+    rect: [24, 11.5, 22, 3.5]
 
   - id: electrical
     name: Electrical Room
     code: 4-48-2-E
     type: engineering
     fit: equipment
-    rect: [48, 9, 8, 6]
-    doors: [[52, 9]]
+    rect: [48, 9.5, 8, 5.5]
+    doors: [[52, 9.5]]
     pois:
       - { name: Switchboards, kind: machinery, at: [52, 14.5], prop: switchboards }
 
@@ -113,8 +113,8 @@ rooms:
     code: 4-56-2-E
     type: engineering
     fit: machinery
-    rect: [56, 9, 10, 6]
-    doors: [[61, 9]]
+    rect: [56, 9.5, 10, 5.5]
+    doors: [[61, 9.5]]
     pois:
       - { name: Coolant pumps, kind: machinery, at: [61, 12.6], prop: pumps, facing: stbd }
 

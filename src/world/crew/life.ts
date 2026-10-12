@@ -225,6 +225,34 @@ class Walker implements CrewView {
     this.phase = rng.next() * Math.PI * 2;
   }
 
+  /** Nowhere yet, doing nothing: as before the start of the game. */
+  reset(): void {
+    this.deck = 0;
+    this.x = 0;
+    this.y = 0;
+    this.lift = 0;
+    this.yaw = 0;
+    this.pose = 'stand';
+    this.seat = 0;
+    this.visible = true;
+    this.activity = 'duty';
+    this.space = null;
+    this.settled = false;
+    this.curtained = false;
+    this.block = null;
+    this.spot = null;
+    this.route = [];
+    this.lead = 0;
+    this.nextLook = 0;
+    this.settledUntil = 0;
+    this.waited = 0;
+    this.attention = null;
+    this.speaking = false;
+    this.override = null;
+    this.buddy = null;
+    this.leads = false;
+  }
+
   /** The block at a ship time (total minutes since day 0). */
   blockAt(total: number): Block {
     const day = Math.floor(total / DAY);
@@ -256,6 +284,11 @@ class Walker implements CrewView {
     }
     return plan;
   }
+}
+
+/** Waiting in a room for an event, whatever the plan of the day says. */
+function waiting(room: string): Block {
+  return { from: 0, to: DAY, activity: 'duty', room };
 }
 
 /** Same activity in the same place: no need to move. */
@@ -300,8 +333,28 @@ export class CrewLife {
     this.byId = new Map(this.walkers.map((walker) => [walker.member.id, walker]));
     this.people = this.walkers;
     this.now = now;
-    // Everyone starts where their plan says, already settled in.
-    for (const walker of this.walkers) this.placeAt(walker, walker.blockAt(now), now);
+    this.restart(now);
+  }
+
+  /**
+   * Everyone where their plan of the day puts them at `now`, already settled in: the start of
+   * the game, or a saved game loaded. `summoned` (crew id → room) are waiting where an event
+   * needs them instead, until dismissed.
+   */
+  restart(now: number, summoned: ReadonlyMap<string, string> = new Map()): void {
+    this.now = now;
+    this.claims.clear();
+    for (const walker of this.walkers) walker.reset();
+    // The summoned first, so they get the posts in the room they're waiting in.
+    for (const [id, room] of summoned) {
+      const walker = this.byId.get(id);
+      if (!walker || !this.map.deckOfSpace.has(room)) continue;
+      walker.override = waiting(room);
+      this.placeAt(walker, walker.override, now);
+    }
+    for (const walker of this.walkers) {
+      if (!walker.override) this.placeAt(walker, walker.blockAt(now), now);
+    }
   }
 
   person(id: string): CrewView | undefined {
@@ -341,7 +394,7 @@ export class CrewLife {
   summon(id: string, room: string): void {
     const walker = this.byId.get(id);
     if (!walker || !this.map.deckOfSpace.has(room)) return;
-    walker.override = { from: 0, to: DAY, activity: 'duty', room };
+    walker.override = waiting(room);
     if (walker.block?.room !== room || walker.block.activity !== 'duty') {
       this.setOff(walker, walker.override, this.now);
     }

@@ -19,18 +19,18 @@ shafts:
   - id: ladder-fwd
     name: Forward ladderwell
     type: ladder
-    rect: [22, 9, 2, 5]
-    opening: [23, 9]
+    rect: [22, 9.5, 2, 4.5]
+    opening: [23, 9.5]
     decks: [1, 2, 3, 4]
   - id: lift
     name: Lift
     type: lift
-    rect: [46, 9, 2, 2]
-    opening: [47, 9]
+    rect: [46, 9.5, 2, 2]
+    opening: [47, 9.5]
     decks: [1, 2, 3, 4]
   - id: ladder-aft
     name: Aft ladderwell
     type: ladder
-    rect: [66, 9, 2, 5]
-    opening: [67, 9]
+    rect: [66, 9.5, 2, 4.5]
+    opening: [67, 9.5]
     decks: [2, 3, 4]

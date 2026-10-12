@@ -10,8 +10,8 @@ test('the minimap shows the deck, the room and the nearest point of interest', a
   await expect(minimap).toContainText('Deck 2 · Habitation');
   await expect(minimap).toContainText('2-30-2-L');
   await expect(minimap).toContainText('Junior Enlisted Berthing A');
-  // The viewpoint is just inside the hatch, by the fire extinguisher.
-  await expect(minimap).toContainText('Fire extinguisher');
+  // The viewpoint is just inside the hatch, by the watch bill.
+  await expect(minimap).toContainText('Watch bill');
   await expect(minimap.locator('.map-player')).toHaveCount(1);
   expect(errors).toEqual([]);
 });

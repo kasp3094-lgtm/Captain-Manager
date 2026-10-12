@@ -86,6 +86,13 @@ From the design doc: every major choice trades off at least two meters, with no 
 Effects are small (±1–5), major (±10–20) or defining (±25 or more, plus flags). Each officer
 reacts in their own voice (Act 1 spec §4).
 
+## Saving
+
+The game can be saved between an event's scenes (while the captain is on the way to its room,
+or after a `#goto`), never during one. A save made part way through an event remembers where
+the script had got to; if you change that script, the event starts over from its call when the
+save is loaded.
+
 ## Trying an event out
 
 Open the game with `?event=<id>`: the event is called at once, whatever the time. Add

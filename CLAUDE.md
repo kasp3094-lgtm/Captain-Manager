@@ -40,7 +40,7 @@ Working rules for Claude Code, and anyone else, building this game.
 
 `npm run sim` (headless playthrough bots) arrives in M2.
 
-Keys in the game: WASD walk, mouse look, Shift walk faster, E use (climb a ladder, take the lift, talk to someone), M ship map, Esc pause. In the lift, 1–4 pick a deck. In an event's dialogue, Space or Enter goes on and 1–9 pick a choice.
+Keys in the game: WASD walk, mouse look, Shift walk faster, E use (climb a ladder, take the lift, talk to someone), M ship map, Esc pause (and save or load from there). In the lift, 1–4 pick a deck. In an event's dialogue, Space or Enter goes on and 1–9 pick a choice.
 
 URL parameters: `?debug` shows the debug panel, `?debug=colliders` also shows collision boxes, `?seed=42` fixes the random seed, `?cam=<viewpoint>` starts at a viewpoint (any room id such as `junior-berthing-a`, a shaft stop such as `ladder-fwd-deck2` or `lift-deck3`, or `spawn`), `?autostart` skips the start screen, `?noui` hides the interface, `?time=1555` starts at that ship's time, `?timescale=20` runs time and the crew 20 times faster (`0` freezes them, for screenshots), `?dialog=<entry id>` plays a walk-by dialog entry as soon as people who fit it are on the captain's deck, `?event=<id>` calls an event at once (for example `?event=stranded-trader&cam=bridge`).
 
@@ -49,6 +49,7 @@ URL parameters: `?debug` shows the debug panel, `?debug=colliders` also shows co
 - The deck plans in `content/ship/` are the one source for the ship's layout: the map and the 3D ship are both generated from them. A room's `fit` picks its furniture template (`src/world/ship/fits.ts`); a point of interest's `prop` builds that object where the point is. `npm run validate` checks the layout rules in `src/sim/ship.ts` (rooms inside the hull, doors that lead somewhere, every room reachable, enough racks), then furnishes the whole ship and reports anything that doesn't fit.
 - The layout planner (`src/world/ship/coords.ts`, `layout.ts`, `fits.ts`, `walkgrid.ts`, `spots.ts`) and the crew's movement, bodies and dialog (`src/world/crew/life.ts`, `body.ts`, `chatter.ts`) are plain maths with no Babylon.js, so the validator and unit tests run them in Node. ESLint enforces it.
 - The crew is content too: every job aboard is in `content/crew/billets.yaml`, the named characters in `characters.yaml`, and the day (watch bill, meals, where each group sleeps, eats and relaxes) in `routine.yaml`. `npm run validate` checks that no rack has two sleepers at once, that everyone is in exactly one place at a time, and that every dialog entry can actually happen.
+- Saved games live in the browser's localStorage (`src/saveSlots.ts`); what a save holds is `src/sim/save.ts`. When new game state needs to survive a save, add it there, raise `SAVE_VERSION` and add a migration so older saves still load.
 - Every source file starts with a comment saying what it does. When you add a file, add it to the table in `src/README.md`.
 - Import Babylon.js only through `src/world/babylon.ts`. Module-by-module imports keep the bundle small, and ESLint enforces it.
 - `@playwright/test` is pinned to the version whose Chromium is preinstalled in Claude's cloud sandbox (1.56.1). Upgrade the two together.

@@ -200,7 +200,7 @@ In the spirit of naval command games like *Fleet Command*, the captain commands 
 
 - **Style.** Low-poly, flat or simple shading, few textures, clear silhouettes. Lighting and colour do the work. Reference: *Fleet Command II*; screenshots in [`references/`](references/) will pin down the exact look.
 - **Colour-coded zones.** Command: blue-grey. Habitation: warm beige and green. Weapons: grey with red accents. Engineering: yellow and orange hazard markings. Medical: white and teal.
-- **Realism through detail, not polygons.** Pipes and cable trays overhead, compartment numbers on every hatch, fire extinguishers and damage-control lockers, handrails, hatches with raised sills, notices on the bulkheads, personal items in racks.
+- **Realism through detail, not polygons.** Pipes and cable trays overhead, compartment numbers on every hatch, damage-control lockers, handrails, hatches with raised sills, notices on the bulkheads, personal items in racks.
 - **Characters.** Stylised low-poly people; uniform colour by department; key characters recognisable by silhouette (hair, build, accessories). Emotion is carried by **2D portraits** in dialogue (3–4 expressions each).
 - **UI.** A military datapad: dark background, amber and green, monospace accents. The tactical plot uses real naval symbol conventions (friendly: blue circle; hostile: red diamond; unknown: yellow square).
 

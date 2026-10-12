@@ -3,18 +3,8 @@
  * locked choice, the walk to the hangar to see the boarding party off, the verdict, and the
  * outcome card, with the command meters changed. (Screenshots of it: tests/shots.)
  */
-import { expect, test, type Page } from '@playwright/test';
-import { openGame, waitFrames } from '../support';
-
-/** Presses Space until choices show, and returns their texts. */
-async function untilChoices(page: Page): Promise<string[]> {
-  const choices = page.locator('.event-choices button');
-  for (let i = 0; i < 40 && (await choices.count()) === 0; i++) {
-    if ((await page.getByTestId('event').count()) === 0) break;
-    await page.keyboard.press('Space');
-  }
-  return choices.allInnerTexts();
-}
+import { expect, test } from '@playwright/test';
+import { openGame, untilChoices, waitFrames } from '../support';
 
 test('the stranded trader: called to the bridge, then down to the hangar', async ({ page }) => {
   test.setTimeout(4 * 60_000);

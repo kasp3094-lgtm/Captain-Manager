@@ -47,14 +47,14 @@ Rules:
 | Module | Responsibility |
 |---|---|
 | `src/sim/command` | The meters, relations and flags; applying and clamping changes; tiers; the change log; requirement checks for gated choices (the planned `state` and `effects` modules in one, so far) |
-| `src/sim/state` | Game state for saves: the command state plus reputation, supplies, time, crew records, RNG |
+| `src/sim/state` | Game state for saves: the command state plus reputation, supplies, time, crew records, RNG (so far `src/sim/save` gathers it from the clock, the command state and the events) |
 | `src/sim/events` | Event registry, trigger evaluation (by ship's time and room, so far), scheduling of delayed consequences |
 | `src/sim/narrative` | Ink runtime binding: external functions (`fx`, `flag`, `has`, `meter`, `tier`, `summon`, `name`, `last`, `ship`) and tags (`#speaker`, `#goto`, `#req`, `#cost`; later `#portrait`) |
 | `src/sim/crew`, `schedule`, `clock` | Roster generation, watch rotation, rack assignment; everyone's day (duty, patrols, meals, leisure, sleep) and where they are at any minute; ship's time |
 | `src/sim/dialog` | Walk-by dialog: reads and checks the scripts, finds entries that can never happen, matches entries to people, places and times |
 | `src/sim/battle` | Fixed-step deterministic battle simulation: orders, AI, damage, casualties |
 | `src/sim/campaign` | Days, command time, patrol legs, sector map, stations, budget cycle, endings |
-| `src/sim/save` | Versioned save files and migrations |
+| `src/sim/save` | Versioned save files and migrations: what a save holds, making one and putting it back, reading one back (the browser's save slots are in `src/saveSlots.ts`) |
 | `src/sim/ship` | Ship layout queries (room at a point, nearest point of interest) and the deck-plan rules checked by `npm run validate` |
 | `src/world/babylon.ts` | The only place that imports Babylon.js, module by module, to keep the bundle small |
 | `src/world/ship` | Deck plan → layout plan (walls, doors, lighting cells, furniture; pure and unit-tested) → meshes, props, lights, signs, ladders, lift; the walk grid and the spots (seats, racks, posts) the crew use |
@@ -104,13 +104,13 @@ rooms:
     short: Junior berthing A          # label on the map
     code: 2-30-2-L                    # deck-frame-position-use
     type: berthing                    # sets the map colour
-    rect: [30, 9, 10, 6]              # x, y, width, depth
+    rect: [30, 9.5, 10, 5.5]          # x, y, width, depth
     doors: [[30, 12]]                 # door centres, on the room's edge
     racks: 12
     hotRacked: true
     fit: berthing                     # furniture template (default for berthing rooms)
     pois:
-      - { name: Watch bill, kind: info, at: [30.2, 10.2], prop: noticeboard }
+      - { name: Watch bill, kind: info, at: [30.2, 10.4], prop: noticeboard }
       - { name: Card table, kind: social, at: [38.4, 12.2], prop: card-table, facing: port }
 ```
 
@@ -190,6 +190,32 @@ Readiness is at {meter("readiness")} percent, Captain. I want a full twenty-four
 
 Convention: the game checks `#req` and `#cost` tags. Unmet choices are shown greyed out with the reason and can't be picked; a choice that needs a flag stays hidden until the flag is set. `#goto:<room>` pauses the scene until the captain walks there. Scripts are compiled at build time, so the game carries only the Ink runtime.
 
+**Save file** (`src/sim/save.ts`; kept as JSON in the browser's localStorage by `src/saveSlots.ts`: an autosave and three slots). A save holds ship's time, where the captain stands, the command state (every meter and relation, the flags and the change log) and the events: those done, and the one under way with where its Ink script had got to and who it summoned. The crew aren't saved: ship's time and their plan of the day say where everyone is. Saves are made between an event's scenes, never in the middle of one. Reading a save checks it against the schema; to change what a save holds, raise `SAVE_VERSION` and add a migration from the old version, so older saves still load.
+
+```json
+{
+  "version": 1,
+  "savedAt": "2026-10-11T09:00:00.000Z",
+  "place": "Main passageway, deck 1",
+  "seed": 42,
+  "clock": { "day": 0, "minute": 498.5 },
+  "captain": { "deck": 1, "x": 30.4, "y": 8, "yaw": -90, "pitch": 4 },
+  "command": {
+    "values": { "budget": 6000, "readiness": 52, "crew": 47, "rel.okafor": -10 },
+    "flags": [],
+    "log": [{ "target": "crew", "amount": 2, "before": 45, "after": 47, "cause": "Mayday from the Sable Wren" }]
+  },
+  "events": {
+    "done": [],
+    "active": {
+      "id": "stranded-trader", "status": "away", "room": "hangar",
+      "story": "<Ink's saved state>", "script": "<fingerprint of the compiled script>",
+      "logStart": 0, "summoned": [["okafor", "bridge"], ["mensah", "hangar"]]
+    }
+  }
+}
+```
+
 ## 4. Verification: how we know it works
 
 | Check | Command | What it proves |
@@ -263,7 +289,7 @@ Done when:
 
 ### M2 — Command core (1–2 weeks)
 
-*Started early, at your request (October 2026), with the first mission, the Sable Wren's mayday: the command meters with their change log and tiers (`src/sim/command.ts`, starting values in `balance.yaml`), Ink with the game's functions and tags, events called by ship's time and played where they happen (`src/sim/events.ts`, `narrative.ts`), and the dialogue panel with greyed-out locked choices, notices and an outcome card. Still to do: portraits, the datapad, the day loop and command time, the captain's log, saves and the headless runner.*
+*Started early, at your request (October 2026), with the first mission, the Sable Wren's mayday: the command meters with their change log and tiers (`src/sim/command.ts`, starting values in `balance.yaml`), Ink with the game's functions and tags, events called by ship's time and played where they happen (`src/sim/events.ts`, `narrative.ts`), and the dialogue panel with greyed-out locked choices, notices and an outcome card. Saves came next: an autosave every morning (at `time.autosave` in `balance.yaml`), after each event, on pausing and on leaving the page; three slots of the player's own, saved and loaded from the pause screen; Continue and Load on the start screen. A save loads in place, without reloading the page (`src/sim/save.ts`, `src/saveSlots.ts`). Still to do: portraits, the datapad, the day loop and command time, the captain's log and the headless runner.*
 
 Build:
 
@@ -278,7 +304,7 @@ Done when:
 
 - [ ] Three sample events, including *The drill*, play end to end in the browser. *(One so far: the Sable Wren's mayday, played through by `tests/e2e/mission.spec.ts`; every branch is played by `tests/unit/events.test.ts`.)*
 - [ ] 1,000 headless runs of three days finish without errors.
-- [ ] Save → load reproduces an identical state; older saves load through migrations.
+- [x] Save → load reproduces an identical state; older saves load through migrations. *(`tests/unit/save.test.ts`: a save made half way through the mission loads into an identical state and plays on exactly as the original; migrations bring a save up one version at a time, tested with a made-up older format since version 1 is the first. `tests/e2e/save.spec.ts` saves mid-mission, reloads the page and carries on.)*
 - [ ] Unit-test coverage of `src/sim` is at least 80 %.
 
 ### M3 — Living crew (1–2 weeks)
